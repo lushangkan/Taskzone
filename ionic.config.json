@@ -1,0 +1,8 @@
+{
+  "name": "Taskzone",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite",
+  "id": "6b4f4c68"
+}
