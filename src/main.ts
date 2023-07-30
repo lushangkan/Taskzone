@@ -1,8 +1,20 @@
 import { createApp } from 'vue'
-import App from './App.vue'
+import App from '@/App.vue'
 import router from './router';
 
 import { IonicVue } from '@ionic/vue';
+
+// Import i18n
+import {i18n} from "@/locals/i18n";
+
+// Import pinia
+import { createPinia } from 'pinia'
+
+// Import database
+import { initDb } from '@/data/database/init-db';
+
+// Import database stores
+import { useDatabaseStores } from '@/stores/database-stores';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -21,12 +33,25 @@ import '@ionic/vue/css/flex-utils.css';
 import '@ionic/vue/css/display.css';
 
 /* Theme variables */
-import './theme/variables.css';
+import '@/assets/styles/main.less';
 
 const app = createApp(App)
   .use(IonicVue)
-  .use(router);
-  
-router.isReady().then(() => {
-  app.mount('#app');
-});
+  .use(router)
+  .use(i18n)
+  .use(createPinia())
+;
+
+// Use database stores
+const dbStores = useDatabaseStores();
+
+// Init database
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+initDb(() => {
+
+},() => {
+  router.isReady().then(() => {
+    // Mount Vue app
+    app.mount('#app')
+  });
+}, dbStores);
