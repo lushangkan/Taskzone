@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from '@/App.vue'
-import router from './router';
+import router from './router/router';
 
 import { IonicVue } from '@ionic/vue';
 
@@ -36,7 +36,9 @@ import '@ionic/vue/css/display.css';
 import '@/assets/styles/main.less';
 
 const app = createApp(App)
-  .use(IonicVue)
+  .use(IonicVue, {
+    mode: 'ios',
+  })
   .use(router)
   .use(i18n)
   .use(createPinia())
