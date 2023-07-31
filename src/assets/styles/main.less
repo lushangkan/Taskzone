@@ -10,3 +10,26 @@
 #app {
   font-family: "Misans", sans-serif;
 }
+
+.menu-panel {
+  --width: 246px;
+}
+
+.menu-panel::part(backdrop) {
+  background-color: hsl(var(--n));
+  opacity: 0.13;
+}
+
+.menu-panel::part(container) {
+  box-shadow: 3px 0 15px 0 rgba(0, 0, 0, 0.08);
+}
+
+.btn-menu-active {
+  background-color: hsl(var(--p-200));
+  > svg {
+    stroke: hsl(var(--b1));
+  }
+  > a {
+    color: hsl(var(--b1));
+  }
+}
