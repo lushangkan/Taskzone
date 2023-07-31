@@ -1,10 +1,5 @@
 <template>
   <ion-app>
-    <ion-header class="d-navbar">
-      <ion-toolbar>
-        <ion-title>Header Toolbar</ion-title>
-      </ion-toolbar>
-    </ion-header>
   </ion-app>
 </template>
 
@@ -23,7 +18,7 @@ import {
   IonRouterOutlet,
   IonSplitPane,
 } from '@ionic/vue';
-import { ref } from 'vue';
+import {onMounted, ref} from 'vue';
 import {
   archiveOutline,
   archiveSharp,
@@ -40,7 +35,12 @@ import {
   warningOutline,
   warningSharp,
 } from 'ionicons/icons';
+import {generateThemeColorVariants} from "@/utils/theme-color-utils";
 
+onMounted(() => {
+  // 生成主题色变体
+  generateThemeColorVariants();
+})
 
 </script>
 
