@@ -1,5 +1,8 @@
 <template>
   <ion-app>
+    <top-navbar>
+      <ion-router-outlet class="z-0" id="main-content"/>
+    </top-navbar>
   </ion-app>
 </template>
 
@@ -36,6 +39,8 @@ import {
   warningSharp,
 } from 'ionicons/icons';
 import {generateThemeColorVariants} from "@/utils/theme-color-utils";
+import TopNavbar from "@/componrnts/TopNavbar.vue";
+import DayTaskView from "@/views/DayTaskView.vue";
 
 onMounted(() => {
   // 生成主题色变体
