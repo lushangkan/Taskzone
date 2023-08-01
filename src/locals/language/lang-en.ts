@@ -8,5 +8,11 @@ export const langEn = {
             today: 'Today',
             titleDate: '{date}'
         }
+    },
+    menu: {
+        searchPapi: 'Search task',
+        dayTask: 'Day task',
+        tags: 'Tags',
+        taskList: 'Task list',
     }
 }

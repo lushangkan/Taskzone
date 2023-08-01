@@ -8,5 +8,11 @@ export const langZhCn = {
             today: '今天',
             titleDate: '{date}'
         }
+    },
+    menu: {
+        searchPapi: '搜索任务',
+        dayTask: '日任务',
+        tags: '标签',
+        taskList: '任务列表',
     }
 }
