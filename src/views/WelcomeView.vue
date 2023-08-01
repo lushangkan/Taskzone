@@ -1,7 +1,7 @@
 <template>
   <div class="h-screen w-screen flex flex-col justify-center items-center gap-2.5">
     <vue3-lottie :animationData="DottedLineFace" class="h-[90px] w-[90px]"/>
-    <div class="text-center text-black text-sm font-thin">{{ $t('page.welcome.tipsLine') }}</div>
+    <a class="text-center text-black text-sm font-thin" v-html="$t('page.welcome.tipsLine')"></a>
   </div>
 </template>
 
