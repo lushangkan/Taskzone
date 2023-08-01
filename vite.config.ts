@@ -3,12 +3,19 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import { defineConfig } from 'vite'
 import px2vw from '@yuo/postcss-px2vw'
+import vueI18n from '@intlify/vite-plugin-vue-i18n'
+import { resolve, dirname } from 'node:path'
+import {fileURLToPath} from "url";
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    legacy()
+    legacy(),
+    vueI18n({
+      include: resolve(dirname(fileURLToPath(import.meta.url)), './path/to/src/locales/**'),
+    })
   ],
   css: {
     postcss: {

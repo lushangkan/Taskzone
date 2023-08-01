@@ -33,3 +33,111 @@
     color: hsl(var(--b1));
   }
 }
+
+// Datepicker
+@keyframes datepicker-animation {
+  0% {
+    height: 0;
+    > div {
+      height: 0;
+    }
+  }
+  100% {
+    height: 360px;
+    > div {
+      height: 360px;
+    }
+  }
+}
+
+.datepicker-enter-active {
+  animation: datepicker-animation 0.18s ease-out forwards;
+}
+
+.datepicker-leave-active {
+  animation: datepicker-animation 0.18s ease-out forwards;
+  animation-direction: reverse;
+}
+
+.datepicker {
+  > div {
+    border: none;
+    background-color: hsl(var(--b1));
+    border-bottom-right-radius: 22px;
+    border-bottom-left-radius: 22px;
+    box-shadow: none;
+    > div {
+      > div {
+        > div {
+          > .flex {
+            .dark\:text-vtd-secondary-300 {
+              --tw-bg-opacity: 1;
+              color: hsl(var(--p));
+            }
+            .dark\:bg-vtd-secondary-800 {
+              --tw-bg-opacity: 1;
+              background-color: unset;
+            }
+            padding-top: 0.05rem;
+            padding-bottom: 0.05rem;
+          }
+          > .px-0\.5 {
+            > .flex-wrap {
+              button.dark\:bg-vtd-secondary-800 {
+                --tw-bg-opacity: 1;
+                background-color: unset;
+              }
+              button.dark\:text-vtd-secondary-300 {
+                --tw-bg-opacity: 1;
+                color: hsl(var(--n));
+              }
+            }
+
+            > div {
+              .py-2 {
+                div {
+                  --tw-bg-opacity: 1;
+                  color: hsl(var(--n));
+                }
+              }
+              .my-1 {
+                .text-vtd-secondary-600 {
+                  --tw-bg-opacity: 1;
+                  color: hsl(var(--n) / 0.9);
+                }
+                .text-vtd-secondary-400 {
+                  --tw-bg-opacity: 1;
+                  color: hsl(var(--n) / 0.5);
+                }
+                .text-vtd-secondary-700 {
+                  --tw-bg-opacity: 1;
+                  color: hsl(var(--n) / 0.9);
+                }
+                .dark\:bg-vtd-secondary-800 {
+                  --tw-bg-opacity: 1;
+                  background-color: hsl(var(--p));
+                }
+                .focus\:outline-none {
+                  --tw-bg-opacity: 1;
+                  background-color: transparent;
+                  color: hsl(var(--p));
+                }
+              }
+            }
+
+            .bg-vtd-primary-500 {
+              background-color: hsl(var(--p));
+            }
+            .text-vtd-primary-500 {
+              color: hsl(var(--b1));
+            }
+            button.vtd-datepicker-date {
+              width: 2.3rem;
+              height: 2.3rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}

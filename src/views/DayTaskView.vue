@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage } from "@ionic/vue";
+import { IonPage, IonText, IonContent } from "@ionic/vue";
 </script>
 
 

@@ -46,9 +46,6 @@ import {
   ChevronRight
 } from 'lucide-vue-next';
 
-const menu = ref<IonMenu | null>(null);
-
-console.log(useAttrs());
 </script>
 
 <style scoped lang="less">

@@ -14,16 +14,20 @@
             }}</ion-title>
         </div>
         <div class="navbar-end">
-          <button type="button" title="Open datepicker" class="d-btn d-btn-ghost">
+          <button type="button" title="Open datepicker" :class="`d-btn d-btn-ghost ${datepickerOpen?'d-btn-active':''}`" @click="datepickerOpen=!datepickerOpen">
             <calendar-days-icon class="w-[24px] h-[24px]" color="hsl(var(--b1))"/>
           </button>
         </div>
       </ion-header>
+      <Transition name="datepicker">
+        <navbar-datepicker v-show="datepickerOpen" @ondatechange="onDateChange"/>
+      </Transition>
     </div>
     <slot/>
 </template>
 
 <script setup lang="ts">
+import { IonTitle, IonHeader } from "@ionic/vue";
 import {
   MenuIcon,
   CalendarDaysIcon,
@@ -35,8 +39,10 @@ import {
 } from 'lucide-vue-next';
 import {onMounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
-import SidePanel from "@/componrnts/SidePanel.vue";
+import SidePanel from "@/componrnts/navbar/SidePanel.vue";
 import {menuController} from "@ionic/vue";
+import NavbarDatepicker from "@/componrnts/navbar/NavbarDatepicker.vue";
+import {Moment} from "moment";
 
 const router = useRouter();
 
@@ -46,6 +52,9 @@ const titleDate = ref('');
 
 const menuOpen = ref(false);
 
+const datepickerOpen = ref(false);
+
+// 当菜单打开状态改变
 watch(menuOpen, (newVal) => {
   if (newVal) {
     menuController.open();
@@ -53,6 +62,17 @@ watch(menuOpen, (newVal) => {
     menuController.close();
   }
 });
+
+// 当Datepicker值发生变化
+function onDateChange(date: Moment) {
+  if (date.isSame(moment(), 'day')) {
+    titleDate.value = 'today';
+  } else if (!date.isSame(moment(), 'year')) {
+    titleDate.value = date.format('LL');
+  } else {
+    titleDate.value = date.format('MMMDo');
+  }
+}
 
 onMounted(() => {
   // 获取日任务路由参数的日期

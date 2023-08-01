@@ -10,6 +10,17 @@
     "test:unit": "vitest",
     "lint": "eslint"
   },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true,
+      "vue/setup-compiler-macros": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ]
+  },
   "dependencies": {
     "@capacitor-community/sqlite": "^5.0.6",
     "@capacitor/android": "^5.2.2",
@@ -20,6 +31,7 @@
     "@capacitor/status-bar": "5.0.6",
     "@ionic/vue": "^7.2.1",
     "@ionic/vue-router": "^7.2.1",
+    "@tailwindcss/forms": "^0.5.4",
     "animate.css": "^4.1.1",
     "colorjs.io": "^0.4.5",
     "ionicons": "^7.1.2",
@@ -31,10 +43,12 @@
     "vue": "^3.3.4",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.4",
+    "vue-tailwind-datepicker": "^1.4.5",
     "vue3-lottie": "^2.7.4"
   },
   "devDependencies": {
     "@capacitor/cli": "5.2.2",
+    "@intlify/vite-plugin-vue-i18n": "^7.0.0",
     "@types/node": "18",
     "@vitejs/plugin-legacy": "^4.1.1",
     "@vitejs/plugin-vue": "^4.2.3",

@@ -39,7 +39,7 @@ import {
   warningSharp,
 } from 'ionicons/icons';
 import {generateThemeColorVariants} from "@/utils/theme-color-utils";
-import TopNavbar from "@/componrnts/TopNavbar.vue";
+import TopNavbar from "@/componrnts/navbar/TopNavbar.vue";
 import DayTaskView from "@/views/DayTaskView.vue";
 
 onMounted(() => {
