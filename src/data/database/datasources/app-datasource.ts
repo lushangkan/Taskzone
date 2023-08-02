@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm';
+import {DataSource} from 'typeorm';
 import dBConnect from "../db-connect";
 import {DayTask} from "@/data/database/entities/DayTask";
 import {Setting} from "@/data/database/entities/Setting";

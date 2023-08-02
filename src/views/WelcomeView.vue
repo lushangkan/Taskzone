@@ -6,7 +6,6 @@
 </template>
 
 <script setup lang="ts">
-import {IonContent} from "@ionic/vue";
 import DottedLineFace from '@/assets/emoji/notoemoji/dotted-line-face.json'
 import {Vue3Lottie} from "vue3-lottie";
 </script>

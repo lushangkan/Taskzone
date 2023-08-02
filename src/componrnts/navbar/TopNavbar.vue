@@ -1,20 +1,24 @@
 <template>
-    <div class="fixed flex flex-col justify-start items-center w-full h-full py-[16px] z-10">
-      <side-panel @onmenuclose="menuOpen=false"/>
+  <sticky-element>
+    <div class="fixed flex flex-col justify-start items-center w-full py-[16px] z-10">
       <ion-header
           class="d-navbar border-none flex flex-row justify-around items-center w-[348px] h-[63px] px-[13px] rounded-3xl shadow-[0_4px_4px_0_rgba(0,0,0,0.08)] bg-gradient-to-br from-[hsl(var(--p--100))] to-[hsl(var(--p-300))]">
         <div class="navbar-start">
-          <button type="button" title="Open menu" :class="`d-btn d-btn-ghost ${menuOpen?'d-btn-active':''}`" @click="menuOpen=!menuOpen">
+          <button type="button" title="Open menu" :class="`d-btn d-btn-ghost ${menuOpen?'d-btn-active':''}`"
+                  @click="menuOpen=!menuOpen">
             <menu-icon class="w-[24px] h-[24px]" color="hsl(var(--b1))"/>
           </button>
         </div>
         <div class="d-navbar-start">
           <ion-title class="text-base-100 text-lg font-medium">{{
               pageName === 'daytask' ? titleDate === 'today' ? $t('page.daytask.today') : titleDate : $t(`page.${pageName}.name`)
-            }}</ion-title>
+            }}
+          </ion-title>
         </div>
         <div class="navbar-end">
-          <button type="button" title="Open datepicker" :class="`d-btn d-btn-ghost ${datepickerOpen?'d-btn-active':''}`" @click="datepickerOpen=!datepickerOpen">
+          <button type="button" title="Open datepicker"
+                  :class="`d-btn d-btn-ghost ${datepickerOpen?'d-btn-active':''}`"
+                  @click="datepickerOpen=!datepickerOpen">
             <calendar-days-icon class="w-[24px] h-[24px]" color="hsl(var(--b1))"/>
           </button>
         </div>
@@ -23,26 +27,21 @@
         <navbar-datepicker v-show="datepickerOpen" @ondatechange="onDateChange"/>
       </Transition>
     </div>
-    <slot/>
+  </sticky-element>
+  <side-panel @onmenuclose="menuOpen=false" class="w-full h-full z-20"/>
+  <slot/>
 </template>
 
 <script setup lang="ts">
-import { IonTitle, IonHeader } from "@ionic/vue";
-import {
-  MenuIcon,
-  CalendarDaysIcon,
-  SettingsIcon,
-  CalendarCheckIcon,
-  TagsIcon,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-vue-next';
-import {onMounted, ref, watch} from "vue";
+import {IonHeader, IonTitle, menuController} from "@ionic/vue";
+import {CalendarDaysIcon, MenuIcon} from 'lucide-vue-next';
+import {onMounted, onUnmounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import SidePanel from "@/componrnts/navbar/SidePanel.vue";
-import {menuController} from "@ionic/vue";
 import NavbarDatepicker from "@/componrnts/navbar/NavbarDatepicker.vue";
 import {Moment} from "moment";
+import StickyElement from 'vue-sticky-element';
+
 
 const router = useRouter();
 
@@ -53,6 +52,7 @@ const titleDate = ref('');
 const menuOpen = ref(false);
 
 const datepickerOpen = ref(false);
+
 
 // 当菜单打开状态改变
 watch(menuOpen, (newVal) => {
@@ -97,6 +97,7 @@ onMounted(() => {
     titleDate.value = 'today';
   }
 })
+
 
 </script>
 

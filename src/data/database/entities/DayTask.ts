@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn} from "typeorm";
+import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from "typeorm";
 import {RepeatCustom} from "@/data/models/RepeatCustom";
 import {RepeatMode} from "../../enum/RepeatMode";
 

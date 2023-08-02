@@ -1,15 +1,15 @@
 <template>
-  <ion-page class="z-0">
-    <ion-content>
-      <div class="w-full h-full flex flex-col justify-center items-center">
-        <ion-text>Hello DayTaskView</ion-text>
+  <ion-page>
+    <ion-content :fullscreen="true" :scroll-events=true>
+      <div class="w-full flex flex-col justify-start items-center pt-[150px]" @ionScroll="console.log($event)">
+        <div class="bg-warning h-[150vh] w-3/4"></div>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonText, IonContent } from "@ionic/vue";
+import {IonContent, IonPage} from "@ionic/vue";
 </script>
 
 

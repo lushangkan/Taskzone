@@ -1,10 +1,10 @@
-import { defineCustomElements as jeepSqlite, applyPolyfills} from 'jeep-sqlite/loader';
-import { Capacitor } from '@capacitor/core';
-import { CapacitorSQLite } from '@capacitor-community/sqlite';
+import {applyPolyfills, defineCustomElements as jeepSqlite} from 'jeep-sqlite/loader';
+import {Capacitor} from '@capacitor/core';
+import {CapacitorSQLite} from '@capacitor-community/sqlite';
 import sqliteConnection from '@/data/database/db-connect';
 import AppDatasource from "@/data/database/datasources/app-datasource";
 
-export function initDb(beforeInit: () => void, afterInit: () => void, dbStores: any){
+export function initDb(beforeInit: () => void, afterInit: () => void, dbStores: any) {
 
     beforeInit();
 

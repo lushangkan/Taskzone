@@ -1,9 +1,9 @@
-import { defineStore } from "pinia";
-import { type Ref, ref, type UnwrapRef } from "vue";
+import {defineStore} from "pinia";
+import {ref} from "vue";
 
 export const useDatabaseStores = defineStore('databaseStore', () => {
-  const sqliteConnection = ref();
-  const platform = ref();
+    const sqliteConnection = ref();
+    const platform = ref();
 
-  return { sqliteConnection, platform };
+    return {sqliteConnection, platform};
 });

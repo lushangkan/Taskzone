@@ -1,20 +1,24 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from '@/App.vue'
 import router from './router/router';
 
-import { IonicVue } from '@ionic/vue';
+import {IonicVue} from '@ionic/vue';
 
 // Import i18n
 import {i18n} from "@/locals/i18n";
 
 // Import pinia
-import { createPinia } from 'pinia'
+import {createPinia} from 'pinia'
 
 // Import database
-import { initDb } from '@/data/database/init-db';
+import {initDb} from '@/data/database/init-db';
 
 // Import database stores
-import { useDatabaseStores } from '@/stores/database-stores';
+import {useDatabaseStores} from '@/stores/database-stores';
+
+// Some global components
+import VStickyElement from 'vue-sticky-element';
+
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -36,12 +40,13 @@ import '@ionic/vue/css/display.css';
 import '@/assets/styles/main.less';
 
 const app = createApp(App)
-  .use(IonicVue, {
-    mode: 'ios',
-  })
-  .use(router)
-  .use(i18n)
-  .use(createPinia())
+    .use(IonicVue, {
+        mode: 'ios',
+    })
+    .use(router)
+    .use(i18n)
+    .use(VStickyElement)
+    .use(createPinia())
 ;
 
 // Use database stores
@@ -51,9 +56,9 @@ const dbStores = useDatabaseStores();
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 initDb(() => {
 
-},() => {
-  router.isReady().then(() => {
-    // Mount Vue app
-    app.mount('#app')
-  });
+}, () => {
+    router.isReady().then(() => {
+        // Mount Vue app
+        app.mount('#app')
+    });
 }, dbStores);

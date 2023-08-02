@@ -1,35 +1,35 @@
-import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn} from "typeorm";
+import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity()
 export class Task {
 
-        @PrimaryGeneratedColumn()
-        id!: number;
+    @PrimaryGeneratedColumn()
+    id!: number;
 
-        @Column('text')
-        name: string;
+    @Column('text')
+    name: string;
 
-        @Column('text')
-        description: string;
+    @Column('text')
+    description: string;
 
-        @Column('text')
-        color: string;
+    @Column('text')
+    color: string;
 
-        @Column('text')
-        icon: string;
+    @Column('text')
+    icon: string;
 
-        @Column('simple-array')
-        tags: number[];
+    @Column('simple-array')
+    tags: number[];
 
-        @CreateDateColumn()
-        createDate: Date;
+    @CreateDateColumn()
+    createDate: Date;
 
-        @Column('datetime')
-        deadLineDate: Date;
+    @Column('datetime')
+    deadLineDate: Date;
 
-        @Column('boolean')
-        isDone: boolean;
+    @Column('boolean')
+    isDone: boolean;
 
-        @Column('datetime')
-        doneDate: Date;
+    @Column('datetime')
+    doneDate: Date;
 }

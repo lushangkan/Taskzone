@@ -1,6 +1,7 @@
 <template>
   <ion-menu @ionWillClose="$emit('onmenuclose')" ref="menu" content-id="main-content" class="z-20 menu-panel">
-    <div class="w-full h-full top-0 py-[29px] px-[30.5px] bg-base-100 flex-col justify-start items-center gap-[25px] flex">
+    <div
+        class="w-full h-full top-0 py-[29px] px-[30.5px] bg-base-100 flex-col justify-start items-center gap-[25px] flex">
       <div class="w-full flex-col justify-start items-center gap-[12px] inline-flex">
         <div class="w-full flex flex-row justify-start items-center px-[2px]">
           <button type="button" title="Setting" class="d-btn d-btn-circle d-btn-ghost w-[30px] h-[30px] min-h-[30px]">
@@ -36,18 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import { IonMenu, IonContent } from "@ionic/vue";
-import {onMounted, ref, useAttrs} from "vue";
-import {
-  MenuIcon,
-  CalendarDaysIcon,
-  SettingsIcon,
-  CalendarCheckIcon,
-  TagsIcon,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-vue-next';
-
+import {IonMenu} from "@ionic/vue";
+import {CalendarCheckIcon, SettingsIcon, TagsIcon} from 'lucide-vue-next';
 </script>
 
 <style scoped lang="less">
