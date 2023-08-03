@@ -1,5 +1,5 @@
 <template>
-  <sticky-element>
+  <sticky-element :scrollElement="scrolEle" stuckClass="navbar-stuck" showClass="navbar-show" transitionClass="navbar-transition" id="sticky-navbar">
     <div class="fixed flex flex-col justify-start items-center w-full py-[16px] z-10">
       <ion-header
           class="d-navbar border-none flex flex-row justify-around items-center w-[348px] h-[63px] px-[13px] rounded-3xl shadow-[0_4px_4px_0_rgba(0,0,0,0.08)] bg-gradient-to-br from-[hsl(var(--p--100))] to-[hsl(var(--p-300))]">
@@ -35,13 +35,12 @@
 <script setup lang="ts">
 import {IonHeader, IonTitle, menuController} from "@ionic/vue";
 import {CalendarDaysIcon, MenuIcon} from 'lucide-vue-next';
-import {onMounted, onUnmounted, ref, watch} from "vue";
+import {onMounted, onUnmounted, type Ref, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import SidePanel from "@/componrnts/navbar/SidePanel.vue";
 import NavbarDatepicker from "@/componrnts/navbar/NavbarDatepicker.vue";
 import {Moment} from "moment";
 import StickyElement from 'vue-sticky-element';
-
 
 const router = useRouter();
 
@@ -53,6 +52,7 @@ const menuOpen = ref(false);
 
 const datepickerOpen = ref(false);
 
+const scrollEle:Ref<HTMLElement | null> = ref(null);
 
 // 当菜单打开状态改变
 watch(menuOpen, (newVal) => {
@@ -96,6 +96,12 @@ onMounted(() => {
   } else {
     titleDate.value = 'today';
   }
+
+  // 获取滚动元素
+  const content: HTMLIonContentElement = (document.getElementsByTagName('ion-content')[0] as HTMLIonContentElement);
+  content.getScrollElement().then((ele) => {
+    scrollEle.value = ele;
+  });
 })
 
 

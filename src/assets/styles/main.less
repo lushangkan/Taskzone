@@ -167,12 +167,34 @@
 }
 
 .navbar-transition {
-  animation: navbar-animation 0.3s ease-out forwards;
+  transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
 }
 
-@keyframes navbar-animation {
+.addtaskbtn {
+  animation: addtaskbtn-animation 0.2s ease-in-out forwards alternate infinite;
+}
+
+@keyframes addtaskbtn-animation {
   0% {
-    transform: translateY(-110%) scale(0.9);
+    box-shadow: 0 0 5px 5px rgba(114,232,196,0.15);
+  }
+  100% {
+    box-shadow: 0 0 8px 5px rgba(114,232,196,0.3);
+  }
+}
+
+.add-task-btn-enter-active {
+  animation: add-task-btn 0.2s ease-in-out forwards;
+}
+
+.add-task-btn-leave-active {
+  animation: add-task-btn 0.2s ease-in-out forwards;
+  animation-direction: reverse;
+}
+
+@keyframes add-task-btn {
+  0% {
+    transform: translateY(110%) scale(0.9);
     opacity: 0;
   }
   100% {
