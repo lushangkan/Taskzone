@@ -1,5 +1,5 @@
 <template>
-  <sticky-element :scrollElement="scrolEle" stuckClass="navbar-stuck" showClass="navbar-show" transitionClass="navbar-transition" id="sticky-navbar">
+  <sticky-element :scrollElement="scrollEle" stuckClass="navbar-stuck" showClass="navbar-show" transitionClass="navbar-transition" id="sticky-navbar" @stuck="appStore.addTaskBtnShow=!$event">
     <div class="fixed flex flex-col justify-start items-center w-full py-[16px] z-10">
       <ion-header
           class="d-navbar border-none flex flex-row justify-around items-center w-[348px] h-[63px] px-[13px] rounded-3xl shadow-[0_4px_4px_0_rgba(0,0,0,0.08)] bg-gradient-to-br from-[hsl(var(--p--100))] to-[hsl(var(--p-300))]">
@@ -41,6 +41,7 @@ import SidePanel from "@/componrnts/navbar/SidePanel.vue";
 import NavbarDatepicker from "@/componrnts/navbar/NavbarDatepicker.vue";
 import {Moment} from "moment";
 import StickyElement from 'vue-sticky-element';
+import {useAppStores} from "@/stores/app-stores";
 
 const router = useRouter();
 
@@ -52,7 +53,9 @@ const menuOpen = ref(false);
 
 const datepickerOpen = ref(false);
 
-const scrollEle:Ref<HTMLElement | null> = ref(null);
+const scrollEle = ref<HTMLElement>();
+
+const appStore = useAppStores();
 
 // 当菜单打开状态改变
 watch(menuOpen, (newVal) => {
@@ -103,7 +106,6 @@ onMounted(() => {
     scrollEle.value = ele;
   });
 })
-
 
 </script>
 
