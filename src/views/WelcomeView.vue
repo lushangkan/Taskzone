@@ -1,9 +1,9 @@
 <template>
-  <ion-page>
+  <ion-page >
     <ion-content :fullscreen="true" :scroll-events=true>
-      <div class="h-screen w-screen flex flex-col justify-center items-center gap-2.5">
+      <div class="h-screen w-screen flex flex-col justify-center items-center gap-2.5 bg-base-100">
         <vue3-lottie :animationData="DottedLineFace" class="h-[90px] w-[90px]"/>
-        <a class="text-center text-black text-sm font-thin" v-html="$t('page.welcome.tipsLine')"></a>
+        <a class="text-center text-neutral text-sm font-thin" v-html="$t('page.welcome.tipsLine')"></a>
         <add-task-btn/>
       </div>
     </ion-content>

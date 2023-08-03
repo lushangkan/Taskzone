@@ -184,21 +184,41 @@
 }
 
 .add-task-btn-enter-active {
-  animation: add-task-btn 0.2s ease-in-out forwards;
+  animation: add-task-btn-animation 0.2s ease-in-out forwards;
 }
 
 .add-task-btn-leave-active {
-  animation: add-task-btn 0.2s ease-in-out forwards;
+  animation: add-task-btn-animation 0.2s ease-in-out forwards;
   animation-direction: reverse;
 }
 
-@keyframes add-task-btn {
+@keyframes add-task-btn-animation {
   0% {
     transform: translateY(110%) scale(0.9);
     opacity: 0;
   }
   100% {
     transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.options-btn-enter-active {
+  animation: options-btn-animation 0.2s ease-out forwards;
+}
+
+.options-btn-leave-active {
+  animation: options-btn-animation 0.2s ease-out forwards;
+  animation-direction: reverse;
+}
+
+@keyframes options-btn-animation {
+  0% {
+    transform: translateY(13vh) translateX(10vw) scale(0.3);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) translateX(0) scale(1);
     opacity: 1;
   }
 }

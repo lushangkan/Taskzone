@@ -16,7 +16,7 @@
           </ion-title>
         </div>
         <div class="navbar-end">
-          <button type="button" title="Open datepicker"
+          <button v-if="pageName==='daytask'" type="button" title="Open datepicker"
                   :class="`d-btn d-btn-ghost ${datepickerOpen?'d-btn-active':''}`"
                   @click="datepickerOpen=!datepickerOpen">
             <calendar-days-icon class="w-[24px] h-[24px]" color="hsl(var(--b1))"/>

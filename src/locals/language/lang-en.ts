@@ -14,5 +14,9 @@ export const langEn = {
         dayTask: 'Day task',
         tags: 'Tags',
         taskList: 'Task list',
+    },
+    addTaskBtn: {
+        addTask: 'Task',
+        addTaskList: 'Task list'
     }
 }
