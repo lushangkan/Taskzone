@@ -36,18 +36,10 @@
 // Datepicker
 @keyframes datepicker-animation {
   0% {
-    height: 0;
-
-    > div {
-      height: 0;
-    }
+    max-height: 0;
   }
   100% {
-    height: 360px;
-
-    > div {
-      height: 360px;
-    }
+    max-height: 359px;
   }
 }
 
@@ -220,5 +212,134 @@
   100% {
     transform: translateY(0) translateX(0) scale(1);
     opacity: 1;
+  }
+}
+
+.horizontal-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.vertical-centering {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.editor {
+  transition: transform 0.3s cubic-bezier(0.7,-0.01, 0.57, 0.99);
+}
+
+.editor-detail {
+  > .top {
+    a {
+      font-size: 18px;
+    }
+  }
+
+  .line1 {
+    @apply flex-col;
+    .icon-color {
+      padding-top: 10px;
+      padding-bottom: 35px;
+      button {
+        height: 84px;
+        width: 84px;
+        svg {
+          height: 48px;
+          width: 48px;
+        }
+      }
+    }
+    .d-form-control {
+      .input-group {
+        width: 267px;
+        height: 45px;
+        input {
+          padding-left: 1rem;
+        }
+      }
+    }
+  }
+}
+
+.editor-datepicker {
+  div {
+    border-radius: 25px;
+  }
+}
+
+.editor-datepicker::after {
+  content:'';
+  position: absolute;
+  bottom: -8px;
+  right: 30px;
+  height: 0;
+  width: 0;
+  border-top: 13px solid hsl(var(--b1));
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  filter: drop-shadow(0 0 10px hsla(var(--n)/0.15));
+}
+
+.datepicker-menu {
+  --dp-font-family: "Misans", sans-serif;
+  --dp-cell-border-radius: 50%;
+  border-color: transparent;
+  font-weight: 300;
+  padding-left: 15px;
+  padding-right: 15px;
+  .dp__calendar_header {
+    font-family: "Misans", sans-serif;
+    font-weight: 300;
+    font-size: 13.5px;
+  }
+  .dp__active_date {
+    font-weight: 500;
+  }
+}
+
+.dp__theme_light {
+  --dp-background-color: hsl(var(--b1));
+  --dp-text-color: hsl(var(--n));
+  --dp-primary-color: hsl(var(--p));
+  --dp-primary-text-color: hsl(var(--b1));
+  --dp-border-color: transparent;
+  --dp-menu-border-color: transparent;
+  --dp-border-color-hover: transparent;
+  --dp-icon-color: hsl(var(--p));
+  --dp-scroll-bar-color: hsl(var(--p));
+  --dp-scroll-bar-background: hsl(var(--b2));
+}
+
+.dp__theme_dark {
+  --dp-background-color: hsl(var(--b1));
+  --dp-text-color: hsl(var(--n));
+  --dp-primary-color: hsl(var(--p));
+  --dp-primary-text-color: hsl(var(--b1));
+  --dp-border-color: transparent;
+  --dp-menu-border-color: transparent;
+  --dp-border-color-hover: transparent;
+  --dp-icon-color: hsl(var(--p));
+  --dp-scroll-bar-color: hsl(var(--p));
+  --dp-scroll-bar-background: hsl(var(--b2));
+}
+
+.navbar-datepicker-enter-active {
+  animation: navbar-datepicker-animation 0.3s ease-in-out forwards;
+}
+
+.navbar-datepicker-leave-active {
+  animation: navbar-datepicker-animation 0.3s ease-in-out forwards;
+  animation-direction: reverse;
+}
+
+@keyframes navbar-datepicker-animation {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scaleX(100%);
   }
 }

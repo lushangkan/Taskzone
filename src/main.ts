@@ -19,6 +19,9 @@ import {useDatabaseStores} from '@/stores/database-stores';
 // Some global components
 import VStickyElement from 'vue-sticky-element';
 import VScrollThreshold from 'v-scroll-threshold';
+import drag from "v-drag"
+import PrimeVue from 'primevue/config';
+
 
 
 /* Core CSS required for Ionic components to work properly */
@@ -46,6 +49,10 @@ const app = createApp(App)
     })
     .use(router)
     .use(i18n)
+    .use(drag, {
+        removeTransition: false
+    })
+    .use(PrimeVue)
     .use(VScrollThreshold)
     .use(VStickyElement)
     .use(createPinia())

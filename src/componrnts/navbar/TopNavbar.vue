@@ -1,6 +1,6 @@
 <template>
   <sticky-element :scrollElement="scrollEle" stuckClass="navbar-stuck" showClass="navbar-show" transitionClass="navbar-transition" id="sticky-navbar" @stuck="appStore.addTaskBtnShow=!$event">
-    <div class="fixed flex flex-col justify-start items-center w-full py-[16px] z-10">
+    <div id="app-navbar" class="fixed flex flex-col justify-start items-center w-full py-[16px] z-10">
       <ion-header
           class="d-navbar border-none flex flex-row justify-around items-center w-[348px] h-[63px] px-[13px] rounded-3xl shadow-[0_4px_4px_0_rgba(0,0,0,0.08)] bg-gradient-to-br from-[hsl(var(--p--100))] to-[hsl(var(--p-300))]">
         <div class="navbar-start">
@@ -24,7 +24,7 @@
         </div>
       </ion-header>
       <Transition name="datepicker">
-        <navbar-datepicker v-show="datepickerOpen" @ondatechange="onDateChange"/>
+        <navbar-datepicker v-if="datepickerOpen" @ondatechange="onDateChange"/>
       </Transition>
     </div>
   </sticky-element>
@@ -42,6 +42,8 @@ import NavbarDatepicker from "@/componrnts/navbar/NavbarDatepicker.vue";
 import {Moment} from "moment";
 import StickyElement from 'vue-sticky-element';
 import {useAppStores} from "@/stores/app-stores";
+import anime from 'animejs/lib/anime.es.js';
+
 
 const router = useRouter();
 
@@ -63,6 +65,41 @@ watch(menuOpen, (newVal) => {
     menuController.open();
   } else {
     menuController.close();
+  }
+});
+
+// 当Datepicker打开状态改变
+watch(datepickerOpen, (newVal) => {
+  if (newVal) {
+    // 打开
+    anime({
+      targets: '#app-navbar',
+      keyframes: [
+        {
+          translateY: '8%',
+          duration: 280
+        },
+        {
+          translateY: '0',
+          duration: 280
+        }
+      ],
+    });
+  } else {
+    // 关闭
+    anime({
+      targets: '#app-navbar',
+      keyframes: [
+        {
+          translateY: '-10%',
+          duration: 230
+        },
+        {
+          translateY: '0',
+          duration: 230
+        }
+      ]
+    });
   }
 });
 
