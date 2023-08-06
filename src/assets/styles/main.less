@@ -232,32 +232,35 @@
 }
 
 .editor-detail {
-  > .top {
-    a {
-      font-size: 18px;
-    }
-  }
-
-  .line1 {
-    @apply flex-col;
-    .icon-color {
-      padding-top: 10px;
-      padding-bottom: 35px;
-      button {
-        height: 84px;
-        width: 84px;
-        svg {
-          height: 48px;
-          width: 48px;
-        }
+  > #editor-content{
+    padding-bottom: 50px;
+    > .top {
+      a {
+        font-size: 18px;
       }
     }
-    .d-form-control {
-      .input-group {
-        width: 267px;
-        height: 45px;
-        input {
-          padding-left: 1rem;
+
+    .line1 {
+      @apply flex-col;
+      .icon-color {
+        padding-top: 48px;
+        padding-bottom: 35px;
+        button {
+          height: 84px;
+          width: 84px;
+          svg {
+            height: 48px;
+            width: 48px;
+          }
+        }
+      }
+      .d-form-control {
+        .input-group {
+          width: 267px;
+          height: 45px;
+          input {
+            padding-left: 1rem;
+          }
         }
       }
     }
@@ -279,7 +282,7 @@
   border-top: 13px solid hsl(var(--b1));
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  filter: drop-shadow(0 0 10px hsla(var(--n)/0.15));
+  animation: navbar-datepicker-animation 0.3s ease-in-out forwards;
 }
 
 .datepicker-menu {
@@ -340,5 +343,25 @@
   }
   100% {
     transform: scaleX(100%);
+  }
+}
+
+.editor-datepicker-enter-active {
+  animation: editor-datepicker-animation 0.3s ease-in-out forwards;
+}
+
+.editor-datepicker-leave-active {
+  animation: editor-datepicker-animation 0.3s ease-in-out forwards;
+  animation-direction: reverse;
+}
+
+@keyframes editor-datepicker-animation {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
