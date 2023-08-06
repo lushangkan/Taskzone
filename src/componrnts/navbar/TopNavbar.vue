@@ -96,7 +96,7 @@ watch(datepickerOpen, (newVal) => {
         },
         {
           translateY: '0',
-          duration: 230
+          duration: 200
         }
       ]
     });
