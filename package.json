@@ -38,7 +38,7 @@
     "colorjs.io": "^0.4.5",
     "ionicons": "^7.1.2",
     "jeep-sqlite": "^2.3.9",
-    "lucide-vue-next": "^0.263.0",
+    "lucide-vue-next": "file:../lucide/packages/lucide-vue-next",
     "moment": "^2.29.4",
     "pinia": "^2.1.6",
     "primevue": "^3.31.0",
@@ -48,6 +48,8 @@
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.4",
     "vue-sticky-element": "^1.7.0",
+    "vue3-colorpicker": "^2.2.0",
+    "vue3-emoji-picker": "^1.1.7",
     "vue3-lottie": "^2.7.4"
   },
   "devDependencies": {
