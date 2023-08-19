@@ -18,5 +18,32 @@ export const langEn = {
     addTaskBtn: {
         addTask: 'Task',
         addTaskList: 'Task list'
-    }
+    },
+    taskEditor: {
+        createTask: 'Create task',
+        taskName: 'Task name',
+        taskNamePlaceholder: 'Task name',
+        taskTag: 'Task tag',
+        deadline: 'Deadline',
+        deadlinePlaceholder: 'Select time',
+    },
+    emojiPicker: {
+        groupNames: {
+            "recent": "Recently used",
+            "smileys_emotion": "Smiles & Emotion",
+            "people_body": "People & Body",
+            "animals_nature": "Animals & Nature",
+            "food_drink": "Food & Drink",
+            "activities": "Activities",
+            "travel_places": "Travel places",
+            "objects": "Objects",
+            "symbols": "Symbols",
+            "flags": "Flags"
+        },
+        staticText: {
+            placeholder: "Search emoji",
+            skinTone: "Skin tone",
+        }
+    },
+
 }

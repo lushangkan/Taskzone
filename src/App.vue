@@ -11,10 +11,17 @@ import {IonApp, IonRouterOutlet,} from '@ionic/vue';
 import {onMounted} from 'vue';
 import {generateThemeColorVariants} from "@/utils/theme-color-utils";
 import TopNavbar from "@/componrnts/navbar/TopNavbar.vue";
+import {checkIsSupportEmoji} from "@/utils/fun";
+import {useAppStores} from "@/stores/app-stores";
+
+const appStore = useAppStores();
 
 onMounted(() => {
   // 生成主题色变体
   generateThemeColorVariants();
+
+  // 检测是否支持Emoji v15
+  checkIsSupportEmoji(appStore);
 })
 
 </script>

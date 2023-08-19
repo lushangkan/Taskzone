@@ -326,7 +326,6 @@
   --dp-scroll-bar-color: hsl(var(--p));
   --dp-scroll-bar-background: hsl(var(--b2));
 }
-
 .navbar-datepicker-enter-active {
   animation: navbar-datepicker-animation 0.3s ease-in-out forwards;
 }
@@ -345,26 +344,6 @@
   }
 }
 
-//.editor-datepicker-enter-active {
-//  animation: editor-datepicker-animation 0.3s ease-in-out forwards;
-//}
-//
-//.editor-datepicker-leave-active {
-//  animation: editor-datepicker-animation 0.3s ease-in-out forwards;
-//  animation-direction: reverse;
-//}
-//
-//@keyframes editor-datepicker-animation {
-//  0% {
-//    opacity: 0;
-//    transform: translateY(-100%);
-//  }
-//  100% {
-//    opacity: 1;
-//    transform: translateY(0);
-//  }
-//}
-
 @keyframes editor-content-animation {
   0% {
     transform: translateX(-100%);
@@ -381,4 +360,43 @@
   width: 100%;
   height: 100vh;
   background-color: hsl(var(--b1));
+}
+
+.tab-bordered-transition {
+  transition: border 0.2s ease-out, color 0.2s ease-out;
+}
+
+.color-emoji-picker-enter-active {
+  animation: color-emoji-picker-animation 0.2s ease-out forwards;
+}
+
+.color-emoji-picker-leave-active {
+  animation: color-emoji-picker-animation 0.2s ease-out forwards;
+  animation-direction: reverse;
+}
+
+@keyframes color-emoji-picker-animation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.emoji-picker {
+  --v3-picker-bg: hsl(var(--b1));
+  --v3-picker-fg: hsl(var(--n));
+  --v3-picker-border: hsl(var(--b3));
+  --v3-picker-input-bg: var(--v3-picker-bg);
+  --v3-picker-input-border: hsl(var(--b2));
+  --v3-picker-input-focus-border: hsl(var(--n));
+  --v3-group-image-filter: none;
+  --v3-picker-emoji-hover: hsl(var(--b2));
+
+  > .v3-footer {
+    > .v3-foot-left {
+      opacity: 0;
+    }
+  }
 }

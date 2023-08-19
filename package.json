@@ -37,6 +37,7 @@
     "animejs": "^3.2.1",
     "colorjs.io": "^0.4.5",
     "ionicons": "^7.1.2",
+    "is-emoji-supported": "^0.0.5",
     "jeep-sqlite": "^2.3.9",
     "lucide-vue-next": "file:../lucide/packages/lucide-vue-next",
     "moment": "^2.29.4",
@@ -49,7 +50,7 @@
     "vue-router": "^4.2.4",
     "vue-sticky-element": "^1.7.0",
     "vue3-colorpicker": "^2.2.0",
-    "vue3-emoji-picker": "^1.1.7",
+    "vue3-emoji-picker": "file:../vue3-emoji-picker",
     "vue3-lottie": "^2.7.4"
   },
   "devDependencies": {

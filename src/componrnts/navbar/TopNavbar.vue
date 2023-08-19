@@ -40,6 +40,7 @@ import {useRouter} from "vue-router";
 import SidePanel from "@/componrnts/navbar/SidePanel.vue";
 import NavbarDatepicker from "@/componrnts/navbar/NavbarDatepicker.vue";
 import {Moment} from "moment";
+import moment from "moment";
 import StickyElement from 'vue-sticky-element';
 import {useAppStores} from "@/stores/app-stores";
 import anime from 'animejs/lib/anime.es.js';
