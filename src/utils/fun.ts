@@ -9,7 +9,6 @@ export function checkIsSupportEmoji(store: any) {
     if (store.isSupportEmoji === false) {
         const styleEle: HTMLStyleElement = document.createElement("style");
         styleEle.innerHTML = EmojiCss;
-        styleEle.type = "text/css";
     }
 
     return store.isSupportEmoji;

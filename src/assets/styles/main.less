@@ -176,23 +176,11 @@
 }
 
 .add-task-btn-enter-active {
-  animation: add-task-btn-animation 0.2s ease-in-out forwards;
+  animation: backInUp 0.4s ease-out forwards;
 }
 
 .add-task-btn-leave-active {
-  animation: add-task-btn-animation 0.2s ease-in-out forwards;
-  animation-direction: reverse;
-}
-
-@keyframes add-task-btn-animation {
-  0% {
-    transform: translateY(110%) scale(0.9);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
+  animation: backOutDown 0.4s ease-out forwards;
 }
 
 .options-btn-enter-active {
@@ -228,7 +216,7 @@
 }
 
 .editor-animation {
-  transition: transform 0.3s cubic-bezier(0.7,-0.01, 0.57, 0.99), top 0.3s cubic-bezier(0.7,-0.01, 0.57, 0.99), bottom 0.3s cubic-bezier(0.7,-0.01, 0.57, 0.99);
+  transition: transform 0.3s cubic-bezier(0.7,-0.01, 0.57, 0.99), top 0.3s cubic-bezier(0.7,-0.01, 0.57, 0.99), bottom 0.3s cubic-bezier(0.7,-0.01, 0.57, 0.99), height 0.3s cubic-bezier(0.7,-0.01, 0.57, 0.99);
 }
 
 .editor-detail {
@@ -327,30 +315,11 @@
   --dp-scroll-bar-background: hsl(var(--b2));
 }
 .navbar-datepicker-enter-active {
-  animation: navbar-datepicker-animation 0.3s ease-in-out forwards;
+  animation: zoomIn 0.3s ease-in-out forwards;
 }
 
 .navbar-datepicker-leave-active {
-  animation: navbar-datepicker-animation 0.3s ease-in-out forwards;
-  animation-direction: reverse;
-}
-
-@keyframes navbar-datepicker-animation {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    transform: scaleX(100%);
-  }
-}
-
-@keyframes editor-content-animation {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateY(0);
-  }
+  animation: zoomOut 0.3s ease-in-out forwards;
 }
 
 .editor::after {
@@ -366,22 +335,20 @@
   transition: border 0.2s ease-out, color 0.2s ease-out;
 }
 
-.color-emoji-picker-enter-active {
-  animation: color-emoji-picker-animation 0.2s ease-out forwards;
+.editor-content-enter-active {
+  animation: fadeIn 0.2s forwards;
 }
 
-.color-emoji-picker-leave-active {
-  animation: color-emoji-picker-animation 0.2s ease-out forwards;
-  animation-direction: reverse;
-}
-
-@keyframes color-emoji-picker-animation {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+@keyframes editor-content-animation {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .emoji-picker {
@@ -399,4 +366,6 @@
       opacity: 0;
     }
   }
+
+
 }
