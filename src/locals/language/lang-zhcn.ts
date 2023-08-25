@@ -7,7 +7,8 @@ export const langZhCn = {
         daytask: {
             today: '今天',
             titleDate: '{date}'
-        }
+        },
+        pageNotFound: '页面不存在',
     },
     menu: {
         searchPapi: '搜索任务',

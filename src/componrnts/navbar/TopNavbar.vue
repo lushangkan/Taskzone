@@ -11,7 +11,7 @@
         </div>
         <div class="d-navbar-start">
           <ion-title class="text-base-100 text-lg font-medium">{{
-              pageName === 'daytask' ? titleDate === 'today' ? $t('page.daytask.today') : titleDate : $t(`page.${pageName}.name`)
+              pageName === 'daytask' ? titleDate === 'today' ? i18n.t('page.daytask.today') : titleDate : i18n.t(`page.${pageName}.name`, i18n.t('page.pageNotFound'))
             }}
           </ion-title>
         </div>
@@ -44,7 +44,9 @@ import moment from "moment";
 import StickyElement from 'vue-sticky-element';
 import {useAppStores} from "@/stores/app-stores";
 import anime from 'animejs/lib/anime.es.js';
+import {useI18n} from "vue-i18n";
 
+const i18n = useI18n();
 
 const router = useRouter();
 
@@ -140,9 +142,13 @@ onMounted(() => {
 
   // 获取滚动元素
   const content: HTMLIonContentElement = (document.getElementsByTagName('ion-content')[0] as HTMLIonContentElement);
-  content.getScrollElement().then((ele) => {
-    scrollEle.value = ele;
-  });
+  if (content && content.getScrollElement) {
+    content.getScrollElement().then((ele) => {
+      scrollEle.value = ele;
+    }).catch((e) => {
+      console.error('Cannot get scroll element: ', e);
+    });
+  }
 })
 
 </script>

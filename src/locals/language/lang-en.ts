@@ -7,7 +7,8 @@ export const langEn = {
         daytask: {
             today: 'Today',
             titleDate: '{date}'
-        }
+        },
+        pageNotFound: 'Page not found',
     },
     menu: {
         searchPapi: 'Search task',

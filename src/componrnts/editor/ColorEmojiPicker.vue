@@ -16,9 +16,9 @@
           <a class="text-[32px]">{{ emojiValue }}</a>
         </div>
       </div>
-      <emoji-picker :native="true" :group-names="groupNames"
+      <emoji-picker :native="true" :group-names="$tm('emojiPicker.groupNames')"
                    @select="onSelectEmoji"
-                   :static-texts="staticText" :display-recent="true"
+                   :static-texts="$tm('emojiPicker.staticText')" :display-recent="true"
                    :emoji-list="emojis" :hide-selected-emoji="true"
                    search-class="!d-input !d-input-bordered !h-[28px] !text-[13px]"
                    class="emoji-picker shadow-none w-full h-[365px]"
@@ -49,24 +49,6 @@ const emojiValue = ref('');
 
 const i18n = useI18n();
 
-const groupNames = reactive({
-  "recent": useI18n().t('emojiPicker.groupNames.recent'),
-  "smileys_emotion": useI18n().t('emojiPicker.groupNames.smileys_emotion'),
-  "people_body": useI18n().t('emojiPicker.groupNames.people_body'),
-  "animals_nature": useI18n().t('emojiPicker.groupNames.animals_nature'),
-  "food_drink": useI18n().t('emojiPicker.groupNames.food_drink'),
-  "activities": useI18n().t('emojiPicker.groupNames.activities'),
-  "travel_places": useI18n().t('emojiPicker.groupNames.travel_places'),
-  "objects": useI18n().t('emojiPicker.groupNames.objects'),
-  "symbols": useI18n().t('emojiPicker.groupNames.symbols'),
-  "flags": useI18n().t('emojiPicker.groupNames.flags'),
-});
-
-const staticText = reactive({
-  "placeholder": useI18n().t('emojiPicker.staticText.placeholder'),
-  "skinTone": useI18n().t('emojiPicker.staticText.skinTone'),
-});
-
 function clickEmoji() {
   emojiOpen.value = true;
   colorOpen.value = false;
@@ -79,7 +61,6 @@ function clickColor() {
 
 function onSelectEmoji(emojiData) {
   emojiValue.value = emojiData.i;
-  emojiInputRef.value!.value = emojiData.i;
 }
 
 </script>
