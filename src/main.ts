@@ -20,7 +20,7 @@ import {useDatabaseStores} from '@/stores/database-stores';
 import VStickyElement from 'vue-sticky-element';
 import VScrollThreshold from 'v-scroll-threshold';
 import drag from "v-drag"
-import PrimeVue from 'primevue/config';
+import Vue3TouchEvents from "vue3-touch-events";
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -50,7 +50,7 @@ const app = createApp(App)
     .use(drag, {
         removeTransition: false
     })
-    .use(PrimeVue)
+    .use(Vue3TouchEvents)
     .use(VScrollThreshold)
     .use(VStickyElement)
     .use(createPinia())

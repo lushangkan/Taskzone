@@ -60,3 +60,13 @@ export function getWhiteBlackCssVar() {
 export function getCssVar(name: string) {
     return getComputedStyle(document.documentElement).getPropertyValue(name);
 }
+
+/**
+ * 生成随机颜色
+ */
+export function randomColor() {
+    const h = Math.floor(Math.random() * 360);
+    const s = 100;
+    const l = Math.floor(Math.random()*(85-60+1))+60;
+    return new Color('hsl', [h, s, l]).to('srgb').toString({format: "hex"});
+}

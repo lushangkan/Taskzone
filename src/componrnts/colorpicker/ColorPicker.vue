@@ -36,8 +36,14 @@
           </custom-scrollbar>
         </div>
       </div>
-      <div v-else-if="customOpen" class="flex flex-col justify-around items-center w-full h-full  mt-[18px]">
-
+      <div v-else-if="customOpen" class="flex flex-col justify-around items-center w-full h-full mt-[18px]">
+        <div ref="colorIndicator" class="absolute mb-[86%] mr-[58%] w-[32px] h-[32px] rounded-full"></div>
+        <div id="iro-color-picker" class="my-[10px]"></div>
+        <div class="w-full flex flex-row justify-end items-center mt-[30px] px-[20px]">
+          <button type="button" title="back" class="d-btn d-btn-circle d-btn-primary h-[52px] w-[52px]" @click="onClickDoneBtn">
+            <check-icon class="h-[30px] w-[30px] text-base-100" stroke-width="2.5"/>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -45,38 +51,50 @@
 
 <script setup lang="ts">
 import OpenColor from "open-color";
-import {onMounted, onUpdated, reactive, type Ref, ref, defineOptions, defineEmits} from "vue";
-import {ChevronLeftIcon} from "lucide-vue-next";
+import {onMounted, onUpdated, reactive, type Ref, ref, defineOptions, defineEmits, defineProps} from "vue";
+import {ChevronLeftIcon, CheckIcon} from "lucide-vue-next";
 import CustomScrollbar from 'vue-custom-scrollbar/src/vue-scrollbar.vue'
 import "vue-custom-scrollbar/dist/vueScrollbar.css"
 import * as fun from "@/utils/fun";
 import {useI18n} from "vue-i18n";
+import iro from '@jaames/iro';
 
-const presetOpen = ref(true);
-const customOpen = ref(false);
+
+const presetOpen = ref(false);
+const customOpen = ref(true);
 const selectColorCodeOpen = ref(false);
 const colorBtns: Ref<Array<HTMLButtonElement | null>> = ref([]);
 const colorCodeBtns: Ref<Array<HTMLButtonElement | null>> = ref([]);
 const backBtn: Ref<HTMLButtonElement | null> = ref(null);
 const showBackBtn = ref(true);
-const scrollContent: Ref<any> = ref(null)
+const scrollContent: Ref<any> = ref(null);
+const colorIndicator: Ref<HTMLDivElement | null> = ref(null);
+const iroColorPicker = ref();
 
 const selectColor = ref('');
 const i18n = useI18n();
 
 const colorCode = reactive([50, 100, 200, 300, 400, 500, 600, 700, 800, 900]);
 const defaultColorCode = ref(400);
+const iroSelectColor: Ref<string> = ref(fun.randomColor());
 let lastScrollTop = 0;
 
 const colors = getPresetColors(OpenColor);
 
 const emit = defineEmits<{
-  'selectColor': (colorHex: string) => void
+  'selectColor': [colorHex: string]
 }>();
+
+const props = defineProps({
+  'iroColorPickerWidth': {
+    type: Number,
+    default: 230
+  },
+});
 
 defineOptions({
   inheritAttrs: false
-})
+});
 
 function onClickPreset() {
   presetOpen.value = true;
@@ -99,19 +117,6 @@ function onClickColorCodeBtn(colorCode: number | string) {
   selectColorCodeOpen.value = false;
 }
 
-function getPresetColors(openColor: OpenColor) {
-  const colors = reactive({});
-  for (const [key, value] of Object.entries(openColor)) {
-    if (key === 'black' || key === 'white') continue;
-      colors[key] = {};
-    for (let i = 0; i < value.length; i++) {
-      colors[key][colorCode[i]] = value[i];
-    }
-  }
-
-  return colors;
-}
-
 function onScroll() {
   const scrollTop = scrollContent.value!.$el.scrollTop;
   if (scrollTop > lastScrollTop && scrollTop - lastScrollTop > 2) {
@@ -120,6 +125,28 @@ function onScroll() {
     showBackBtn.value = true;
   }
   lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+}
+
+function onIroColorPickerColorInitChange(color) {
+  iroSelectColor.value = color.hexString;
+  colorIndicator.value!.style.setProperty('background-color', color.hexString);
+}
+
+function getPresetColors(openColor: OpenColor) {
+  const colors = reactive({});
+  for (const [key, value] of Object.entries(openColor)) {
+    if (key === 'black' || key === 'white') continue;
+    colors[key] = {};
+    for (let i = 0; i < value.length; i++) {
+      colors[key][colorCode[i]] = value[i];
+    }
+  }
+
+  return colors;
+}
+
+function onClickDoneBtn() {
+  emit('selectColor', iroSelectColor.value);
 }
 
 function updateTextColor() {
@@ -154,14 +181,35 @@ function updateTextColor() {
   }
 }
 
+function initIro() {
+  if (customOpen.value && document.getElementsByClassName('IroColorPicker').length === 0) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    iroColorPicker.value = new iro.ColorPicker('#iro-color-picker', {
+      width: props.iroColorPickerWidth,
+      color: iroSelectColor.value,
+    });
+
+    iroColorPicker.value.on(['color:init', 'color:change'], onIroColorPickerColorInitChange);
+  }
+}
+
 onMounted(() => {
   // 更新颜色按钮字体颜色
   updateTextColor();
+
+  // 加载iro
+  initIro();
+
+  console.log(fun)
 })
 
 onUpdated(() => {
   // 更新颜色按钮字体颜色
   updateTextColor();
+
+  // 加载iro
+  initIro();
 });
 
 </script>
