@@ -7,7 +7,7 @@
 // Font
 @import "./fonts/misans.less";
 
-#app {
+* {
   font-family: "Misans", sans-serif;
 }
 
@@ -366,6 +366,42 @@
       opacity: 0;
     }
   }
+}
 
+.d-tab-active {
+  color: hsl(var(--b1)) !important;
+  font-weight: 400 !important;
+}
 
+.color-picker-tab-transition {
+  transition: color 0.2s ease-out, background-color 0.2s ease-out, font-weight 0.2s ease-out;
+}
+
+.ps__thumb-x {
+  height: 6px;
+  background-color: hsl(var(--b3--300));
+}
+.ps__thumb-y {
+  width: 6px;
+  background-color: hsl(var(--b3--300));
+}
+
+.ps__rail-x {
+  height: 8px;
+}
+
+.ps__rail-y {
+  width: 8px;
+}
+
+.ps-container {
+  width: 100% + 6px;
+}
+
+.back-btn-enter-active {
+  animation: fadeInLeft 0.2s ease-out forwards;
+}
+
+.back-btn-leave-active {
+  animation: fadeOutLeft 0.2s ease-out forwards;
 }

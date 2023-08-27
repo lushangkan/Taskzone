@@ -38,12 +38,16 @@ export function generateColorVariants(colorVar: string): Map<number, Color> {
  * 生成主题颜色的各种版本,并保存在css变量
  */
 export function generateThemeColorVariants(): void {
-    generateColorVariants('--p')
-    generateColorVariants('--s')
-    generateColorVariants('--a')
-    generateColorVariants('--n')
-    generateColorVariants('--wa')
-    generateColorVariants('--su')
-    generateColorVariants('--er')
-    generateColorVariants('--in')
+    generateColorVariants('--p');
+    generateColorVariants('--s');
+    generateColorVariants('--a');
+    generateColorVariants('--n');
+    generateColorVariants('--b1');
+    generateColorVariants('--b2');
+    generateColorVariants('--b3');
+    generateColorVariants('--wa');
+    generateColorVariants('--su');
+    generateColorVariants('--er');
+    generateColorVariants('--in');
 }
+

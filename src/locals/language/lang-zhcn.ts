@@ -8,6 +8,9 @@ export const langZhCn = {
             today: '今天',
             titleDate: '{date}'
         },
+        "colorpicker-test": {
+            name: '颜色选择器测试',
+        },
         pageNotFound: '页面不存在',
     },
     menu: {
@@ -45,5 +48,22 @@ export const langZhCn = {
             placeholder: "搜索表情",
             skinTone: "肤色",
         }
+    },
+    colorPicker: {
+        color: {
+            gray: '灰色',
+            red: '红色',
+            pink: '粉色',
+            grape: '葡萄紫',
+            violet: '紫色',
+            indigo: '靛蓝',
+            blue: '蓝色',
+            cyan: '青色',
+            teal: '蓝绿色',
+            green: '绿色',
+            lime: '酸橙色',
+            yellow: '黄色',
+            orange: '橙色',
+        },
     }
 }

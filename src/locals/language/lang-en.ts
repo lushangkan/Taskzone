@@ -46,5 +46,22 @@ export const langEn = {
             skinTone: "Skin tone",
         }
     },
+    colorPicker: {
+        color: {
+            gray: 'Gray',
+            red: 'Red',
+            pink: 'Pink',
+            grape: 'Grape',
+            violet: 'Violet',
+            indigo: 'Indigo',
+            blue: 'Blue',
+            cyan: 'Cyan',
+            teal: 'Teal',
+            green: 'Green',
+            lime: 'Lime',
+            yellow: 'Yellow',
+            orange: 'Orange',
+        },
+    }
 
 }
