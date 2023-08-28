@@ -70,3 +70,12 @@ export function randomColor() {
     const l = Math.floor(Math.random()*(85-60+1))+60;
     return new Color('hsl', [h, s, l]).to('srgb').toString({format: "hex"});
 }
+
+/**
+ * 转换vw为px
+ * @param vw vw
+ */
+export function getPxfromVw(vw: number | undefined) {
+    if (vw === undefined) return 0;
+    return vw / 100 * window.innerWidth;
+}

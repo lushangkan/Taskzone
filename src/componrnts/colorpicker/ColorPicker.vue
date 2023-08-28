@@ -4,7 +4,7 @@
       <div class="flex flex-row justify-center items-center w-full h-[43px] bg-base-200 rounded-[25px]">
         <div class="d-tabs d-tabs-boxed shadow-[17px_17px_28px_0_hsl(var(--n))/10] w-full h-full flex flex-row justify-around items-center px-[25px]">
           <a :class="`${presetOpen?'d-tab-active':''} d-tab font-medium w-[45%] color-picker-tab-transition`" @click="onClickPreset">预设</a>
-          <a :class="`${customOpen?'d-tab-active':''} d-tab font-medium w-[45%] color-picker-tab-transition`" @click="onClickCustom">自定义</a>
+          <a :class="`${presetOpen?'':'d-tab-active'} d-tab font-medium w-[45%] color-picker-tab-transition`" @click="onClickCustom">自定义</a>
         </div>
       </div>
       <div v-if="presetOpen" class="flex flex-col justify-center items-center w-full h-full mt-[18px]">
@@ -36,10 +36,10 @@
           </custom-scrollbar>
         </div>
       </div>
-      <div v-else-if="customOpen" class="relative flex flex-col justify-around items-center w-full h-full mt-[18px]">
+      <div v-else class="relative flex flex-col justify-around items-center w-full h-full mt-[18px]">
         <div ref="colorIndicator" class="absolute left-[8px] top-[0] w-[32px] h-[32px] rounded-full"></div>
         <div id="iro-color-picker" class="py-[10px]"></div>
-        <div class="flex flex-row justify-around items-center pt-[8px] h-[38px]" :style="{ width: `${props.iroColorPickerWidth}px` }">
+        <div class="flex flex-row justify-around items-center pt-[8px] h-[38px]" :style="{ width: `${props.iroColorPickerWidth}vw` }">
           <div class="d-join h-full rounded-[6px]">
               <div class="d-join-item h-full w-[28px] bg-primary flex flex-row justify-center items-center">
                 <a class="font-normal text-base-100">R:</a>
@@ -83,7 +83,6 @@ import {IroColorPicker} from "@jaames/iro/dist/ColorPicker";
 
 
 const presetOpen = ref(false);
-const customOpen = ref(true);
 const selectColorCodeOpen = ref(false);
 const colorBtns: Ref<Array<HTMLButtonElement | null>> = ref([]);
 const colorCodeBtns: Ref<Array<HTMLButtonElement | null>> = ref([]);
@@ -113,7 +112,7 @@ const emit = defineEmits<{
 const props = defineProps({
   'iroColorPickerWidth': {
     type: Number,
-    default: 230
+    default: 59
   },
 });
 
@@ -123,12 +122,10 @@ defineOptions({
 
 function onClickPreset() {
   presetOpen.value = true;
-  customOpen.value = false;
 }
 
 function onClickCustom() {
   presetOpen.value = false;
-  customOpen.value = true;
 }
 
 function onClickColorBtn(colorName: string) {
@@ -198,17 +195,17 @@ function updateTextColor() {
     });
   }
 
-  if (presetOpen.value && !customOpen.value) {
+  if (presetOpen.value) {
     selectColorCodeOpen.value ? update(colorCodeBtns) : update(colorBtns);
   }
 }
 
 function initIro() {
-  if (customOpen.value && document.getElementsByClassName('IroColorPicker').length === 0) {
+  if (!presetOpen.value && document.getElementsByClassName('IroColorPicker').length === 0) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     iroColorPicker.value = new iro.ColorPicker('#iro-color-picker', {
-      width: props.iroColorPickerWidth,
+      width: fun.getPxfromVw(props.iroColorPickerWidth),
       color: iroSelectColor.value,
     });
 
@@ -247,10 +244,9 @@ function onRGBCodeInput(e: InputEvent) {
   const r = Number(rInput.value!.value);
   const g = Number(gInput.value!.value);
   const b = Number(bInput.value!.value);
-  console.log(r, g, b);
+
   if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
     const color = new Color('srgb', [r / 255, g / 255, b / 255]);
-    console.log(color.toString({format: 'hex'}));
     colorIndicator.value!.style.setProperty('background-color', color.toString({format: 'hex'}));
     iroColorPicker.value?.setColors([color.toString({format: 'hex'})]);
   }
@@ -263,7 +259,12 @@ onMounted(() => {
 
   // 加载iro
   initIro();
-})
+
+  // 监听窗口大小变化
+  window.addEventListener('resize', () => {
+    iroColorPicker.value?.resize(fun.getPxfromVw(props.iroColorPickerWidth));
+  });
+});
 
 onUpdated(() => {
   // 更新颜色按钮字体颜色
