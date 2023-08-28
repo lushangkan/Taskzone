@@ -2,7 +2,7 @@
   <div v-bind="$attrs" class="min-h-[380px] min-w-[280px] bg-base-100 shadow-lg border border-neutral/10 rounded-[20px] p-[25px]">
     <div class="flex flex-col justify-start items-center w-full h-full">
       <div class="flex flex-row justify-center items-center w-full h-[43px] bg-base-200 rounded-[25px]">
-        <div class="d-tabs d-tabs-boxed shadow-[17px_17px_28px_0_hsl(var(--n))/10] w-full h-full flex flex-row justify-around items-center px-[25px]">
+        <div class="d-tabs d-tabs-boxed color-picker-tabs shadow-[17px_17px_28px_0_hsl(var(--n))/10] w-full h-full flex flex-row justify-around items-center px-[25px]">
           <a :class="`${presetOpen?'d-tab-active':''} d-tab font-medium w-[45%] color-picker-tab-transition`" @click="onClickPreset">预设</a>
           <a :class="`${presetOpen?'':'d-tab-active'} d-tab font-medium w-[45%] color-picker-tab-transition`" @click="onClickCustom">自定义</a>
         </div>
@@ -59,7 +59,7 @@
             <input ref="bInput" @input="onRGBCodeInput($event)" class="d-input d-input-bordered d-join-item min-h-0 min-w-0 h-full w-[40px] p-0 caret-neutral text-center text-neutral font-light">
           </div>
         </div>
-        <div class="w-full flex flex-row justify-end items-center pt-[30px] px-[20px]">
+        <div v-if="!props.disableConfirmBtn" class="w-full flex flex-row justify-end items-center pt-[30px] px-[20px]">
           <button type="button" title="back" class="d-btn d-btn-circle d-btn-primary h-[52px] w-[52px]" @click="onClickDoneBtn">
             <check-icon class="h-[30px] w-[30px] text-base-100" stroke-width="2.5"/>
           </button>
@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import OpenColor from "open-color";
 import Color from "colorjs.io";
-import {onMounted, onUpdated, reactive, type Ref, ref, defineOptions, defineEmits, defineProps} from "vue";
+import {onMounted, onUpdated, reactive, type Ref, ref, defineOptions, defineEmits, defineProps, watch} from "vue";
 import {ChevronLeftIcon, CheckIcon} from "lucide-vue-next";
 import CustomScrollbar from 'vue-custom-scrollbar/src/vue-scrollbar.vue'
 import "vue-custom-scrollbar/dist/vueScrollbar.css"
@@ -81,6 +81,24 @@ import {useI18n} from "vue-i18n";
 import iro from '@jaames/iro';
 import {IroColorPicker} from "@jaames/iro/dist/ColorPicker";
 
+const emit = defineEmits<{
+  'selectColor': [colorHex: string]
+}>();
+
+const props = defineProps({
+  'colorHex': {
+    type: String,
+    default: ''
+  },
+  'iroColorPickerWidth': {
+    type: Number,
+    default: 59
+  },
+  'disableConfirmBtn': {
+    type: Boolean,
+    default: false,
+  }
+});
 
 const presetOpen = ref(false);
 const selectColorCodeOpen = ref(false);
@@ -100,21 +118,16 @@ const i18n = useI18n();
 
 const colorCode = reactive([50, 100, 200, 300, 400, 500, 600, 700, 800, 900]);
 const defaultColorCode = ref(400);
-const iroSelectColor: Ref<string> = ref(fun.randomColor());
+const iroSelectColor: Ref<string | undefined> = ref(props.colorHex === '' ? fun.randomColor() : undefined);
 let lastScrollTop = 0;
 
 const colors = getPresetColors(OpenColor);
 
-const emit = defineEmits<{
-  'selectColor': [colorHex: string]
-}>();
-
-const props = defineProps({
-  'iroColorPickerWidth': {
-    type: Number,
-    default: 59
-  },
-});
+if (props.disableConfirmBtn) {
+  watch(iroSelectColor, (colorHex: string) => {
+    emit('selectColor', colorHex);
+  });
+}
 
 defineOptions({
   inheritAttrs: false
@@ -175,7 +188,7 @@ function getPresetColors(openColor: OpenColor) {
 }
 
 function onClickDoneBtn() {
-  emit('selectColor', iroSelectColor.value);
+  emit('selectColor', <string>(iroSelectColor.value === undefined? props.colorHex : iroSelectColor.value));
 }
 
 function updateTextColor() {
@@ -206,7 +219,7 @@ function initIro() {
     // @ts-ignore
     iroColorPicker.value = new iro.ColorPicker('#iro-color-picker', {
       width: fun.getPxfromVw(props.iroColorPickerWidth),
-      color: iroSelectColor.value,
+      color: iroSelectColor.value === undefined? props.colorHex : iroSelectColor.value,
     });
 
     iroColorPicker.value?.on(['color:init', 'color:change'], onIroColorPickerColorInitChange);
