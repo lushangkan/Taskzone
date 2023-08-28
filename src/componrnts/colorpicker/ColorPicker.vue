@@ -36,10 +36,30 @@
           </custom-scrollbar>
         </div>
       </div>
-      <div v-else-if="customOpen" class="flex flex-col justify-around items-center w-full h-full mt-[18px]">
-        <div ref="colorIndicator" class="absolute mb-[86%] mr-[58%] w-[32px] h-[32px] rounded-full"></div>
-        <div id="iro-color-picker" class="my-[10px]"></div>
-        <div class="w-full flex flex-row justify-end items-center mt-[30px] px-[20px]">
+      <div v-else-if="customOpen" class="relative flex flex-col justify-around items-center w-full h-full mt-[18px]">
+        <div ref="colorIndicator" class="absolute left-[8px] top-[0] w-[32px] h-[32px] rounded-full"></div>
+        <div id="iro-color-picker" class="py-[10px]"></div>
+        <div class="flex flex-row justify-around items-center pt-[8px] h-[38px]" :style="{ width: `${props.iroColorPickerWidth}px` }">
+          <div class="d-join h-full rounded-[6px]">
+              <div class="d-join-item h-full w-[28px] bg-primary flex flex-row justify-center items-center">
+                <a class="font-normal text-base-100">R:</a>
+              </div>
+              <input ref="rInput" @input="onRGBCodeInput($event)" class="d-input d-input-bordered d-join-item min-h-0 min-w-0 h-full w-[40px] p-0 caret-neutral text-center text-neutral font-light">
+          </div>
+          <div class="d-join h-full rounded-[6px]">
+            <div class="d-join-item h-full w-[28px] bg-primary flex flex-row justify-center items-center">
+              <a class="font-normal text-base-100">G:</a>
+            </div>
+            <input ref="gInput" @input="onRGBCodeInput($event)" class="d-input d-input-bordered d-join-item min-h-0 min-w-0 h-full w-[40px] p-0 caret-neutral text-center text-neutral font-light">
+          </div>
+          <div class="d-join h-full rounded-[6px]">
+            <div class="d-join-item h-full w-[28px] bg-primary flex flex-row justify-center items-center">
+              <a class="font-normal text-base-100">B:</a>
+            </div>
+            <input ref="bInput" @input="onRGBCodeInput($event)" class="d-input d-input-bordered d-join-item min-h-0 min-w-0 h-full w-[40px] p-0 caret-neutral text-center text-neutral font-light">
+          </div>
+        </div>
+        <div class="w-full flex flex-row justify-end items-center pt-[30px] px-[20px]">
           <button type="button" title="back" class="d-btn d-btn-circle d-btn-primary h-[52px] w-[52px]" @click="onClickDoneBtn">
             <check-icon class="h-[30px] w-[30px] text-base-100" stroke-width="2.5"/>
           </button>
@@ -51,6 +71,7 @@
 
 <script setup lang="ts">
 import OpenColor from "open-color";
+import Color from "colorjs.io";
 import {onMounted, onUpdated, reactive, type Ref, ref, defineOptions, defineEmits, defineProps} from "vue";
 import {ChevronLeftIcon, CheckIcon} from "lucide-vue-next";
 import CustomScrollbar from 'vue-custom-scrollbar/src/vue-scrollbar.vue'
@@ -58,6 +79,7 @@ import "vue-custom-scrollbar/dist/vueScrollbar.css"
 import * as fun from "@/utils/fun";
 import {useI18n} from "vue-i18n";
 import iro from '@jaames/iro';
+import {IroColorPicker} from "@jaames/iro/dist/ColorPicker";
 
 
 const presetOpen = ref(false);
@@ -69,7 +91,10 @@ const backBtn: Ref<HTMLButtonElement | null> = ref(null);
 const showBackBtn = ref(true);
 const scrollContent: Ref<any> = ref(null);
 const colorIndicator: Ref<HTMLDivElement | null> = ref(null);
-const iroColorPicker = ref();
+const iroColorPicker: Ref<IroColorPicker | undefined> = ref();
+const rInput: Ref<HTMLInputElement | null> = ref(null);
+const gInput: Ref<HTMLInputElement | null> = ref(null);
+const bInput: Ref<HTMLInputElement | null> = ref(null);
 
 const selectColor = ref('');
 const i18n = useI18n();
@@ -129,7 +154,14 @@ function onScroll() {
 
 function onIroColorPickerColorInitChange(color) {
   iroSelectColor.value = color.hexString;
+
+  // 更新颜色指示器
   colorIndicator.value!.style.setProperty('background-color', color.hexString);
+
+  // 更新RGB输入框
+  rInput.value!.value = color.rgb.r.toString();
+  gInput.value!.value = color.rgb.g.toString();
+  bInput.value!.value = color.rgb.b.toString();
 }
 
 function getPresetColors(openColor: OpenColor) {
@@ -150,22 +182,8 @@ function onClickDoneBtn() {
 }
 
 function updateTextColor() {
-  if (selectColorCodeOpen.value && presetOpen.value && !customOpen.value) {
-    colorCodeBtns.value.forEach((e) => {
-      const colorCodeText = e!.getElementsByTagName('a')[0];
-      const backgroundColor = e!.style.backgroundColor;
-      const textColor = fun.getTextColor(backgroundColor);
-      const blackWhiteVar = fun.getWhiteBlackCssVar();
-      if (textColor === 'black') {
-        colorCodeText.style.setProperty('color', `hsl(var(${blackWhiteVar.black}))`);
-      } else if (textColor === 'white') {
-        colorCodeText.style.setProperty('color', `hsl(var(${blackWhiteVar.white}))`);
-      } else {
-        colorCodeText.style.setProperty('color', 'inherit');
-      }
-    })
-  } else if (!selectColorCodeOpen.value && presetOpen.value && !customOpen.value) {
-    colorBtns.value.forEach((e) =>{
+  const update = (btns: Ref<Array<HTMLButtonElement | null>>) => {
+    btns.value.forEach((e) =>{
       const colorText = e!.getElementsByTagName('a')[0];
       const backgroundColor = e!.style.backgroundColor;
       const textColor = fun.getTextColor(backgroundColor);
@@ -175,9 +193,13 @@ function updateTextColor() {
       } else if (textColor === 'white') {
         colorText.style.setProperty('color', `hsl(var(${blackWhiteVar.white}))`);
       } else {
-        colorText.style.setProperty('color', 'inherit');
+        colorText.style.setProperty('color', `hsl(var(${blackWhiteVar.black}))`);
       }
-    })
+    });
+  }
+
+  if (presetOpen.value && !customOpen.value) {
+    selectColorCodeOpen.value ? update(colorCodeBtns) : update(colorBtns);
   }
 }
 
@@ -190,8 +212,49 @@ function initIro() {
       color: iroSelectColor.value,
     });
 
-    iroColorPicker.value.on(['color:init', 'color:change'], onIroColorPickerColorInitChange);
+    iroColorPicker.value?.on(['color:init', 'color:change'], onIroColorPickerColorInitChange);
   }
+}
+
+function onRGBCodeInput(e: InputEvent) {
+  // 获取输入目标，输入类型和输入数据
+  const target = e.target as HTMLInputElement;
+  const inputData = e.data;
+
+  // 检测函数
+  const checkAndFixValue = (input: string | null) => {
+    if (input === null) return input;
+    // 空文本不做处理
+    if (input.replaceAll(/\s/g, '') === '') target.value = target.value.replaceAll(/\s/g, '');
+
+    // 如果输入值不是数字，删除最后一个非数字字符
+    if (isNaN(Number(input))) {
+      target.value = target.value.substring(0, target.value.lastIndexOf(<string>input));
+    }
+    // 如果输入值是整数，限制其范围在0到255之间
+    if (Number.isInteger(Number(input))) {
+      target.value = Math.max(0, Math.min(255, Number(target.value))).toString();
+    }
+    // 如果输入值是小数，删除最后一个非数字字符
+    if (!Number.isInteger(Number(input))) {
+      target.value = target.value.substring(0, target.value.lastIndexOf(<string>input));
+    }
+  };
+
+  inputData !== null ? checkAndFixValue(inputData) : checkAndFixValue(target.value)
+
+  // 更新颜色
+  const r = Number(rInput.value!.value);
+  const g = Number(gInput.value!.value);
+  const b = Number(bInput.value!.value);
+  console.log(r, g, b);
+  if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
+    const color = new Color('srgb', [r / 255, g / 255, b / 255]);
+    console.log(color.toString({format: 'hex'}));
+    colorIndicator.value!.style.setProperty('background-color', color.toString({format: 'hex'}));
+    iroColorPicker.value?.setColors([color.toString({format: 'hex'})]);
+  }
+
 }
 
 onMounted(() => {
@@ -200,8 +263,6 @@ onMounted(() => {
 
   // 加载iro
   initIro();
-
-  console.log(fun)
 })
 
 onUpdated(() => {
