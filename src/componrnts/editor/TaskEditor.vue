@@ -5,8 +5,8 @@
            @click="onClickEditor($event)" :class="`${!colorEmojiPickerOpen?detailMode?'bottom-0':'top-[308px]':'bottom-0'} absolute w-full rounded-t-[40px] bg-base-100 editor`"
            @v-drag-snapping="onDragSnapping"
       >
-        <div id="editor-content" ref="editorContent">
-          <Transition appear name="editor-content" @after-leave="afterEditorLeave" @enter="onEditorEnter">
+        <div id="editor-content" ref="editorContent" class="editor-content-transition">
+<!--          <Transition appear name="editor-content" @after-leave="afterEditorLeave" @enter="onEditorEnter">-->
             <div v-if="mainEditorOpen" id="main-editor" :class="`${detailMode?'editor-detail':''} top-0 main-editor flex flex-col justify-around items-center py-[21px] gap-[20px]`">
               <div class="top flex w-full flex-col justify-around items-center gap-[20px]">
                 <div class="guide-strip w-full h-[20px] flex flex-row justify-center items-center">
@@ -52,7 +52,7 @@
             </div>
             <color-emoji-picker @on-back-click="onColorEmojiBackClick"
                                 v-else-if="colorEmojiPickerOpen" class="top-0"/>
-          </Transition>
+<!--          </Transition>-->
           <div class="flex flex-row justify-end items-center w-full px-[65px] pb-[20px]">
             <button type="button" title="continue" class="d-btn d-btn-circle h-[55px] w-[55px] bg-primary flex flex-row justify-center items-center">
               <check class="text-base-100 h-[28px] w-[28px]"></check>
@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import {Icon} from "@iconify/vue";
 import {PenLine, X, Check, TagIcon, CalendarCheckIcon} from "lucide-vue-next";
-import {computed, onBeforeUnmount, onMounted, onUnmounted, onUpdated, type Ref, ref, watch} from "vue";
+import {computed, nextTick, onBeforeUnmount, onMounted, onUnmounted, onUpdated, type Ref, ref, watch} from "vue";
 import TagPicker from "@/componrnts/TagPicker.vue";
 import EditorDatepicker from "@/componrnts/editor/EditorDatepicker.vue";
 import moment from "moment";
@@ -92,7 +92,7 @@ const colorEmojiBtnRef = ref<HTMLButtonElement | null>(null);
 const editorSizeWatcher = new ResizeObserver((entries) => {
   for (const entry of entries) {
     if (entry.target.isEqualNode(editorRef.value!)) {
-     draggableParent.value!.style.setProperty('height', `${entry.contentRect.height}px`);
+      draggableParent.value!.style.setProperty('height', `${entry.contentRect.height}px`);
     }
   }
 });
@@ -126,7 +126,7 @@ function onDragSnapping() {
     if (editorRef.value?.style.transform !== '' && editorRef.value?.style.transform !== 'none' && editorRef.value?.style.transform.indexOf('matrix') !== -1) {
       // 存在transform
       const transform = editorRef.value?.style.transform;
-      const y = transform.match(/matrix\((-?\d+(?:\.\d+)?), (-?\d+(?:\.\d+)?), (-?\d+(?:\.\d+)?), (-?\d+(?:\.\d+)?), (-?\d+(?:\.\d+)?), (-?\d+(?:\.\d+)?)\)/)?.[6];
+      const y = transform?.match(/matrix\((-?\d+(?:\.\d+)?), (-?\d+(?:\.\d+)?), (-?\d+(?:\.\d+)?), (-?\d+(?:\.\d+)?), (-?\d+(?:\.\d+)?), (-?\d+(?:\.\d+)?)\)/)[6];
 
       if (y > -5 && y < snap.value - 30) {
         detailMode.value = true;
@@ -137,28 +137,18 @@ function onDragSnapping() {
   });
 }
 
+
 function onColorEmojiClick() {
   mainEditorOpen.value = false;
+  colorEmojiPickerOpen.value = true;
+  editorSizeWatcher.observe(editorRef.value!);
 }
 
 function onColorEmojiBackClick() {
   colorEmojiPickerOpen.value = false;
-}
-
-function afterEditorLeave(el: HTMLElement) {
-  if (el.id === "main-editor") {
-    colorEmojiPickerOpen.value = true;
-    editorSizeWatcher.observe(editorRef.value!);
-  } else {
-    mainEditorOpen.value = true;
-    editorSizeWatcher.unobserve(editorRef.value!);
-  }
-}
-
-function onEditorEnter(el: HTMLElement) {
-  if (el.id === "main-editor") {
-    draggableParent.value!.style.setProperty('height', '');
-  }
+  draggableParent.value!.style.setProperty('height', '');
+  mainEditorOpen.value = true;
+  editorSizeWatcher.unobserve(editorRef.value!);
 }
 
 </script>

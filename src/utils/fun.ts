@@ -1,6 +1,8 @@
 import {isEmojiSupported} from "is-emoji-supported";
 import EmojiCss from '@/assets/styles/fonts/emoji.less'
 import Color from "colorjs.io";
+import Emojis from "@/assets/data/emojis.json"
+import OpenColor from "open-color";
 
 /**
  * 检测设备是否支持emoji v15
@@ -78,4 +80,55 @@ export function randomColor() {
 export function getPxfromVw(vw: number | undefined) {
     if (vw === undefined) return 0;
     return vw / 100 * window.innerWidth;
+}
+
+/**
+ * Convert unicode to native emoji
+ *
+ * @param unicode - emoji unicode
+ * @author form https://github.com/delowardev/vue3-emoji-picker
+ */
+export function unicodeToEmoji(unicode: string) {
+    return unicode
+        .split('-')
+        .map((hex) => parseInt(hex, 16))
+        .map((hex) => String.fromCodePoint(hex))
+        .join('')
+}
+
+/**
+ * 从变量中随机获取一个元素
+ * @param e 数组,对象
+ */
+export function getRandomElements(e: any) {
+    return Math.floor(Math.random() * (e.length - 1));
+}
+
+/**
+ * 随机生成emoji
+ * @param groups 生成emoji的分组
+ */
+export function randomEmoji(groups?: string[]) {
+    groups = groups === undefined? ['activity', 'travel', 'objects']: groups;
+    const emojiJson = JSON.parse(JSON.stringify(Emojis));
+    for (const group_name of Object.keys(emojiJson)) {
+        if (groups.indexOf(group_name) === -1) {
+            delete emojiJson[group_name];
+        }
+    }
+    const groupName = Object.keys(emojiJson)[getRandomElements(Object.keys(emojiJson))];
+    const group = emojiJson[groupName];
+    const emojiObj = group[getRandomElements(Object.keys(group))];
+    return unicodeToEmoji(emojiObj['u']);
+}
+
+/**
+ * 从OpenColor随机生成emoji
+ */
+export function randomEmojiFromOpenColor(colorCode?: Array<number>) {
+    colorCode = colorCode === undefined? [3,4,5,6]: colorCode;
+    const entries = Object.entries(OpenColor).filter((name) => {
+        return name[0] !== 'white' && name[0] !== 'black';
+    });
+    return entries[getRandomElements(entries)][1][getRandomElements(colorCode)];
 }

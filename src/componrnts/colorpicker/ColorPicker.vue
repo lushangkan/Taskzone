@@ -8,9 +8,9 @@
         </div>
       </div>
       <div v-if="presetOpen" class="flex flex-col justify-center items-center w-full h-full mt-[18px]">
-        <div v-if="!selectColorCodeOpen" class="flex flex-row justify-start items-center flex-wrap gap-[12px]">
+        <div v-if="!selectColorCodeOpen" class="flex flex-row justify-start w-full items-center flex-wrap gap-[12px]">
           <button ref="colorBtns" v-for="(v, k) in colors" :key="k" type="button"
-                  :title="`select ${k}`" class="d-btn min-h-0 h-[48px] w-[80px]"
+                  :title="`select ${k}`" class="d-btn min-h-0 h-[48px] w-[30%]"
                   :style="`background-color: ${v[defaultColorCode]};`"
                   @click="onClickColorBtn(k)"
           >
@@ -100,7 +100,7 @@ const props = defineProps({
   }
 });
 
-const presetOpen = ref(false);
+const presetOpen = ref(true);
 const selectColorCodeOpen = ref(false);
 const colorBtns: Ref<Array<HTMLButtonElement | null>> = ref([]);
 const colorCodeBtns: Ref<Array<HTMLButtonElement | null>> = ref([]);
@@ -118,6 +118,7 @@ const i18n = useI18n();
 
 const colorCode = reactive([50, 100, 200, 300, 400, 500, 600, 700, 800, 900]);
 const defaultColorCode = ref(400);
+// eslint-disable-next-line vue/no-setup-props-destructure
 const iroSelectColor: Ref<string | undefined> = ref(props.colorHex === '' ? fun.randomColor() : undefined);
 let lastScrollTop = 0;
 
@@ -128,6 +129,11 @@ if (props.disableConfirmBtn) {
     emit('selectColor', colorHex);
   });
 }
+
+// eslint-disable-next-line vue/no-setup-props-destructure
+watch(() => props.iroColorPickerWidth, (value) => {
+  iroColorPicker.value?.resize(fun.getPxfromVw(value));
+});
 
 defineOptions({
   inheritAttrs: false
