@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import {createApp} from 'vue'
 import App from '@/App.vue'
 import router from './router/router';
@@ -11,7 +13,7 @@ import {i18n} from "@/locals/i18n";
 import {createPinia} from 'pinia'
 
 // Import database
-import {initDb} from '@/data/database/init-db';
+import {initDb} from '@/data/database/init/init-db';
 
 // Import database stores
 import {useDatabaseStores} from '@/stores/database-stores';
@@ -60,12 +62,11 @@ const app = createApp(App)
 const dbStores = useDatabaseStores();
 
 // Init database
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-initDb(() => {
-
-}, () => {
+initDb(dbStores).then((bool) => {
     router.isReady().then(() => {
         // Mount Vue app
         app.mount('#app')
     });
-}, dbStores);
+}).catch((e) => {
+    console.error(e);
+});

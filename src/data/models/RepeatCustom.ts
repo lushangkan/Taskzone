@@ -1,11 +1,11 @@
 export class RepeatCustom {
 
-    Monday!: boolean;
-    Tuesday!: boolean;
-    Wednesday!: boolean;
-    Thursday!: boolean;
-    Friday!: boolean;
-    Saturday!: boolean;
-    Sunday!: boolean;
+    monday!: boolean;
+    tuesday!: boolean;
+    wednesday!: boolean;
+    thursday!: boolean;
+    friday!: boolean;
+    saturday!: boolean;
+    sunday!: boolean;
 
 }

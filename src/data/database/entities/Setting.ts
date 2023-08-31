@@ -4,13 +4,12 @@ import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 export class Setting {
 
     @PrimaryGeneratedColumn()
-    id!: number;
+    id: number;
 
     @Column('text')
     key: string;
 
     @Column('simple-json')
-    value: { value: any };
-
+    value: NonNullable<unknown>;
 
 }
