@@ -1,11 +1,11 @@
 import {Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {RepeatMode} from "@/data/enum/RepeatMode";
 import {RepeatCustom} from "@/data/models/RepeatCustom";
-import {Task} from "@/data/database/entities/Task";
-import {Tag} from "@/data/database/entities/Tag";
+import {TaskEntity} from "@/data/database/entities/TaskEntity";
+import {TagEntity} from "@/data/database/entities/TagEntity";
 
 @Entity()
-export class TaskGroup {
+export class TaskGroupEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -19,8 +19,8 @@ export class TaskGroup {
     @Column('text')
     description: string;
 
-    @OneToMany(() => Task, task => task.taskGroup, { nullable: true })
-    tasks: (Task | null)[];
+    @OneToMany(() => TaskEntity, task => task.taskGroup, { nullable: true })
+    tasks: (TaskEntity | null)[];
 
     @Column('text')
     color: string;
@@ -28,8 +28,8 @@ export class TaskGroup {
     @Column('text')
     icon: string;
 
-    @ManyToMany(() => Tag, tag => tag.taskGroups, { nullable: true })
-    tags: (Tag | null)[];
+    @ManyToMany(() => TagEntity, tag => tag.taskGroups, { nullable: true })
+    tags: (TagEntity | null)[];
 
     @CreateDateColumn()
     createDate: Date;

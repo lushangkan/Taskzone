@@ -10,14 +10,14 @@ import {
 } from "typeorm";
 import {RepeatMode} from "@/data/enum/RepeatMode";
 import {RepeatCustom} from "@/data/models/RepeatCustom";
-import {TaskGroup} from "@/data/database/entities/TaskGroup";
+import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import {ReminderMode} from "@/data/enum/ReminderMode";
 import {Priority} from "@/data/enum/Priority";
-import {Tag} from "@/data/database/entities/Tag";
+import {TagEntity} from "@/data/database/entities/TagEntity";
 
 @Entity()
 @Tree("closure-table")
-export class Task {
+export class TaskEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -34,8 +34,8 @@ export class Task {
     @Column('text')
     icon: string;
 
-    @ManyToMany(() => Tag, tag => tag.tasks, { nullable: true })
-    tags: (Tag | null)[];
+    @ManyToMany(() => TagEntity, tag => tag.tasks, { nullable: true })
+    tags: (TagEntity | null)[];
 
     @Column('int', { nullable: true })
     priority: Priority | null;
@@ -58,13 +58,13 @@ export class Task {
     @Column('int')
     reminders: ReminderMode;
 
-    @ManyToOne(() => TaskGroup, taskGroup => taskGroup.tasks, { nullable: true })
-    taskGroup: TaskGroup | null;
+    @ManyToOne(() => TaskGroupEntity, taskGroup => taskGroup.tasks, { nullable: true })
+    taskGroup: TaskGroupEntity | null;
 
     @TreeParent()
-    parentTask: Task | null;
+    parentTask: TaskEntity | null;
 
     @TreeChildren()
-    childTasks: Map<Task, any> | boolean | any[];
+    childTasks: Map<TaskEntity, any> | boolean | any[];
 
 }

@@ -1,23 +1,23 @@
 import {useDatabaseStores} from "@/stores/database-stores";
-import {Task} from "@/data/database/entities/Task";
+import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {faker} from '@faker-js/faker';
 import * as fun from "@/utils/fun"
 import {Priority} from "@/data/enum/Priority";
 import {randomEnum, randomRepeatCustom} from "@/utils/fun";
 import {RepeatMode} from "@/data/enum/RepeatMode";
 import {ReminderMode} from "@/data/enum/ReminderMode";
-import {Tag} from "@/data/database/entities/Tag";
-import {TaskGroup} from "@/data/database/entities/TaskGroup";
+import {TagEntity} from "@/data/database/entities/TagEntity";
+import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 
 export async function genFakeTask(count: number) {
     const dbStore = useDatabaseStores();
     const entityManager = dbStore.entityManager;
 
-    const map: Map<Task, any> = new Map();
+    const map: Map<TaskEntity, any> = new Map();
 
     if (entityManager) {
         for (let i = 0; i < count; i++) {
-            const task = new Task();
+            const task = new TaskEntity();
 
             task.name = `Task ${faker.lorem.word()}`
             task.description = faker.lorem.lines(1);
@@ -55,11 +55,11 @@ export async function genFakeTask(count: number) {
 export async function genFakeTag(count: number) {
     const dbStore = useDatabaseStores();
     const entityManager = dbStore.entityManager;
-    const map: Map<Tag, any> = new Map();
+    const map: Map<TagEntity, any> = new Map();
 
     if (entityManager) {
         for (let i = 0; i < count; i++) {
-            const tag = new Tag();
+            const tag = new TagEntity();
 
             tag.name = `Tag ${faker.lorem.word()}`
             tag.description = faker.lorem.lines(1);
@@ -82,11 +82,11 @@ export async function genFakeTag(count: number) {
 export async function genFakeTaskGroup(count: number) {
     const dbStore = useDatabaseStores();
     const entityManager = dbStore.entityManager;
-    const map: Map<TaskGroup, any> = new Map();
+    const map: Map<TaskGroupEntity, any> = new Map();
 
     if (entityManager) {
         for (let i = 0; i < count; i++) {
-            const taskGroup = new TaskGroup();
+            const taskGroup = new TaskGroupEntity();
 
             taskGroup.name = `TaskGroup ${faker.lorem.word()}`
             taskGroup.description = faker.lorem.lines(1);
@@ -114,13 +114,13 @@ export async function genFakeTaskGroup(count: number) {
     return false;
 }
 
-export async function getRandomTag(): Promise<Tag | null> {
+export async function getRandomTag(): Promise<TagEntity | null> {
     const dbStore = useDatabaseStores();
     const entityManager = dbStore.entityManager;
 
     if (entityManager) {
         try {
-            const tags = await entityManager.getRepository(Tag).find();
+            const tags = await entityManager.getRepository(TagEntity).find();
             return tags[fun.getRandomElements(tags)];
         } catch (e) {
             console.error(e);
@@ -130,13 +130,13 @@ export async function getRandomTag(): Promise<Tag | null> {
     return null;
 }
 
-export async function getRandomTaskGroup(): Promise<TaskGroup | null> {
+export async function getRandomTaskGroup(): Promise<TaskGroupEntity | null> {
     const dbStore = useDatabaseStores();
     const entityManager = dbStore.entityManager;
 
     if (entityManager) {
         try {
-            const taskGroups = await entityManager.getRepository(TaskGroup).find();
+            const taskGroups = await entityManager.getRepository(TaskGroupEntity).find();
             return taskGroups[fun.getRandomElements(taskGroups)];
         } catch (e) {
             console.error(e);
@@ -146,13 +146,13 @@ export async function getRandomTaskGroup(): Promise<TaskGroup | null> {
     return null;
 }
 
-export async function getRandomTask(): Promise<Task | null> {
+export async function getRandomTask(): Promise<TaskEntity | null> {
     const dbStore = useDatabaseStores();
     const entityManager = dbStore.entityManager;
 
     if (entityManager) {
         try {
-            const tasks = await entityManager.getRepository(Task).find();
+            const tasks = await entityManager.getRepository(TaskEntity).find();
             return tasks[fun.getRandomElements(tasks)];
         } catch (e) {
             console.error(e);
@@ -163,24 +163,24 @@ export async function getRandomTask(): Promise<Task | null> {
 }
 
 
-export async function getRandomTags(count: number) : Promise<(Tag | null)[]> {
-    const tags: (Tag | null)[] = [];
+export async function getRandomTags(count: number) : Promise<(TagEntity | null)[]> {
+    const tags: (TagEntity | null)[] = [];
     for (let i = 0; i < count; i++) {
         tags.push(await getRandomTag());
     }
     return tags;
 }
 
-export async function getRandomTaskGroups(count: number) : Promise<(TaskGroup | null)[]> {
-    const taskGroups: (TaskGroup | null)[] = [];
+export async function getRandomTaskGroups(count: number) : Promise<(TaskGroupEntity | null)[]> {
+    const taskGroups: (TaskGroupEntity | null)[] = [];
     for (let i = 0; i < count; i++) {
         taskGroups.push(await getRandomTaskGroup());
     }
     return taskGroups;
 }
 
-export async function getRandomTasks(count: number) : Promise<(Task | null)[]> {
-    const tasks: (Task | null)[] = [];
+export async function getRandomTasks(count: number) : Promise<(TaskEntity | null)[]> {
+    const tasks: (TaskEntity | null)[] = [];
     for (let i = 0; i < count; i++) {
         tasks.push(await getRandomTask());
     }
