@@ -50,10 +50,6 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  // test: {
-  //   globals: true,
-  //   environment: 'jsdom'
-  // },
   server: {
     host: '0.0.0.0',
     port: 80,
