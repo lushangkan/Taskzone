@@ -65,7 +65,7 @@ const colorOpen = ref(false);
 // eslint-disable-next-line vue/no-setup-props-destructure
 const emojiValue = ref(props.defaultEmoji === '' ?fun.randomEmoji(): props.defaultEmoji);
 // eslint-disable-next-line vue/no-setup-props-destructure
-const colorHexValue = ref(props.defaultColor === '' ?fun.randomEmojiFromOpenColor():props. defaultColor);
+const colorHexValue = ref(props.defaultColor === '' ?fun.randomColorFromOpenColor():props. defaultColor);
 
 watch(() => props.defaultColor, (newVal) => {
   colorHexValue.value !== ''? colorHexValue.value = newVal: null;
@@ -93,7 +93,6 @@ function onEmojiSelected(emojiData) {
 
 function onColorSelected(colorHex: string) {
   colorHexValue.value = colorHex;
-  console.log(colorHex);
 }
 
 

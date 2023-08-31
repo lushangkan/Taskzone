@@ -13,8 +13,12 @@ import {generateThemeColorVariants} from "@/utils/theme-color-utils";
 import TopNavbar from "@/componrnts/navbar/TopNavbar.vue";
 import {checkIsSupportEmoji} from "@/utils/fun";
 import {useAppStores} from "@/stores/app-stores";
+import {useDatabaseStores} from "@/stores/database-stores";
+import * as FakeData from "@/data/database/database/gen-fake-data";
 
 const appStore = useAppStores();
+
+const dataBaseStore = useDatabaseStores();
 
 onMounted(() => {
   // 生成主题色变体
@@ -22,7 +26,11 @@ onMounted(() => {
 
   // 检测是否支持Emoji v15
   checkIsSupportEmoji(appStore);
-})
+
+  console.log(dataBaseStore);
+
+  console.log(FakeData)
+});
 
 </script>
 

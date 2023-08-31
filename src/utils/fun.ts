@@ -3,6 +3,8 @@ import EmojiCss from '@/assets/styles/fonts/emoji.less'
 import Color from "colorjs.io";
 import Emojis from "@/assets/data/emojis.json"
 import OpenColor from "open-color";
+import {RepeatCustom} from "@/data/models/RepeatCustom";
+import {faker} from "@faker-js/faker";
 
 /**
  * 检测设备是否支持emoji v15
@@ -123,12 +125,55 @@ export function randomEmoji(groups?: string[]) {
 }
 
 /**
- * 从OpenColor随机生成emoji
+ * 从OpenColor随机生成color
  */
-export function randomEmojiFromOpenColor(colorCode?: Array<number>) {
+export function randomColorFromOpenColor(colorCode?: Array<number>) {
     colorCode = colorCode === undefined? [3,4,5,6]: colorCode;
     const entries = Object.entries(OpenColor).filter((name) => {
         return name[0] !== 'white' && name[0] !== 'black';
     });
     return entries[getRandomElements(entries)][1][getRandomElements(colorCode)];
+}
+
+/**
+ * 随机生成Enum中的元素
+ * @param e Enum
+ */
+export function randomEnum(e: any) {
+    const keys = Object.keys(e);
+    return e[keys[getRandomElements(keys)]];
+}
+
+export function randomRepeatCustom() {
+    const custom = new RepeatCustom();
+    custom.monday = faker.datatype.boolean();
+    custom.tuesday = faker.datatype.boolean();
+    custom.wednesday = faker.datatype.boolean();
+    custom.thursday = faker.datatype.boolean();
+    custom.friday = faker.datatype.boolean();
+    custom.saturday = faker.datatype.boolean();
+    custom.sunday = faker.datatype.boolean();
+    return custom;
+}
+
+/**
+ * 随机生成boolean
+ * @param p 概率
+ */
+export function randomBoolean(p?: number | undefined): boolean {
+    p = p === undefined? 0.5: p;
+    if (p < 0 || p > 1) {
+        throw new Error("Invalid probability");
+    }
+    const r = Math.random();
+    return r < p;
+}
+
+/**
+ * 获取随机数字
+ * @param min 最小值
+ * @param max 最大值
+ */
+export function randomInt(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
