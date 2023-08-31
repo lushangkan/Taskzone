@@ -22,7 +22,7 @@ export default {
     prefix: "d-",
     themes: [
       {
-        theme1: {
+        default: {
           "primary": "#63e6be",
           "secondary": "#faa2c1",
           "accent": "#c0eb75",
