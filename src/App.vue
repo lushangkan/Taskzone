@@ -14,7 +14,7 @@ import TopNavbar from "@/componrnts/navbar/TopNavbar.vue";
 import {checkIsSupportEmoji} from "@/utils/fun";
 import {useAppStores} from "@/stores/app-stores";
 import {useDatabaseStores} from "@/stores/database-stores";
-import * as FakeData from "@/data/database/database/gen-fake-data";
+import * as FakeData from "@/data/database/utils/gen-fake-data";
 
 const appStore = useAppStores();
 
