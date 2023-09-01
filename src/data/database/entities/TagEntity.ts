@@ -1,12 +1,12 @@
-import {Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 
 @Entity()
 export class TagEntity {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Column('text')
     name: string;
@@ -20,12 +20,10 @@ export class TagEntity {
     @Column('text')
     description: string;
 
-    @ManyToMany(() => TaskEntity, task => task.tags, { nullable: true })
-    @JoinTable()
+    @ManyToMany(() => TaskEntity, task => task.tags, { nullable: true, cascade: true })
     tasks: (TaskEntity | null)[];
 
-    @ManyToMany(() => TaskGroupEntity, taskGroup => taskGroup.tags, { nullable: true })
-    @JoinTable()
+    @ManyToMany(() => TaskGroupEntity, taskGroup => taskGroup.tags, { nullable: true, cascade: true })
     taskGroups: (TaskGroupEntity | null)[];
 
 }

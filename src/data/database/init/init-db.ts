@@ -54,6 +54,8 @@ export function initDb(dbStores: any) {
 
                 dbStores.dataSource = AppDatasource;
 
+                dbStores.updateStatus();
+
                 if (platform === 'web') {
                     // save the database from memory to store
                     await sqliteConnection.saveToStore('taskzoneDB');

@@ -15,6 +15,10 @@ import {checkIsSupportEmoji} from "@/utils/fun";
 import {useAppStores} from "@/stores/app-stores";
 import {useDatabaseStores} from "@/stores/database-stores";
 import * as FakeData from "@/data/database/utils/gen-fake-data";
+import {SettingEntity} from "@/data/database/entities/SettingEntity";
+import {TagEntity} from "@/data/database/entities/TagEntity";
+import {TaskEntity} from "@/data/database/entities/TaskEntity";
+import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 
 const appStore = useAppStores();
 
@@ -29,7 +33,12 @@ onMounted(() => {
 
   console.log(dataBaseStore);
 
-  console.log(FakeData)
+  console.log(FakeData);
+
+  console.log(SettingEntity);
+  console.log(TagEntity);
+  console.log(TaskEntity);
+  console.log(TaskGroupEntity);
 });
 
 </script>

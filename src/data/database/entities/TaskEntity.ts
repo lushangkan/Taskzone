@@ -1,7 +1,7 @@
 import {
     Column,
     CreateDateColumn,
-    Entity, ManyToMany,
+    Entity, JoinTable, ManyToMany,
     ManyToOne,
     PrimaryGeneratedColumn,
     Tree,
@@ -19,8 +19,8 @@ import {TagEntity} from "@/data/database/entities/TagEntity";
 @Tree("closure-table")
 export class TaskEntity {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Column('text')
     name: string;
@@ -35,6 +35,7 @@ export class TaskEntity {
     icon: string;
 
     @ManyToMany(() => TagEntity, tag => tag.tasks, { nullable: true })
+    @JoinTable()
     tags: (TagEntity | null)[];
 
     @Column('int', { nullable: true })

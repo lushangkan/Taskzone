@@ -1,4 +1,13 @@
-import {Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import {RepeatMode} from "@/data/enum/RepeatMode";
 import {RepeatCustom} from "@/data/models/RepeatCustom";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
@@ -7,8 +16,8 @@ import {TagEntity} from "@/data/database/entities/TagEntity";
 @Entity()
 export class TaskGroupEntity {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Column('datetime', { nullable: true })
     dayTaskDate: Date | null;
@@ -19,7 +28,7 @@ export class TaskGroupEntity {
     @Column('text')
     description: string;
 
-    @OneToMany(() => TaskEntity, task => task.taskGroup, { nullable: true })
+    @OneToMany(() => TaskEntity, task => task.taskGroup, { nullable: true, cascade: true })
     tasks: (TaskEntity | null)[];
 
     @Column('text')
@@ -29,6 +38,7 @@ export class TaskGroupEntity {
     icon: string;
 
     @ManyToMany(() => TagEntity, tag => tag.taskGroups, { nullable: true })
+    @JoinTable()
     tags: (TagEntity | null)[];
 
     @CreateDateColumn()

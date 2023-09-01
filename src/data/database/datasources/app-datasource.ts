@@ -4,6 +4,7 @@ import {SettingEntity} from "@/data/database/entities/SettingEntity";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {TagEntity} from "@/data/database/entities/TagEntity";
+import {EntityListener} from "@/data/database/listeners/EntityListener";
 
 export default new DataSource({
     type: 'capacitor',
@@ -15,4 +16,5 @@ export default new DataSource({
     synchronize: true,
     //TODO: 加密
     mode: "encryption",
+    subscribers: [EntityListener]
 });

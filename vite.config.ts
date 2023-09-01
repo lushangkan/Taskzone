@@ -43,7 +43,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['jeep-sqlite/loader']
+    exclude: ['jeep-sqlite/loader'],
   },
   resolve: {
     alias: {

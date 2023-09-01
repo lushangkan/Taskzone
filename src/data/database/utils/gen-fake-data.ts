@@ -3,7 +3,7 @@ import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {faker} from '@faker-js/faker';
 import * as fun from "@/utils/fun"
 import {Priority} from "@/data/enum/Priority";
-import {randomEnum, randomRepeatCustom} from "@/utils/fun";
+import {randomEnum} from "@/utils/fun";
 import {RepeatMode} from "@/data/enum/RepeatMode";
 import {ReminderMode} from "@/data/enum/ReminderMode";
 import {TagEntity} from "@/data/database/entities/TagEntity";
@@ -29,6 +29,7 @@ export async function genFakeTask(count: number) {
             task.deadLineDate = faker.date.future();
             task.isDone = faker.datatype.boolean();
             task.repeatMode = randomEnum(RepeatMode);
+            task.repeatCustom = null;
 
             if (task.repeatMode === RepeatMode.CUSTOM) {
                 task.repeatCustom = fun.randomRepeatCustom();
@@ -42,6 +43,7 @@ export async function genFakeTask(count: number) {
             try {
                 map.set(await entityManager.save(task), true);
             } catch (e) {
+                console.error(e);
                 map.set(task, e);
             }
 
@@ -71,6 +73,7 @@ export async function genFakeTag(count: number) {
             try {
                 map.set(await entityManager.save(tag), true);
             } catch (e) {
+                console.error(e);
                 map.set(tag, e);
             }
         }
@@ -89,6 +92,7 @@ export async function genFakeTaskGroup(count: number) {
             const taskGroup = new TaskGroupEntity();
 
             taskGroup.name = `TaskGroup ${faker.lorem.word()}`
+            taskGroup.dayTaskDate = fun.randomBoolean() ? faker.date.past() : null;
             taskGroup.description = faker.lorem.lines(1);
             taskGroup.color = fun.randomColor();
             taskGroup.icon = fun.randomEmoji();
@@ -96,6 +100,7 @@ export async function genFakeTaskGroup(count: number) {
             taskGroup.createDate = faker.date.past();
             taskGroup.deadLineDate = faker.date.future();
             taskGroup.repeatMode = randomEnum(RepeatMode);
+            taskGroup.repeatCustom = null;
 
             if (taskGroup.repeatMode === RepeatMode.CUSTOM) {
                 taskGroup.repeatCustom = fun.randomRepeatCustom();
@@ -106,6 +111,7 @@ export async function genFakeTaskGroup(count: number) {
             try {
                 map.set(await entityManager.save(taskGroup), true);
             } catch (e) {
+                console.error(e);
                 map.set(taskGroup, e);
             }
         }
@@ -130,14 +136,35 @@ export async function getRandomTag(): Promise<TagEntity | null> {
     return null;
 }
 
-export async function getRandomTaskGroup(): Promise<TaskGroupEntity | null> {
+export async function getRandomTaskGroup(loadHasTasks?: boolean): Promise<TaskGroupEntity | null> {
+    loadHasTasks === undefined ? loadHasTasks = false : null;
     const dbStore = useDatabaseStores();
     const entityManager = dbStore.entityManager;
 
     if (entityManager) {
         try {
-            const taskGroups = await entityManager.getRepository(TaskGroupEntity).find();
-            return taskGroups[fun.getRandomElements(taskGroups)];
+            const taskGroups = await entityManager.getRepository(TaskGroupEntity).find({
+                relations: {
+                    tasks: true,
+                }
+            });
+            if (taskGroups.length === 0) {
+                return null;
+            }
+            let taskGroup = null;
+            if (!loadHasTasks) {
+                let retry = true;
+                while (retry) {
+                    const r = taskGroups[fun.getRandomElements(taskGroups)];
+                    if (r.tasks === undefined || r.tasks === null || r.tasks.length === 0) {
+                        taskGroup = r;
+                        retry = false;
+                    }
+                }
+            } else {
+                taskGroup = taskGroups[fun.getRandomElements(taskGroups)];
+            }
+            return taskGroup;
         } catch (e) {
             console.error(e);
         }
@@ -146,14 +173,36 @@ export async function getRandomTaskGroup(): Promise<TaskGroupEntity | null> {
     return null;
 }
 
-export async function getRandomTask(): Promise<TaskEntity | null> {
+export async function getRandomTask(loadHasTaskGroup?: boolean): Promise<TaskEntity | null> {
+    loadHasTaskGroup === undefined ? loadHasTaskGroup = false : null;
     const dbStore = useDatabaseStores();
     const entityManager = dbStore.entityManager;
 
     if (entityManager) {
         try {
-            const tasks = await entityManager.getRepository(TaskEntity).find();
-            return tasks[fun.getRandomElements(tasks)];
+            const tasks = await entityManager.getRepository(TaskEntity).find({
+                relations: {
+                    taskGroup: true,
+                }
+            });
+            if (tasks.length === 0) {
+                return null;
+            }
+            let task = null;
+            if (!loadHasTaskGroup) {
+                let retry = true;
+                while (retry) {
+                    const r = tasks[fun.getRandomElements(tasks)];
+                    if (r.taskGroup === undefined || r.taskGroup === null) {
+                        task = r;
+                        retry = false;
+                    }
+                }
+            } else {
+                task = tasks[fun.getRandomElements(tasks)];
+            }
+
+            return task;
         } catch (e) {
             console.error(e);
         }
@@ -166,7 +215,21 @@ export async function getRandomTask(): Promise<TaskEntity | null> {
 export async function getRandomTags(count: number) : Promise<(TagEntity | null)[]> {
     const tags: (TagEntity | null)[] = [];
     for (let i = 0; i < count; i++) {
-        tags.push(await getRandomTag());
+        let retryTimes = 0;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            if (retryTimes > 10) {
+                break;
+            }
+            const tag = await getRandomTag();
+            if ( tag === undefined || tag === null || tags.find((e) => e !== undefined? e?.id === tag?.id : true)) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                retryTimes++;
+                continue;
+            }
+            tags.push(tag);
+            break;
+        }
     }
     return tags;
 }
@@ -174,7 +237,21 @@ export async function getRandomTags(count: number) : Promise<(TagEntity | null)[
 export async function getRandomTaskGroups(count: number) : Promise<(TaskGroupEntity | null)[]> {
     const taskGroups: (TaskGroupEntity | null)[] = [];
     for (let i = 0; i < count; i++) {
-        taskGroups.push(await getRandomTaskGroup());
+        let retryTimes = 0;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            if (retryTimes > 10) {
+                break;
+            }
+            const taskGroup = await getRandomTaskGroup();
+            if ( taskGroup === undefined || taskGroup === null || taskGroups.find((e) => e !== undefined? e?.id === taskGroup?.id : true)) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                retryTimes++;
+                continue;
+            }
+            taskGroups.push(taskGroup);
+            break;
+        }
     }
     return taskGroups;
 }
@@ -182,7 +259,21 @@ export async function getRandomTaskGroups(count: number) : Promise<(TaskGroupEnt
 export async function getRandomTasks(count: number) : Promise<(TaskEntity | null)[]> {
     const tasks: (TaskEntity | null)[] = [];
     for (let i = 0; i < count; i++) {
-        tasks.push(await getRandomTask());
+        let retryTimes = 0;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            if (retryTimes > 10) {
+                break;
+            }
+            const task = await getRandomTask();
+            if (task === undefined || task === null || tasks.find((e) => e !== undefined? e?.id === task?.id : true)) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                retryTimes++;
+                continue;
+            }
+            tasks.push(task);
+            break;
+        }
     }
     return tasks;
 }
