@@ -36,27 +36,38 @@ const addTaskBtnShow = ref(true);
 const appStore = useAppStores();
 
 onMounted(() => {
-  // 获取滚动元素
-  const content: HTMLIonContentElement = (document.getElementsByTagName('ion-content')[0] as HTMLIonContentElement);
-  content.getScrollElement().then((ele) => {
-    // 监听滚动事件
-    let lastScrollTop = 0;
+  // 添加监听器
+  appStore.mainScrollListeners.initialized.push(() => {
+    // 获取滚动元素
+    const scrollContent = document.getElementById('main-scroll-content');
+    if (scrollContent !== null) {
 
-    ele.addEventListener('scroll', () => {
-      const scrollTop = ele.scrollTop;
-      if (scrollTop > lastScrollTop && scrollTop - lastScrollTop > 20) {
-        addTaskBtnShow.value = false;
-      } else if (scrollTop < lastScrollTop && lastScrollTop - scrollTop > 20) {
-        addTaskBtnShow.value = true;
+      const scrollEle = scrollContent.parentElement;
+
+      let lastScrollTop = 0;
+
+      if ("addEventListener" in scrollEle) {
+        scrollEle.addEventListener('scroll', () => {
+          const scrollTop = scrollEle.scrollTop;
+          if (scrollTop > lastScrollTop && scrollTop - lastScrollTop > 20) {
+            addTaskBtnShow.value = false;
+          } else if (scrollTop < lastScrollTop && lastScrollTop - scrollTop > 20) {
+            addTaskBtnShow.value = true;
+          }
+          lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+
+        // 监听content Click事件
+        scrollEle.addEventListener('click', () => {
+          optionsBtnShow.value = false;
+        });
+      } else {
+        console.warn('Could not find scroll element');
       }
-      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-    });
-  });
-
-  // 监听content Click事件
-  content.addEventListener('click', () => {
-    optionsBtnShow.value = false;
-  });
+    } else {
+      console.warn('Could not find scroll element');
+    }
+  })
 });
 
 </script>

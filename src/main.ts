@@ -19,6 +19,7 @@ import {initDb} from '@/data/database/init/init-db';
 import {useDatabaseStores} from '@/stores/database-stores';
 
 // Some global components
+import 'overlayscrollbars/overlayscrollbars.css';
 import VStickyElement from 'vue-sticky-element';
 import VScrollThreshold from 'v-scroll-threshold';
 import drag from "v-drag"
@@ -52,7 +53,6 @@ const app = createApp(App)
     .use(drag, {
         removeTransition: false
     })
-    .use(Vue3TouchEvents)
     .use(VScrollThreshold)
     .use(VStickyElement)
     .use(createPinia())

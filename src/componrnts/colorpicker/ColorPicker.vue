@@ -18,22 +18,32 @@
           </button>
         </div>
         <div v-else class="w-full">
-          <custom-scrollbar ref="scrollContent" @ps-scroll-y="onScroll" :swipeEasing="true"
-                            class="max-h-[280px] w-full flex flex-row justify-start items-center flex-wrap gap-[12px]"
-                            :settings="{suppressScrollX: true}"
+          <overlay-scrollbars-component class="max-h-[280px] w-full" defer element="div" :options="{
+              overflow: {
+                x: 'hidden',
+              },
+              scrollbars: {
+                autoHide: 'leave',
+                autoHideDelay: 200,
+                clickScroll: true,
+                theme: 'os-theme-dark',
+              }
+            }" @os-scroll="onScroll"
           >
-            <Transition name="back-btn">
-              <button ref="backBtn" v-show="showBackBtn" type="button" title="close" @click="selectColorCodeOpen=false"
-                      class="d-btn d-btn-circle bg-base-100 h-[35px] w-[35px] min-h-0 fixed flex flex-row justify-center items-center z-10 mb-[67%] ml-[0.8%]">
-                <chevron-left-icon class="h-[30px] w-[30px] text-neutral" stroke-width="1.6"/>
+            <div ref="scrollContent" class="h-full w-full flex flex-row justify-start items-center flex-wrap gap-[12px]">
+              <Transition name="back-btn">
+                <button ref="backBtn" v-show="showBackBtn" type="button" title="close" @click="selectColorCodeOpen=false"
+                        class="d-btn d-btn-circle bg-base-100 h-[35px] w-[35px] min-h-0 fixed flex flex-row justify-center items-center z-10 mb-[67%] ml-[0.8%]">
+                  <chevron-left-icon class="h-[30px] w-[30px] text-neutral" stroke-width="1.6"/>
+                </button>
+              </Transition>
+              <button ref="colorCodeBtns" v-for="(v, k) in colors[selectColor]" :key="k" type="button"
+                      :title="`select ${selectColor}-${k}`" @click="onClickColorCodeBtn(k)"
+                      class="d-btn min-h-0 h-[48px] w-[45%] text-current" :style="`background-color: ${v};`">
+                <a class="font-medium normal-case">{{ i18n.t(`colorPicker.color.${selectColor}`)+ '-' + k }}</a>
               </button>
-            </Transition>
-            <button ref="colorCodeBtns" v-for="(v, k) in colors[selectColor]" :key="k" type="button"
-                    :title="`select ${selectColor}-${k}`" @click="onClickColorCodeBtn(k)"
-                    class="d-btn min-h-0 h-[48px] w-[45%] text-current" :style="`background-color: ${v};`">
-              <a class="font-medium normal-case">{{ i18n.t(`colorPicker.color.${selectColor}`)+ '-' + k }}</a>
-            </button>
-          </custom-scrollbar>
+            </div>
+          </overlay-scrollbars-component>
         </div>
       </div>
       <div v-else class="relative flex flex-col justify-around items-center w-full h-full mt-[18px]">
@@ -74,8 +84,7 @@ import OpenColor from "open-color";
 import Color from "colorjs.io";
 import {onMounted, onUpdated, reactive, type Ref, ref, defineOptions, defineEmits, defineProps, watch} from "vue";
 import {ChevronLeftIcon, CheckIcon} from "lucide-vue-next";
-import CustomScrollbar from 'vue-custom-scrollbar/src/vue-scrollbar.vue'
-import "vue-custom-scrollbar/dist/vueScrollbar.css"
+import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import * as fun from "@/utils/fun";
 import {useI18n} from "vue-i18n";
 import iro from '@jaames/iro';
@@ -104,9 +113,9 @@ const presetOpen = ref(true);
 const selectColorCodeOpen = ref(false);
 const colorBtns: Ref<Array<HTMLButtonElement | null>> = ref([]);
 const colorCodeBtns: Ref<Array<HTMLButtonElement | null>> = ref([]);
+const scrollContent: Ref<HTMLDivElement | null> = ref(null);
 const backBtn: Ref<HTMLButtonElement | null> = ref(null);
 const showBackBtn = ref(true);
-const scrollContent: Ref<any> = ref(null);
 const colorIndicator: Ref<HTMLDivElement | null> = ref(null);
 const iroColorPicker: Ref<IroColorPicker | undefined> = ref();
 const rInput: Ref<HTMLInputElement | null> = ref(null);
@@ -159,13 +168,15 @@ function onClickColorCodeBtn(colorCode: number | string) {
 }
 
 function onScroll() {
-  const scrollTop = scrollContent.value!.$el.scrollTop;
-  if (scrollTop > lastScrollTop && scrollTop - lastScrollTop > 2) {
-    showBackBtn.value = false;
-  } else if (scrollTop < lastScrollTop && lastScrollTop - scrollTop > 2) {
-    showBackBtn.value = true;
+  const scrollTop = scrollContent.value?.parentElement?.scrollTop;
+  if (scrollTop !== undefined) {
+    if (scrollTop > lastScrollTop && scrollTop - lastScrollTop > 2) {
+      showBackBtn.value = false;
+    } else if (scrollTop < lastScrollTop && lastScrollTop - scrollTop > 2) {
+      showBackBtn.value = true;
+    }
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
   }
-  lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }
 
 function onIroColorPickerColorInitChange(color) {

@@ -58,7 +58,7 @@ const menuOpen = ref(false);
 
 const datepickerOpen = ref(false);
 
-const scrollEle = ref<HTMLElement>();
+const scrollEle = ref<HTMLElement | undefined | null>();
 
 const appStore = useAppStores();
 
@@ -141,14 +141,16 @@ onMounted(() => {
   }
 
   // 获取滚动元素
-  const content: HTMLIonContentElement = (document.getElementsByTagName('ion-content')[0] as HTMLIonContentElement);
-  if (content && content.getScrollElement) {
-    content.getScrollElement().then((ele) => {
-      scrollEle.value = ele;
-    }).catch((e) => {
-      console.error('Cannot get scroll element: ', e);
-    });
-  }
+  appStore.mainScrollListeners.initialized.push(() => {
+    const scrollContent = document.getElementById('main-scroll-content');
+    if (scrollContent !== null) {
+      scrollEle.value = scrollContent.parentElement;
+    } else {
+      scrollEle.value = undefined;
+      console.warn('Could not find scroll element');
+    }
+  })
+
 })
 
 </script>

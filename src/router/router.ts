@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from '@ionic/vue-router';
 import {RouteRecordRaw} from 'vue-router';
-import DayTaskView from "@/views/DayTaskView.vue";
+import DayTaskView from "@/views/TaskView.vue";
 import WelcomeView from "@/views/WelcomeView.vue";
 import ColorPickerTest from "@/views/ColorPickerTest.vue";
 
