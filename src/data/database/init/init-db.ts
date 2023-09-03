@@ -3,8 +3,9 @@ import {Capacitor} from '@capacitor/core';
 import {CapacitorSQLite} from '@capacitor-community/sqlite';
 import sqliteConnection from '@/data/database/db-connect';
 import AppDatasource from "@/data/database/datasources/app-datasource";
+import {useDatabaseStores} from "@/stores/database-stores";
 
-export function initDb(dbStores: any) {
+export function initDb(dbStores: ReturnType<typeof useDatabaseStores>) {
 
     return new Promise((resolve, reject) => {
         applyPolyfills().then(() => {
@@ -27,6 +28,8 @@ export function initDb(dbStores: any) {
                     }
                     // Create the 'jeep-sqlite' Stencil component
                     const jeepSqlite = document.createElement('jeep-sqlite');
+                    // Auto save
+                    jeepSqlite!.autoSave = true;
                     document.body.appendChild(jeepSqlite);
                     await customElements.whenDefined('jeep-sqlite');
                     // Initialize the Web store
@@ -37,7 +40,7 @@ export function initDb(dbStores: any) {
                 // otherwise new connections will fail when using dev-live-reload
                 // see https://github.com/capacitor-community/sqlite/issues/106
                 CapacitorSQLite.checkConnectionsConsistency({
-                    dbNames: ['taskzoneDB'], // i.e. "i expect no connections to be open"
+                    dbNames: dbStores.databaseNames, // i.e. "i expect no connections to be open"
                     openModes: [],
                 }).catch((e: any) => {
                     // the plugin throws an error when closing connections. we can ignore
@@ -54,11 +57,13 @@ export function initDb(dbStores: any) {
 
                 dbStores.dataSource = AppDatasource;
 
-                dbStores.updateStatus();
+                await dbStores.updateStatus();
 
                 if (platform === 'web') {
                     // save the database from memory to store
-                    await sqliteConnection.saveToStore('taskzoneDB');
+                    for (const dbName of dbStores.databaseNames) {
+                        await sqliteConnection.saveToStore(dbName);
+                    }
                 }
 
                 resolve(true);

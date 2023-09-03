@@ -1,5 +1,5 @@
 export enum TableStatus {
-    Empty = "Empty",
-    Defect = "Defect",
-    Intact = "Intact",
+    Empty = "empty",
+    Defect = "defect",
+    Intact = "intact",
 }

@@ -2,11 +2,8 @@ import {
     Column,
     CreateDateColumn,
     Entity, JoinTable, ManyToMany,
-    ManyToOne,
+    ManyToOne, OneToMany,
     PrimaryGeneratedColumn,
-    Tree,
-    TreeChildren,
-    TreeParent
 } from "typeorm";
 import {RepeatMode} from "@/data/enum/RepeatMode";
 import {RepeatCustom} from "@/data/models/RepeatCustom";
@@ -16,7 +13,6 @@ import {Priority} from "@/data/enum/Priority";
 import {TagEntity} from "@/data/database/entities/TagEntity";
 
 @Entity()
-@Tree("closure-table")
 export class TaskEntity {
 
     @PrimaryGeneratedColumn("uuid")
@@ -38,7 +34,7 @@ export class TaskEntity {
     @JoinTable()
     tags: (TagEntity | null)[];
 
-    @Column('int', { nullable: true })
+    @Column('text', { nullable: true })
     priority: Priority | null;
 
     @CreateDateColumn()
@@ -50,22 +46,22 @@ export class TaskEntity {
     @Column('boolean')
     isDone: boolean;
 
-    @Column('int')
+    @Column('text')
     repeatMode: RepeatMode;
 
     @Column('simple-json', { nullable: true })
     repeatCustom: RepeatCustom | null;
 
-    @Column('int')
+    @Column('text')
     reminders: ReminderMode;
 
     @ManyToOne(() => TaskGroupEntity, taskGroup => taskGroup.tasks, { nullable: true })
     taskGroup: TaskGroupEntity | null;
 
-    @TreeParent()
+    @ManyToOne(() => TaskEntity, task => task.childTasks, { nullable: true })
     parentTask: TaskEntity | null;
 
-    @TreeChildren()
-    childTasks: Map<TaskEntity, any> | boolean | any[];
+    @OneToMany(() => TaskEntity, task => task.parentTask, { nullable: true })
+    childTasks: TaskEntity[] | null[];
 
 }

@@ -1,7 +1,7 @@
 export enum ReminderMode {
-    NONE,
-    NOTIFICATION_ONLY,
-    VIBRATION_NOTIFICATION,
-    VIBRATION_RINGTONE_NOTIFICATION,
-    ALARM,
+    NONE = 'none',
+    NOTIFICATION_ONLY = 'notification_only',
+    VIBRATION_NOTIFICATION = 'vibration_notification',
+    VIBRATION_RINGTONE_NOTIFICATION = 'vibration_ringtone_notification',
+    ALARM = 'alarm',
 }

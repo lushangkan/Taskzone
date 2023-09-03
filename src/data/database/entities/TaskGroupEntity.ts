@@ -4,7 +4,6 @@ import {
     Entity,
     JoinTable,
     ManyToMany,
-    ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn
 } from "typeorm";
@@ -47,7 +46,7 @@ export class TaskGroupEntity {
     @Column('datetime', { nullable: true })
     deadLineDate: Date;
 
-    @Column('int')
+    @Column('text')
     repeatMode: RepeatMode;
 
     @Column('simple-json', { nullable: true })

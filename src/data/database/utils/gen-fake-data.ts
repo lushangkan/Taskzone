@@ -37,8 +37,8 @@ export async function genFakeTask(count: number) {
 
             task.reminders = randomEnum(ReminderMode);
             task.taskGroup = fun.randomBoolean() ? await getRandomTaskGroup() : null;
-            task.parentTask = fun.randomBoolean() ? await getRandomTask() : null;
-            task.childTasks = fun.randomBoolean() ? await genFakeTask(fun.randomInt(0, 3)) : [];
+            // task.parentTask = fun.randomBoolean() ? await getRandomTask() : null;
+            // task.childTasks = fun.randomBoolean() ? convertToArray(await genFakeTask(fun.randomInt(0, 3))) : [];
 
             try {
                 map.set(await entityManager.save(task), true);
@@ -52,7 +52,6 @@ export async function genFakeTask(count: number) {
     }
     return false;
 }
-
 
 export async function genFakeTag(count: number) {
     const dbStore = useDatabaseStores();
@@ -106,7 +105,7 @@ export async function genFakeTaskGroup(count: number) {
                 taskGroup.repeatCustom = fun.randomRepeatCustom();
             }
 
-            taskGroup.tasks = fun.randomBoolean() ? await getRandomTasks(fun.randomInt(0, 6)) : [];
+            taskGroup.tasks = fun.randomBoolean() ? await getRandomTasks(fun.randomInt(0, 3)) : [];
 
             try {
                 map.set(await entityManager.save(taskGroup), true);
@@ -154,7 +153,12 @@ export async function getRandomTaskGroup(loadHasTasks?: boolean): Promise<TaskGr
             let taskGroup = null;
             if (!loadHasTasks) {
                 let retry = true;
+                let retryTimes = 0;
                 while (retry) {
+                    if (retryTimes > 10) {
+                        break;
+                    }
+                    retryTimes++;
                     const r = taskGroups[fun.getRandomElements(taskGroups)];
                     if (r.tasks === undefined || r.tasks === null || r.tasks.length === 0) {
                         taskGroup = r;
@@ -191,7 +195,12 @@ export async function getRandomTask(loadHasTaskGroup?: boolean): Promise<TaskEnt
             let task = null;
             if (!loadHasTaskGroup) {
                 let retry = true;
+                let retryTimes = 0;
                 while (retry) {
+                    if (retryTimes > 10) {
+                        break;
+                    }
+                    retryTimes++;
                     const r = tasks[fun.getRandomElements(tasks)];
                     if (r.taskGroup === undefined || r.taskGroup === null) {
                         task = r;
@@ -276,4 +285,19 @@ export async function getRandomTasks(count: number) : Promise<(TaskEntity | null
         }
     }
     return tasks;
+}
+
+export function convertToArray(map: Map<TaskEntity, any> | boolean) {
+    if (map === false) {
+        return [];
+    } else {
+        const array: TaskEntity[] = [];
+        for (const [key, value] of (<Map<TaskEntity, any>>map).entries()) {
+            if (value === true) {
+                array.push(key);
+            }
+        }
+        return array;
+    }
+
 }

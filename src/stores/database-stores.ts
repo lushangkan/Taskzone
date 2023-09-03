@@ -8,6 +8,7 @@ import {AppTableStatus} from "@/data/interface/AppTableStatus";
 
 
 export const useDatabaseStores = defineStore('databaseStore', () => {
+    const databaseNames = ['taskzoneDB'];
     const sqliteConnection: Ref<SQLiteConnection | undefined> = ref();
     const dataSource: Ref<DataSource | undefined> = ref()
     const platform: Ref<string | undefined> = ref();
@@ -35,5 +36,5 @@ export const useDatabaseStores = defineStore('databaseStore', () => {
         }
     }
 
-    return {sqliteConnection, platform, dataSource, entityManager, tableStatus, updateStatus};
+    return {sqliteConnection, platform, dataSource, entityManager, tableStatus, updateStatus, databaseNames};
 });

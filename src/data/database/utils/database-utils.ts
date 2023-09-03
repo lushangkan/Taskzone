@@ -103,3 +103,77 @@ export async function checkAppTableStatus(Entity?: any) {
 
 }
 
+/**
+ * 保存数据库到IndexedDB(Web平台)
+ */
+export async function saveDatabase() {
+    const dbStore = useDatabaseStores();
+    if (dbStore.platform === 'web' && dbStore.sqliteConnection !== undefined) {
+        for (const databaseName of dbStore.databaseNames) {
+            await dbStore.sqliteConnection.saveToStore(databaseName);
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
+ * 关闭所有数据库连接
+ */
+export function closeDatabase() {
+    const dbStore = useDatabaseStores();
+    dbStore.sqliteConnection?.closeAllConnections();
+}
+
+/**
+ * 删除所有实体
+ */
+export async function deleteAllEntities() {
+    const dbStore = useDatabaseStores();
+    const entityManager = dbStore.entityManager;
+
+    await entityManager?.remove(await entityManager?.find(TagEntity));
+    await entityManager?.remove(await entityManager?.find(TaskEntity));
+    await entityManager?.remove(await entityManager?.find(TaskGroupEntity));
+    await entityManager?.remove(await entityManager?.find(SettingEntity));
+}
+
+/**
+ * 获取TagEntity的Repository
+ */
+export function getTagEntityRepository() {
+    const dbStore = useDatabaseStores();
+    const entityManager = dbStore.entityManager;
+
+    return entityManager?.getRepository(TagEntity);
+}
+
+/**
+ * 获取TaskEntity的Repository
+ */
+export function getTaskEntityRepository() {
+    const dbStore = useDatabaseStores();
+    const entityManager = dbStore.entityManager;
+
+    return entityManager?.getRepository(TaskEntity);
+}
+
+/**
+ * 获取TaskGroupEntity的Repository
+ */
+export function getTaskGroupEntityRepository() {
+    const dbStore = useDatabaseStores();
+    const entityManager = dbStore.entityManager;
+
+    return entityManager?.getRepository(TaskGroupEntity);
+}
+
+/**
+ * 获取SettingEntity的Repository
+ */
+export function getSettingEntityRepository() {
+    const dbStore = useDatabaseStores();
+    const entityManager = dbStore.entityManager;
+
+    return entityManager?.getRepository(SettingEntity);
+}
