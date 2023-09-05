@@ -13,8 +13,8 @@
           }
         }" class="w-full h-full" @os-initialized="scrollInitialized"
       >
-        <div id="main-scroll-content" class="w-full flex flex-col justify-start items-center pt-[150px] bg-base-100">
-          <div class="bg-warning h-[150vh] w-3/4"></div>
+        <div id="main-scroll-content" class="w-full flex flex-col justify-start items-center pt-[115px] bg-base-100">
+          <task-card class="h-[62px]"/>
         </div>
       </overlay-scrollbars-component>
     </ion-content>
@@ -27,6 +27,7 @@ import {IonContent, IonPage} from "@ionic/vue";
 import AddTaskBtn from "@/componrnts/AddTaskBtn.vue";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import {useAppStores} from "@/stores/app-stores";
+import TaskCard from "@/componrnts/TaskCard.vue";
 
 const appStore = useAppStores();
 

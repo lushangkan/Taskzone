@@ -1,6 +1,8 @@
-const colors = require("tailwindcss/colors")
+const colors = require("tailwindcss/colors");
+const OpenColor = require("open-color/open-color.js");
 
 export default {
+  presets: [OpenColor],
   content: [
     "./src/**/*.{html,js,ts,vue,less,css}",
     "./index.html",

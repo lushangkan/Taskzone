@@ -24,11 +24,11 @@ export function checkIsSupportEmoji(store: any) {
 }
 
 /**
- * 根据背景色获取文本颜色
+ * 根据背景色获取前景颜色
  * @param backgroundColorText 背景色
  * @return 文本颜色, black或white
  */
-export function getTextColor(backgroundColorText: string) {
+export function getForegroundColor(backgroundColorText: string) {
     const backgroundColor = new Color(backgroundColorText);
     const brightness = ((backgroundColor.srgb[0]*255*299) +
         (backgroundColor.srgb[1]*255*587) +
@@ -177,3 +177,4 @@ export function randomBoolean(p?: number | undefined): boolean {
 export function randomInt(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
