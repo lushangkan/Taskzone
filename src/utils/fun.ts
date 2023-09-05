@@ -132,7 +132,7 @@ export function randomColorFromOpenColor(colorCode?: Array<number>) {
     const entries = Object.entries(OpenColor).filter((name) => {
         return name[0] !== 'white' && name[0] !== 'black';
     });
-    return entries[getRandomElements(entries)][1][getRandomElements(colorCode)];
+    return entries[getRandomElements(entries)][1][colorCode[getRandomElements(colorCode)]];
 }
 
 /**

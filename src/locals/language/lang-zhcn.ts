@@ -65,5 +65,8 @@ export const langZhCn = {
             yellow: '黄色',
             orange: '橙色',
         },
+    },
+    taskCard: {
+        defTaskName: '任务',
     }
 }

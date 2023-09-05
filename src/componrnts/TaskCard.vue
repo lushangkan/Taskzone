@@ -1,8 +1,8 @@
 <template>
-  <div ref="taskCardRef" class="w-[83%] min-h-[62px] bg-lime-400 rounded-[22px] flex flex-row justify-start items-center px-[6%] gap-[15px]">
-    <input @change="onCompleteChange" ref="inputRef" type="checkbox" title="Complete" checked="checked" class="d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100"/>
+  <div ref="taskCardRef" class="w-[83%] min-h-[62px] rounded-[22px] flex flex-row justify-start items-center px-[6%] gap-[15px]" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
+    <input @change="onCompleteChange" ref="inputRef" type="checkbox" title="Complete" checked="checked" class="d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)"/>
     <div class="flex flex-row justify-start items-center h-full w-full">
-      <a></a>
+      <a class="text-[hsl(var(--bg))] font-medium">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</a>
     </div>
   </div>
 </template>
@@ -12,6 +12,7 @@ import {onMounted, reactive, Ref, ref, defineProps} from "vue";
 import {getForegroundColor, getWhiteBlackCssVar} from "@/utils/fun";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import anime from "animejs/lib/anime.es.js";
+import * as fun from "@/utils/fun";
 
 const props = defineProps({
   taskEntity: {
@@ -25,8 +26,6 @@ const taskCardRef: Ref<HTMLDivElement | null> = ref(null);
 
 function onCompleteChange() {
   if (inputRef.value?.checked) {
-    const dingAudio = new Audio(new URL('../assets/sounds/ding.aac', import.meta.url).href);
-    dingAudio.play();
     anime({
       targets: inputRef.value,
       keyframes: [
@@ -53,6 +52,8 @@ function onCompleteChange() {
          taskCardRef.value!.style.removeProperty('scale');
       }
     });
+    const dingAudio = new Audio(new URL('../assets/sounds/ding.aac', import.meta.url).href);
+    dingAudio.play();
   }
 }
 
@@ -60,8 +61,8 @@ onMounted(() => {
   const foregroundColor = getForegroundColor(window.getComputedStyle(taskCardRef.value!).backgroundColor);
   const whiteBlackCss = getWhiteBlackCssVar();
 
-  inputRef.value?.style.setProperty('--chkbg', `var(${foregroundColor === 'white' ? whiteBlackCss.black : whiteBlackCss.white})`);
-  inputRef.value?.style.setProperty('--chkfg', `var(${foregroundColor === 'white' ? whiteBlackCss.white : whiteBlackCss.black})`);
+  taskCardRef.value?.style.setProperty('--bg', `var(${foregroundColor === 'white' ? whiteBlackCss.black : whiteBlackCss.white})`);
+  taskCardRef.value?.style.setProperty('--fg', `var(${foregroundColor === 'white' ? whiteBlackCss.white : whiteBlackCss.black})`);
 })
 
 </script>
