@@ -1,3 +1,5 @@
+import {Priority} from "@/data/enum/Priority";
+
 export const langZhCn = {
     page: {
         welcome: {
@@ -68,5 +70,17 @@ export const langZhCn = {
     },
     taskCard: {
         defTaskName: '任务',
+        defDeadLine: '无截止时间',
+        priority: {
+            [Priority.LOW]: '低',
+            [Priority.MEDIUM]: '中',
+            [Priority.HIGH]: '高',
+            def: '无优先级'
+        }
+    },
+    date: {
+        today: '今天',
+        yesterday: '昨天',
+        tomorrow: '明天',
     }
 }

@@ -1,18 +1,39 @@
 <template>
-  <div ref="taskCardRef" class="w-[83%] min-h-[62px] rounded-[22px] flex flex-row justify-start items-center px-[6%] gap-[15px]" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
-    <input @change="onCompleteChange" ref="inputRef" type="checkbox" title="Complete" checked="checked" class="d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)"/>
-    <div class="flex flex-row justify-start items-center h-full w-full">
-      <a class="text-[hsl(var(--bg))] font-medium">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</a>
+  <div ref="taskCardRef" class="w-[83%] min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
+    <input ref="inputRef" type="checkbox" title="Complete" checked="checked" class="d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)" @change="onCompleteChange" />
+    <div class="h-full w-full flex flex-col justify-around items-center py-[8px]">
+      <div class="flex flex-row justify-start items-center w-full gap-[8px]">
+        <span class="text-[21px] text-center">{{ props.taskEntity !== undefined && props.taskEntity.icon !== null? props.taskEntity.icon : '🍪' }}</span>
+        <span class="text-[hsl(var(--bg))] text-[18px] truncate w-[80%] text-left">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</span>
+      </div>
+      <div class="flex flex-row justify-start items-center gap-[3px] w-full">
+        <bell-icon stroke-width="3px" class="h-[14px] text-[hsl(var(--bg))]"/>
+        <div class="h-[2px] rounded-full aspect-square bg-[hsl(var(--bg))]"/>
+        <div class="flex flex-row justify-start items-center gap-[0]">
+          <calendar-check-icon stroke-width="2px" class="h-[14px] text-[hsl(var(--bg))]"/>
+          <span class="text-[hsl(var(--bg))] text-[8px] truncate">{{ props.taskEntity !== undefined && props.taskEntity.deadLineDate !== null ? fun.getShortDate(props.taskEntity.deadLineDate) : $t('taskCard.defDeadLine') }}</span>
+        </div>
+        <div class="h-[2px] rounded-full aspect-square bg-[hsl(var(--bg))]"/>
+        <div class="flex flex-row justify-start items-center gap-[0]">
+          <badge-alert-icon stroke-width="2px" class="h-[14px] text-[hsl(var(--bg))]"/>
+          <div :class="`flex flex-row justify-center items-center ${props.taskEntity?.priority === Priority.MEDIUM || props.taskEntity?.priority === Priority.HIGH? `bg-[hsl(var(--bg))] aspect-square w-[18px] h-[18px] rounded-full` : ''}`">
+            <span :class="`text-[hsl(var(--bg))] text-[8px] truncate text-center`" :style="`${props.taskEntity?.priority !== Priority.LOW? `color: var(${priorityColor[props.taskEntity?.priority]}); font-weight: 600;` : ''}`">{{ props.taskEntity !== undefined && props.taskEntity.priority !== null ? $t(`taskCard.priority.${props.taskEntity.priority}`) : $t('taskCard.priority.def') }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 
-import {onMounted, reactive, Ref, ref, defineProps} from "vue";
+import {defineProps, onMounted, reactive, ref, Ref} from "vue";
+import * as fun from "@/utils/fun";
 import {getForegroundColor, getWhiteBlackCssVar} from "@/utils/fun";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import anime from "animejs/lib/anime.es.js";
-import * as fun from "@/utils/fun";
+import {BadgeAlertIcon, BellIcon, CalendarCheckIcon} from "lucide-vue-next";
+import "moment/dist/locale/zh-cn.js";
+import {Priority} from "@/data/enum/Priority";
 
 const props = defineProps({
   taskEntity: {
@@ -23,6 +44,12 @@ const props = defineProps({
 
 const inputRef: Ref<HTMLInputElement | null> = ref(null);
 const taskCardRef: Ref<HTMLDivElement | null> = ref(null);
+
+const priorityColor = reactive({
+  [Priority.LOW]: undefined,
+  [Priority.MEDIUM]: '--oc-yellow-6',
+  [Priority.HIGH]: '--oc-red-6',
+});
 
 function onCompleteChange() {
   if (inputRef.value?.checked) {

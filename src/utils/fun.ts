@@ -5,6 +5,9 @@ import Emojis from "@/assets/data/emojis.json"
 import OpenColor from "open-color";
 import {RepeatCustom} from "@/data/models/RepeatCustom";
 import {faker} from "@faker-js/faker";
+import moment from "moment";
+import {useI18n} from "vue-i18n";
+import "moment/dist/locale/zh-cn.js";
 
 /**
  * 检测设备是否支持emoji v15
@@ -178,3 +181,36 @@ export function randomInt(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+/**
+ * 获取日期最短表达形式
+ * @param date 日期
+ */
+export function getShortDate(date: Date) {
+    const i18n = useI18n();
+
+    moment.locale(i18n.locale.value);
+
+    if (date === undefined) return "";
+    if (moment(date).isSame(moment(), 'day')) {
+        return moment(date).fromNow();
+    } else if (moment(date).isSame(moment().add(1, 'day'), 'day')) {
+        return i18n.t('date.tomorrow') as string;
+    } else if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
+        return i18n.t('date.yesterday') as string;
+    } else if (moment(date).diff(moment(), 'day') <= 31 || moment(date).diff(moment(), 'month') <= 12) {
+        return moment(date).fromNow();
+    } else {
+        return moment(date).format('ll');
+    }
+}
+
+/**
+ * 获取两个颜色的对比度和可读性(APCA算法)
+ * @param backgroundColor 背景色
+ * @param foregroundColor 前景色
+ */
+export function getColorsContrast(backgroundColor: string, foregroundColor: string) {
+    const background = new Color(backgroundColor);
+    const foreground = new Color(foregroundColor);
+    return background.contrastAPCA(foreground);
+}

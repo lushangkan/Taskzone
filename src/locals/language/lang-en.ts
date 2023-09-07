@@ -1,3 +1,5 @@
+import {Priority} from "@/data/enum/Priority";
+
 export const langEn = {
     page: {
         welcome: {
@@ -62,6 +64,21 @@ export const langEn = {
             yellow: 'Yellow',
             orange: 'Orange',
         },
+    },
+    taskCard: {
+        defTaskName: 'Task',
+        defDeadLine: 'No deadline',
+        priority: {
+            [Priority.LOW]: 'Low',
+            [Priority.MEDIUM]: 'Medium',
+            [Priority.HIGH]: 'High',
+            def: 'No priority'
+        }
+    },
+    date: {
+        today: 'Today',
+        yesterday: 'Yesterday',
+        tomorrow: 'Tomorrow',
     }
 
 }

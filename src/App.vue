@@ -20,6 +20,8 @@ import {SettingEntity} from "@/data/database/entities/SettingEntity";
 import {TagEntity} from "@/data/database/entities/TagEntity";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
+import moment from "moment";
+import Color from "colorjs.io";
 
 const appStore = useAppStores();
 
@@ -42,6 +44,8 @@ onMounted(() => {
   console.log(TagEntity);
   console.log(TaskEntity);
   console.log(TaskGroupEntity);
+
+  console.log(moment)
 });
 
 onUnmounted(() => {

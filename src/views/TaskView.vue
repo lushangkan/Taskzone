@@ -14,7 +14,7 @@
         }" class="w-full h-full" @os-initialized="scrollInitialized"
       >
         <div id="main-scroll-content" class="w-full flex flex-col justify-start items-center pt-[115px] bg-base-100">
-          <task-card class="h-[62px]"/>
+          <task-card class="h-[62px]" :task-entity="DataUtils.getDefaultTask()"/>
         </div>
       </overlay-scrollbars-component>
     </ion-content>
@@ -28,6 +28,7 @@ import AddTaskBtn from "@/componrnts/AddTaskBtn.vue";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import {useAppStores} from "@/stores/app-stores";
 import TaskCard from "@/componrnts/TaskCard.vue";
+import * as DataUtils from "@/utils/data-utils";
 
 const appStore = useAppStores();
 
@@ -36,7 +37,6 @@ function scrollInitialized() {
     listener();
   }
 }
-
 
 </script>
 

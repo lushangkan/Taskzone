@@ -16,6 +16,11 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import moment from "moment";
 import {useI18n} from "vue-i18n";
+import "moment/dist/locale/zh-cn.js";
+
+const i18n = useI18n();
+
+moment.locale(i18n.locale.value);
 
 defineOptions({
   inheritAttrs: false

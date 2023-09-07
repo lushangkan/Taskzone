@@ -43,6 +43,9 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import '@/assets/styles/main.less';
 
+/* Open Color */
+import 'open-color/open-color.css';
+
 const app = createApp(App)
     .use(IonicVue, {
         mode: 'ios',

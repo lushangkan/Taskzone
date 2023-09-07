@@ -2,7 +2,7 @@
   <sticky-element :scrollElement="scrollEle" stuckClass="navbar-stuck" showClass="navbar-show" transitionClass="navbar-transition" id="sticky-navbar" @stuck="appStore.addTaskBtnShow=!$event">
     <div id="app-navbar" class="fixed flex flex-col justify-start items-center w-full py-[16px] z-10">
       <ion-header
-          class="d-navbar border-none flex flex-row justify-around items-center w-[348px] h-[63px] px-[13px] rounded-3xl shadow-[0_4px_4px_0_rgba(0,0,0,0.08)] bg-gradient-to-br from-[hsl(var(--p--100))] to-[hsl(var(--p-300))]">
+          class="d-navbar border-none flex flex-row justify-around items-center w-[348px] h-[63px] px-[13px] rounded-3xl navbar-shadow bg-gradient-to-br from-[hsl(var(--p--100))] to-[hsl(var(--p-300))]">
         <div class="navbar-start">
           <button type="button" title="Open menu" :class="`d-btn d-btn-ghost ${menuOpen?'d-btn-active':''}`"
                   @click="menuOpen=!menuOpen">
@@ -24,7 +24,7 @@
         </div>
       </ion-header>
       <Transition name="datepicker">
-        <navbar-datepicker v-if="datepickerOpen" @ondatechange="onDateChange"/>
+        <navbar-datepicker v-if="datepickerOpen" @on-date-change="onDateChange"/>
       </Transition>
     </div>
   </sticky-element>
@@ -45,6 +45,7 @@ import StickyElement from 'vue-sticky-element';
 import {useAppStores} from "@/stores/app-stores";
 import anime from 'animejs/lib/anime.es.js';
 import {useI18n} from "vue-i18n";
+import "moment/dist/locale/zh-cn.js";
 
 const i18n = useI18n();
 
@@ -61,6 +62,8 @@ const datepickerOpen = ref(false);
 const scrollEle = ref<HTMLElement | undefined | null>();
 
 const appStore = useAppStores();
+
+moment.locale(i18n.locale.value);
 
 // 当菜单打开状态改变
 watch(menuOpen, (newVal) => {
