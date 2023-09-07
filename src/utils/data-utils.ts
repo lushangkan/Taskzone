@@ -4,18 +4,20 @@ import {Priority} from "@/data/enum/Priority";
 import {faker} from '@faker-js/faker';
 import {RepeatMode} from "@/data/enum/RepeatMode";
 import {ReminderMode} from "@/data/enum/ReminderMode";
+import * as GenFakeData from "@/data/database/utils/gen-fake-data";
+import {TagEntity} from "@/data/database/entities/TagEntity";
 
 /**
  * 获取默认任务 (测试使用)
  */
-export function getDefaultTask() {
+export function getTestTask() {
     const task = new TaskEntity();
     task.id = crypto.randomUUID();
     task.name = "任务";
     task.description = "介绍";
-    task.color = '#ffd43b';
+    task.color = fun.randomColorFromOpenColor([4, 5, 6]);
     task.icon = "🪵";
-    task.tags = [];
+    task.tags = [getTestTag(), getTestTag(), getTestTag()];
     task.priority = Priority.MEDIUM;
     task.createDate = faker.date.past();
     task.deadLineDate = faker.date.future();
@@ -29,3 +31,16 @@ export function getDefaultTask() {
     return task;
 }
 
+export function getTestTag() {
+    const tag = new TagEntity();
+
+    tag.id = crypto.randomUUID();
+    tag.name = "标签";
+    tag.color = fun.randomColorFromOpenColor([4, 5, 6]);
+    tag.icon = '🍪'
+    tag.description = "介绍";
+    tag.tasks = [];
+    tag.taskGroups = [];
+
+    return tag;
+}

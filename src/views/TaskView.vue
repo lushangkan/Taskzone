@@ -14,7 +14,7 @@
         }" class="w-full h-full" @os-initialized="scrollInitialized"
       >
         <div id="main-scroll-content" class="w-full flex flex-col justify-start items-center pt-[115px] bg-base-100">
-          <task-card class="h-[62px]" :task-entity="DataUtils.getDefaultTask()"/>
+          <task-card class="h-[62px]" :task-entity="DataUtils.getTestTask()"/>
         </div>
       </overlay-scrollbars-component>
     </ion-content>

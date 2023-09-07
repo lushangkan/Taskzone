@@ -192,13 +192,13 @@ export function getShortDate(date: Date) {
 
     if (date === undefined) return "";
     if (moment(date).isSame(moment(), 'day')) {
-        return moment(date).fromNow();
+        return moment(date).fromNow().replaceAll(' ', '');
     } else if (moment(date).isSame(moment().add(1, 'day'), 'day')) {
         return i18n.t('date.tomorrow') as string;
     } else if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
         return i18n.t('date.yesterday') as string;
     } else if (moment(date).diff(moment(), 'day') <= 31 || moment(date).diff(moment(), 'month') <= 12) {
-        return moment(date).fromNow();
+        return moment(date).fromNow().replaceAll(' ', '');
     } else {
         return moment(date).format('ll');
     }

@@ -287,7 +287,7 @@ export async function getRandomTasks(count: number) : Promise<(TaskEntity | null
     return tasks;
 }
 
-export function convertToArray(map: Map<TaskEntity, any> | boolean) {
+export function convertToArray(map: Map<TaskEntity, any> | false) {
     if (map === false) {
         return [];
     } else {
