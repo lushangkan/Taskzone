@@ -5,6 +5,7 @@ import {DataSource, EntityManager} from "typeorm";
 import {checkAppTableStatus} from "@/data/database/utils/database-utils";
 
 import {AppTableStatus} from "@/data/interface/AppTableStatus";
+import {EventEnum} from "@/data/enum/EventEnum";
 
 
 export const useDatabaseStores = defineStore('databaseStore', () => {
@@ -12,6 +13,8 @@ export const useDatabaseStores = defineStore('databaseStore', () => {
     const sqliteConnection: Ref<SQLiteConnection | undefined> = ref();
     const dataSource: Ref<DataSource | undefined> = ref()
     const platform: Ref<string | undefined> = ref();
+
+    const entityListeners: Map<EventEnum, (event: any) => void> = new Map();
 
     const entityManager: Ref<EntityManager | undefined> = ref();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -36,5 +39,5 @@ export const useDatabaseStores = defineStore('databaseStore', () => {
         }
     }
 
-    return {sqliteConnection, platform, dataSource, entityManager, tableStatus, updateStatus, databaseNames};
+    return {sqliteConnection, platform, dataSource, entityManager, tableStatus, updateStatus, databaseNames, entityListeners};
 });

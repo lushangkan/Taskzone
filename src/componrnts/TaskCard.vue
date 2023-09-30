@@ -13,14 +13,14 @@
         </div>
       </div>
       <div class="flex flex-row justify-start items-center gap-[3px] w-full">
-        <bell-icon stroke-width="3px" class="h-[14px] text-[hsl(var(--fg))]"/>
-        <div class="h-[2px] rounded-full aspect-square bg-[hsl(var(--fg))]"/>
-        <div class="flex flex-row justify-start items-center gap-[0]">
+        <bell-icon v-if="hasReminder()" stroke-width="3px" class="h-[14px] text-[hsl(var(--fg))]"/>
+        <div v-if="hasReminder()" class="h-[2px] rounded-full aspect-square bg-[hsl(var(--fg))]"/>
+        <div v-if="hasDDL()" class="flex flex-row justify-start items-center gap-[0]">
           <calendar-check-icon stroke-width="2px" class="h-[14px] text-[hsl(var(--fg))]"/>
-          <span class="text-[hsl(var(--fg))] text-[8px] truncate">{{ props.taskEntity !== undefined && props.taskEntity.deadLineDate !== null ? fun.getShortDate(props.taskEntity.deadLineDate) : $t('taskCard.defDeadLine') }}</span>
+          <span class="text-[hsl(var(--fg))] text-[8px] truncate">{{fun.getShortDate(props.taskEntity.deadLineDate)}}</span>
         </div>
-        <div class="h-[2px] rounded-full aspect-square bg-[hsl(var(--fg))]"/>
-        <div class="flex flex-row justify-start items-center gap-[0]">
+        <div v-if="hasPriority()" class="h-[2px] rounded-full aspect-square bg-[hsl(var(--fg))]"/>
+        <div v-if="hasPriority()" class="flex flex-row justify-start items-center gap-[0]">
           <badge-alert-icon stroke-width="2px" class="h-[14px] text-[hsl(var(--fg))]"/>
           <div :class="`flex flex-row justify-center items-center ${props.taskEntity?.priority === Priority.MEDIUM || props.taskEntity?.priority === Priority.HIGH? `bg-[hsl(var(--bg))] aspect-square w-[18px] h-[18px] rounded-full` : ''}`">
             <span :class="`text-[hsl(var(--bg))] text-[8px] truncate text-center`" :style="`${props.taskEntity?.priority !== Priority.LOW? `color: var(${priorityColor[props.taskEntity?.priority]}); font-weight: 600;` : ''}`">{{ props.taskEntity !== undefined && props.taskEntity.priority !== null ? $t(`taskCard.priority.${props.taskEntity.priority}`) : $t('taskCard.priority.def') }}</span>
@@ -40,6 +40,7 @@ import anime from "animejs/lib/anime.es.js";
 import {BadgeAlertIcon, BellIcon, CalendarCheckIcon} from "lucide-vue-next";
 import "moment/dist/locale/zh-cn.js";
 import {Priority} from "@/data/enum/Priority";
+import {ReminderMode} from "@/data/enum/ReminderMode";
 
 const props = defineProps({
   taskEntity: {
@@ -60,6 +61,7 @@ const priorityColor = reactive({
 
 function onCompleteChange() {
   if (inputRef.value?.checked) {
+    fun.playSound('../assets/sounds/ding.aac');
     anime({
       targets: inputRef.value,
       keyframes: [
@@ -86,8 +88,6 @@ function onCompleteChange() {
          taskCardRef.value!.style.removeProperty('scale');
       }
     });
-    const dingAudio = new Audio(new URL('../assets/sounds/ding.aac', import.meta.url).href);
-    dingAudio.play();
   }
 }
 
@@ -104,6 +104,18 @@ function initColorVar() {
     tagsRef.value?.style.setProperty('--bg', `var(${tagForegroundColor === 'white' ? whiteBlackCss.black : whiteBlackCss.white})`);
     tagsRef.value?.style.setProperty('--fg', `var(${tagForegroundColor === 'white' ? whiteBlackCss.white : whiteBlackCss.black})`);
   }
+}
+
+function hasReminder() {
+  return props.taskEntity?.reminders !== ReminderMode.NONE && props.taskEntity?.reminders !== undefined && props.taskEntity?.reminders !== null;
+}
+
+function hasDDL() {
+  return props.taskEntity?.deadLineDate !== null && props.taskEntity?.deadLineDate !== undefined;
+}
+
+function hasPriority() {
+  return props.taskEntity?.priority !== null && props.taskEntity?.priority !== Priority.LOW
 }
 
 onMounted(() => {

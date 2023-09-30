@@ -214,3 +214,12 @@ export function getColorsContrast(backgroundColor: string, foregroundColor: stri
     const foreground = new Color(foregroundColor);
     return background.contrastAPCA(foreground);
 }
+
+/**
+ * 播放声音
+ * @param url 声音文件URL
+ */
+export function playSound(url: string) {
+    const audio = new Audio(new URL(url, import.meta.url).href);
+    audio.play();
+}

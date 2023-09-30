@@ -18,6 +18,9 @@ export class TaskEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
+    @Column('datetime', { nullable: true })
+    dayTaskDay: Date | null;
+
     @Column('text')
     name: string;
 
