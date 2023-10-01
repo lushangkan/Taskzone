@@ -6,6 +6,9 @@ import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {TagEntity} from "@/data/database/entities/TagEntity";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import {AppTableStatus} from "@/data/interface/AppTableStatus";
+import moment from "moment";
+import "moment/dist/locale/zh-cn.js";
+import {RepeatMode} from "@/data/enum/RepeatMode";
 
 /**
  * 检查表是否有内容
@@ -176,4 +179,27 @@ export function getSettingEntityRepository() {
     const entityManager = dbStore.entityManager;
 
     return entityManager?.getRepository(SettingEntity);
+}
+
+/**
+ * 生成今日任务组
+ */
+export function genTodayTaskGroup() {
+    genDayTaskGroup(new Date());
+}
+
+/**
+ * 生成指定日期的任务组
+ */
+export function genDayTaskGroup(date: Date) {
+    // 获取日期
+    const dateMom = moment(date);
+
+    const repository = getTaskGroupEntityRepository();
+
+    const taskGroup = new TaskGroupEntity();
+    taskGroup.dayTaskDate = dateMom.startOf('day').toDate();
+    taskGroup.repeatMode = RepeatMode.ONLY_ONE;
+
+    repository?.save(taskGroup)
 }

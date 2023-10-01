@@ -21,20 +21,20 @@ export class TaskGroupEntity {
     @Column('datetime', { nullable: true })
     dayTaskDate: Date | null;
 
-    @Column('text')
-    name: string;
+    @Column('text', { nullable: true })
+    name: string | null;
 
-    @Column('text')
-    description: string;
+    @Column('text', { nullable: true })
+    description: string | null;
 
     @OneToMany(() => TaskEntity, task => task.taskGroup, { nullable: true, cascade: true })
     tasks: (TaskEntity | null)[];
 
-    @Column('text')
-    color: string;
+    @Column('text', { nullable: true })
+    color: string | null;
 
-    @Column('text')
-    icon: string;
+    @Column('text', { nullable: true })
+    icon: string | null;
 
     @ManyToMany(() => TagEntity, tag => tag.taskGroups, { nullable: true })
     @JoinTable()
@@ -44,7 +44,7 @@ export class TaskGroupEntity {
     createDate: Date;
 
     @Column('datetime', { nullable: true })
-    deadLineDate: Date;
+    deadLineDate: Date | null;
 
     @Column('text')
     repeatMode: RepeatMode;

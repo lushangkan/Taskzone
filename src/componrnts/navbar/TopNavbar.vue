@@ -39,12 +39,12 @@ import {onMounted, onUnmounted, type Ref, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import SidePanel from "@/componrnts/navbar/SidePanel.vue";
 import NavbarDatepicker from "@/componrnts/navbar/NavbarDatepicker.vue";
-import {Moment} from "moment";
-import moment from "moment";
 import StickyElement from 'vue-sticky-element';
 import {useAppStores} from "@/stores/app-stores";
 import anime from 'animejs/lib/anime.es.js';
 import {useI18n} from "vue-i18n";
+import moment from "moment";
+import {Moment} from "moment";
 import "moment/dist/locale/zh-cn.js";
 
 const i18n = useI18n();

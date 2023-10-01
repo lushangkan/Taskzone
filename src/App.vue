@@ -22,6 +22,7 @@ import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import moment from "moment";
 import Color from "colorjs.io";
+import {genTodayTaskGroup} from "@/data/database/utils/database-utils";
 
 const appStore = useAppStores();
 
@@ -33,6 +34,9 @@ onMounted(() => {
 
   // 检测是否支持Emoji v15
   checkIsSupportEmoji(appStore);
+
+  // 检测是否已经创建今日任务组
+  genTodayTaskGroup();
 
   console.log(dbStore);
 
