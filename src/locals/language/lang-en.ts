@@ -75,6 +75,9 @@ export const langEn = {
             def: 'No priority'
         }
     },
+    taskView: {
+        completed: 'Completed'
+    },
     date: {
         today: 'Today',
         yesterday: 'Yesterday',

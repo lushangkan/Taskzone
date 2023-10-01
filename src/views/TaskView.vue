@@ -13,8 +13,23 @@
           }
         }" class="w-full h-full" @os-initialized="scrollInitialized"
       >
-        <div id="main-scroll-content" class="w-full flex flex-col justify-start items-center pt-[115px] bg-base-100 gap-[15px]">
-          <task-card v-for="task in tasks" v-bind:key="task.id" class="h-[62px]" :task-entity="task"/>
+        <div id="main-scroll-content" class="w-full flex flex-col justify-center items-center">
+          <div class="w-[82%] pb-[50px] flex flex-col justify-start items-center">
+            <TransitionGroup name="task-card" tag="div" :class="`${undoneTasks.length !== 0? 'pt-[115px]':''} w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`">
+              <task-card v-for="task in undoneTasks" v-bind:key="task.id"
+                         class="h-[62px] w-[95%]"
+                         :task-entity="task" @on-complete-change="onCompletedChange"/>
+            </TransitionGroup>
+            <div v-if="undoneTasks.length !== 0" class="w-[90%] flex flex-row justify-around items-center gap-[10px] my-[25px]">
+              <span class="text-neutral font-light text-[13px] whitespace-nowrap">{{ $t('taskView.completed') }}</span>
+              <div class="w-full border-t border-base-300/80"/>
+            </div>
+            <TransitionGroup name="task-card" tag="div" :class="`${undoneTasks.length === 0 && doneTasks.length !== 0? 'pt-[115px]':''} w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`">
+              <task-card v-for="task in doneTasks" v-bind:key="task.id"
+                         class="h-[62px] w-[95%] greyscale-90"
+                         :task-entity="task" @on-complete-change="onCompletedChange"/>
+            </TransitionGroup>
+          </div>
         </div>
       </overlay-scrollbars-component>
     </ion-content>
@@ -36,17 +51,19 @@ import * as DbUtils from "@/data/database/utils/database-utils";
 
 const appStore = useAppStores();
 
-const tasks: Ref<TaskEntity[]> = ref([]);
+const undoneTasks: Ref<TaskEntity[]> = ref([]);
+const doneTasks: Ref<TaskEntity[]> = ref([]);
 
 // 监听数据表变化
 const dbStore = useDatabaseStores();
 
-function updateTasks(event?: any) {
+const updateTasks = (event?: any) => {
   DbUtils.getTaskEntityRepository()?.find({ relations: {
       tags: true,
       taskGroup: true,
     }}).then((result) => {
-    tasks.value = result;
+    undoneTasks.value = result.filter((task) => !task.isDone);
+    doneTasks.value = result.filter((task) => task.isDone);
   });
 }
 
@@ -56,6 +73,10 @@ function scrollInitialized() {
   for (const listener of appStore.mainScrollListeners.initialized) {
     listener();
   }
+}
+
+function onCompletedChange(isDone: boolean) {
+  updateTasks();
 }
 
 onMounted(() => {

@@ -10,9 +10,6 @@ export const langZhCn = {
             today: '今天',
             titleDate: '{date}'
         },
-        "colorpicker-test": {
-            name: '颜色选择器测试',
-        },
         pageNotFound: '页面不存在',
     },
     menu: {
@@ -77,6 +74,9 @@ export const langZhCn = {
             [Priority.HIGH]: '高',
             def: '无优先级'
         }
+    },
+    taskView: {
+        completed: '已完成'
     },
     date: {
         today: '今天',

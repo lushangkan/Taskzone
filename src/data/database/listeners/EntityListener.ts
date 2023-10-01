@@ -15,7 +15,7 @@ export class EntityListener implements EntitySubscriberInterface {
     private dbStore = useDatabaseStores();
 
     afterLoad(entity: any, event?: LoadEvent<any>): Promise<any> | void {
-        Object.entries(this.dbStore.entityListeners).filter(([key,]) => key === EventEnum.AFTER_LOAD || key === EventEnum.ALL).forEach(([, fun]) => {
+        Object.entries(this.dbStore.entityListeners).filter(([key,]) => key == EventEnum.AFTER_LOAD || key == EventEnum.ALL).forEach(([, fun]) => {
             fun(event);
         });
     }
@@ -29,8 +29,10 @@ export class EntityListener implements EntitySubscriberInterface {
         const entityType = event.entity.constructor;
         this.dbStore.updateStatus(entityType);
 
-        Object.entries(this.dbStore.entityListeners).filter(([key,]) => key === EventEnum.AFTER_INSERT || key === EventEnum.ALL).forEach(([, fun]) => {
-            fun(event);
+        this.dbStore.entityListeners.forEach((value, key) => {
+            if (key === EventEnum.AFTER_INSERT || key === EventEnum.ALL) {
+                value(event);
+            }
         });
     }
 
@@ -43,8 +45,10 @@ export class EntityListener implements EntitySubscriberInterface {
         const entityType = event.entity.constructor;
         this.dbStore.updateStatus(entityType);
 
-        Object.entries(this.dbStore.entityListeners).filter(([key,]) => key === EventEnum.AFTER_REMOVE || key === EventEnum.ALL).forEach(([, fun]) => {
-            fun(event);
+        this.dbStore.entityListeners.forEach((value, key) => {
+            if (key === EventEnum.AFTER_REMOVE || key === EventEnum.ALL) {
+                value(event);
+            }
         });
     }
 
@@ -57,8 +61,10 @@ export class EntityListener implements EntitySubscriberInterface {
         const entityType = event.entity.constructor;
         this.dbStore.updateStatus(entityType);
 
-        Object.entries(this.dbStore.entityListeners).filter(([key,]) => key === EventEnum.AFTER_SOFT_REMOVE || key === EventEnum.ALL).forEach(([, fun]) => {
-            fun(event);
+        this.dbStore.entityListeners.forEach((value, key) => {
+            if (key === EventEnum.AFTER_SOFT_REMOVE || key === EventEnum.ALL) {
+                value(event);
+            }
         });
     }
 
@@ -71,14 +77,18 @@ export class EntityListener implements EntitySubscriberInterface {
         const entityType = event.entity.constructor;
         this.dbStore.updateStatus(entityType);
 
-        Object.entries(this.dbStore.entityListeners).filter(([key,]) => key === EventEnum.AFTER_RECOVER || key === EventEnum.ALL).forEach(([, fun]) => {
-            fun(event);
+        this.dbStore.entityListeners.forEach((value, key) => {
+            if (key === EventEnum.AFTER_RECOVER || key === EventEnum.ALL) {
+                value(event);
+            }
         });
     }
 
     afterUpdate(event: UpdateEvent<any>): Promise<any> | void {
-        Object.entries(this.dbStore.entityListeners).filter(([key,]) => key === EventEnum.AFTER_UPDATE || key === EventEnum.ALL).forEach(([, fun]) => {
-            fun(event);
+        this.dbStore.entityListeners.forEach((value, key) => {
+            if (key === EventEnum.AFTER_UPDATE || key === EventEnum.ALL) {
+                value(event);
+            }
         });
     }
 

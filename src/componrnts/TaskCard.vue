@@ -1,6 +1,6 @@
 <template>
-  <div ref="taskCardRef" class="w-[83%] min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
-    <input ref="inputRef" type="checkbox" title="Complete" checked="checked" class="z-10 d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)" @change="onCompleteChange" />
+  <div ref="taskCardRef" class="w-full min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
+    <input ref="inputRef" type="checkbox" title="Complete" class="z-10 d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)" @change="onCompleteChange" />
     <div class="h-full w-full flex flex-col justify-around items-center py-[8px]">
       <div class="flex flex-row justify-around items-center w-full gap-[8px]">
         <span class="text-[21px] text-center">{{ props.taskEntity !== undefined && props.taskEntity.icon !== null? props.taskEntity.icon : '🍪' }}</span>
@@ -34,6 +34,7 @@
 
 import {defineProps, onMounted, reactive, ref, Ref} from "vue";
 import * as fun from "@/utils/fun";
+import * as DBUtils from "@/data/database/utils/database-utils";
 import {getForegroundColor, getWhiteBlackCssVar} from "@/utils/fun";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import anime from "animejs/lib/anime.es.js";
@@ -41,13 +42,18 @@ import {BadgeAlertIcon, BellIcon, CalendarCheckIcon} from "lucide-vue-next";
 import "moment/dist/locale/zh-cn.js";
 import {Priority} from "@/data/enum/Priority";
 import {ReminderMode} from "@/data/enum/ReminderMode";
+import {QueryDeepPartialEntity} from "typeorm/query-builder/QueryPartialEntity";
 
 const props = defineProps({
   taskEntity: {
     type: TaskEntity,
     default: undefined,
   }
-})
+});
+
+const emits = defineEmits<{
+  (e: 'on-complete-change', isDone: boolean): void
+}>();
 
 const inputRef: Ref<HTMLInputElement | null> = ref(null);
 const taskCardRef: Ref<HTMLDivElement | null> = ref(null);
@@ -59,35 +65,53 @@ const priorityColor = reactive({
   [Priority.HIGH]: '--oc-red-6',
 });
 
-function onCompleteChange() {
+async function onCompleteChange() {
   if (inputRef.value?.checked) {
     fun.playSound('../assets/sounds/ding.aac');
-    anime({
-      targets: inputRef.value,
-      keyframes: [
-        {'outline-width': '5vw', 'outline-offset': '0vw'},
-        {'outline-width': '100vw', 'outline-offset': '100vw'}
-      ],
-      delay: 230,
-      duration: 500,
-      easing: 'easeInCubic',
-      complete: () => {
-        inputRef.value!.style.removeProperty('outline-width');
-        inputRef.value!.style.removeProperty('outline-offset');
-      }
-    });
-    anime({
-      targets: taskCardRef.value,
-      keyframes: [
-        {scale: 0.95},
-        {scale: 1},
-      ],
-      duration: 900,
-      easing: 'spring(1, 100, 10, 15)',
-      complete: () => {
-         taskCardRef.value!.style.removeProperty('scale');
-      }
-    });
+    await ( async () => {
+      anime({
+        targets: inputRef.value,
+        keyframes: [
+          {'outline-width': '5vw', 'outline-offset': '0vw'},
+          {'outline-width': '100vw', 'outline-offset': '100vw'}
+        ],
+        delay: 230,
+        duration: 500,
+        easing: 'easeInCubic',
+        complete: () => {
+          if (inputRef.value !== null){
+            inputRef.value!.style.removeProperty('outline-width');
+            inputRef.value!.style.removeProperty('outline-offset');
+          }
+        }
+      });
+      await anime({
+        targets: taskCardRef.value,
+        keyframes: [
+          {scale: 0.95},
+          {scale: 1},
+        ],
+        duration: 900,
+        easing: 'spring(1, 100, 10, 15)',
+        complete: async () => {
+          if (taskCardRef.value !== null) {
+            taskCardRef.value!.style.removeProperty('scale');
+          }
+          if (props.taskEntity !== undefined) {
+            props.taskEntity!.isDone = !props.taskEntity!.isDone;
+            await updateTaskDone();
+            emits.call(null, 'on-complete-change', true)
+          }
+
+        }
+      });
+    })();
+  } else {
+    if (props.taskEntity !== undefined) {
+      props.taskEntity!.isDone = !props.taskEntity!.isDone;
+      await updateTaskDone();
+      emits.call(null, 'on-complete-change', false)
+    }
   }
 }
 
@@ -118,8 +142,17 @@ function hasPriority() {
   return props.taskEntity?.priority !== null && props.taskEntity?.priority !== Priority.LOW
 }
 
+async function updateTaskDone() {
+  if (props.taskEntity?.id === undefined || null) {
+    return;
+  }
+
+  await DBUtils.getTaskEntityRepository()?.update((<string>props.taskEntity?.id), {isDone: props.taskEntity.isDone});
+}
+
 onMounted(() => {
   initColorVar();
+  inputRef.value!.checked = props.taskEntity?.isDone === true;
 })
 
 </script>
