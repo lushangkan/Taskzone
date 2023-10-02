@@ -15,7 +15,8 @@
       >
         <div id="main-scroll-content" class="w-full flex flex-col justify-center items-center">
           <div class="w-[82%] pb-[50px] flex flex-col justify-start items-center">
-            <TransitionGroup name="task-card" tag="div" :class="`${undoneTasks.length !== 0? 'pt-[115px]':''} w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`">
+            <TransitionGroup name="task-card" tag="div"
+                             :class="`${undoneTasks.length !== 0? 'pt-[115px]':''} w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`">
               <task-card v-for="task in undoneTasks" v-bind:key="task.id"
                          class="h-[62px] w-[95%]"
                          :task-entity="task" @on-complete-change="onCompletedChange"/>
@@ -24,7 +25,8 @@
               <span class="text-neutral font-light text-[13px] whitespace-nowrap">{{ $t('taskView.completed') }}</span>
               <div class="w-full border-t border-base-300/80"/>
             </div>
-            <TransitionGroup name="task-card" tag="div" :class="`${undoneTasks.length === 0 && doneTasks.length !== 0? 'pt-[115px]':''} w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`">
+            <TransitionGroup name="task-card" tag="div"
+                             :class="`${undoneTasks.length === 0 && doneTasks.length !== 0? 'pt-[115px]':''} w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`">
               <task-card v-for="task in doneTasks" v-bind:key="task.id"
                          class="h-[62px] w-[95%] greyscale-90"
                          :task-entity="task" @on-complete-change="onCompletedChange"/>
