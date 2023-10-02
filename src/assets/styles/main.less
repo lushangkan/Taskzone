@@ -464,4 +464,26 @@
   filter: grayscale(90%);
 }
 
+.btn-transition:not(:active) {
+  animation: button-pop 0.25s cubic-bezier(0.69,-0.38, 0.65, 0.8);
+
+  @keyframes button-pop {
+    0% {
+      transform: scale(0.95);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+
+.btn-transition:active:hover {
+  animation: none;
+}
+
+.btn-transition:active:focus {
+  animation: none;
+}
+
 

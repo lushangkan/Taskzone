@@ -153,7 +153,6 @@ onMounted(() => {
       console.warn('Could not find scroll element');
     }
   })
-
 })
 
 </script>
