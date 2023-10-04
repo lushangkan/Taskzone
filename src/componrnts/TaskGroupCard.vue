@@ -2,7 +2,7 @@
  <div ref="cardRef" v-if="taskGroupEntity?.dayTaskDate === null"
       class="btn-transition w-full h-[48px] rounded-[16px] flex justify-start items-center px-[12px] gap-[8px]" :style="{ backgroundColor: taskGroupEntity?.color }">
    <span v-if="taskGroupEntity?.icon !== null" class="text-[22px]">{{ taskGroupEntity.icon }}</span>
-   <span class="truncate font-medium" style="color: hsl(var(--fg));">{{ taskGroupEntity.name }}</span>
+   <span class="truncate text-clip font-medium" style="color: hsl(var(--fg));">{{ taskGroupEntity.name }}</span>
  </div>
 </template>
 

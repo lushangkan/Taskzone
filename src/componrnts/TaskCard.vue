@@ -6,12 +6,12 @@
         <div class="flex flex-row justify-between items-center w-full">
           <div class="flex flex-row justify-start items-center gap-[4px]">
             <span class="text-[21px] text-center">{{ props.taskEntity !== undefined && props.taskEntity.icon !== null? props.taskEntity.icon : '🍪' }}</span>
-            <span class="text-[hsl(var(--fg))] text-[18px] font-[500] truncate w-[80%] text-left">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</span>
+            <span class="text-[hsl(var(--fg))] text-[18px] font-[500] truncate w-full text-left">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</span>
           </div>
-          <div ref="tagsRef" v-if="props.taskEntity?.tags !== undefined && props.taskEntity?.tags.length !== 0" class="flex flex-row justify-end items-center h-[80%]">
-            <div v-bind:key="props.taskEntity?.tags[0]?.id" :class="`flex flex-row justify-start items-center px-[8px] h-full max-w-[80px] gap-[6px] rounded-full`" :style="{ 'background-color': props.taskEntity?.tags[0]?.color === undefined? 'hsl(var(--bg))' : props.taskEntity?.tags[0]?.color }">
+          <div ref="tagsRef" v-if="props.taskEntity?.tags !== undefined && props.taskEntity?.tags.length !== 0" class="flex flex-row justify-end items-center h-[110%]">
+            <div :class="`flex flex-row justify-start items-center px-[8px] h-full max-w-[80px] gap-[1px] rounded-full`" :style="{ 'background-color': props.taskEntity?.tags[0]?.color === undefined? 'hsl(var(--bg))' : props.taskEntity?.tags[0]?.color }">
               <span v-if="props.taskEntity?.tags[0]?.icon !== undefined" class="text-[16px]">{{ props.taskEntity?.tags[0]?.icon }}</span>
-              <span class="truncate text-[hsl(var(--fg))] text-[14px] font-[400]">{{ props.taskEntity?.tags[0]?.name }}</span>
+              <span class="truncate text-[hsl(var(--fg))] text-[14px] font-light text-clip">{{ props.taskEntity?.tags[0]?.name }}</span>
             </div>
           </div>
         </div>
@@ -25,9 +25,7 @@
           <div v-if="hasPriority()" class="h-[2px] rounded-full aspect-square bg-[hsl(var(--fg))]"/>
           <div v-if="hasPriority()" class="flex flex-row justify-start items-center gap-[0]">
             <badge-alert-icon stroke-width="2px" class="h-[14px] text-[hsl(var(--fg))]"/>
-            <div :class="`flex flex-row justify-center items-center ${props.taskEntity?.priority === Priority.MEDIUM || props.taskEntity?.priority === Priority.HIGH? `bg-[hsl(var(--bg))] aspect-square w-[18px] h-[18px] rounded-full` : ''}`">
-              <span :class="`text-[hsl(var(--bg))] text-[8px] truncate text-center`" :style="`${props.taskEntity?.priority !== Priority.LOW? `color: var(${priorityColor[props.taskEntity?.priority]}); font-weight: 600;` : ''}`">{{ props.taskEntity !== undefined && props.taskEntity.priority !== null ? $t(`taskCard.priority.${props.taskEntity.priority}`) : $t('taskCard.priority.def') }}</span>
-            </div>
+            <div :class="`flex flex-row justify-center items-center ${props.taskEntity?.priority === Priority.MEDIUM || props.taskEntity?.priority === Priority.HIGH? `aspect-square w-[18px] h-[18px] rounded-full border border-[4px] border-[hsl(var(--bg))]` : ''}`" :style="{ backgroundColor: `var(${priorityColor[props.taskEntity?.priority]})` }"/>
           </div>
         </div>
       </div>
