@@ -3,9 +3,11 @@
     <div v-bind="$attrs" ref="taskCardRef" class="relative btn-transition leading-none flex-nowrap normal-case	w-full min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
       <input ref="inputRef" type="checkbox" title="Complete" class="z-10 d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)" @change="onCompleteChange" />
       <div class="h-full w-full flex flex-col justify-around items-center py-[8px]">
-        <div class="flex flex-row justify-around items-center w-full gap-[8px]">
-          <span class="text-[21px] text-center">{{ props.taskEntity !== undefined && props.taskEntity.icon !== null? props.taskEntity.icon : '🍪' }}</span>
-          <span class="text-[hsl(var(--fg))] text-[18px] font-[500] truncate w-[80%] text-left">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</span>
+        <div class="flex flex-row justify-between items-center w-full">
+          <div class="flex flex-row justify-start items-center gap-[4px]">
+            <span class="text-[21px] text-center">{{ props.taskEntity !== undefined && props.taskEntity.icon !== null? props.taskEntity.icon : '🍪' }}</span>
+            <span class="text-[hsl(var(--fg))] text-[18px] font-[500] truncate w-[80%] text-left">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</span>
+          </div>
           <div ref="tagsRef" v-if="props.taskEntity?.tags !== undefined && props.taskEntity?.tags.length !== 0" class="flex flex-row justify-end items-center h-[80%]">
             <div v-bind:key="props.taskEntity?.tags[0]?.id" :class="`flex flex-row justify-start items-center px-[8px] h-full max-w-[80px] gap-[6px] rounded-full`" :style="{ 'background-color': props.taskEntity?.tags[0]?.color === undefined? 'hsl(var(--bg))' : props.taskEntity?.tags[0]?.color }">
               <span v-if="props.taskEntity?.tags[0]?.icon !== undefined" class="text-[16px]">{{ props.taskEntity?.tags[0]?.icon }}</span>
