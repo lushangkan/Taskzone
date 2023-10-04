@@ -24,6 +24,7 @@
                        }"
                        animation="200" handle=".drag-handle"
                        @start="isDragging = true" @end="isDragging = false"
+                       delay="100"
             >
               <template #item="{element}">
                 <div class="list-group-item w-full">
@@ -45,6 +46,7 @@
                        }"
                        animation="200" handle=".drag-handle"
                        @start="isDragging = true" @end="isDragging = false"
+                       delay="100"
             >
               <template #item="{element}">
                 <div class="list-group-item w-full">

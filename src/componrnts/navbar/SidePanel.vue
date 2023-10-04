@@ -42,9 +42,17 @@
           <p class="text-center text-[hsl(var(--n-700))] text-xs font-light">{{ $t('menu.taskList') }}</p>
           <div class="w-[119px] h-[0px] border-t border-[hsl(var(--n-1000)) / 0.9]"/>
         </div>
-        <div class="w-full flex flex-col justify-start items-center gap-[15px]">
-          <task-group-card v-for="group of taskGroups" v-bind:key="group.id" :task-group-entity="group"/>
-        </div>
+        <draggable v-model="taskGroups" item-key="id"
+                   animation="200" tag="div"
+                   :component-data="{ class: 'w-full flex flex-col justify-start items-center gap-[15px]' }"
+                   delay="100"
+        >
+          <template #item="{element}">
+            <div class="list-group-item w-full">
+              <task-group-card :task-group-entity="element"/>
+            </div>
+          </template>
+        </draggable>
       </div>
     </overlay-scrollbars-component>
   </ion-menu>
@@ -60,6 +68,7 @@ import {onMounted, Ref, ref} from "vue";
 import {useDatabaseStores} from "@/stores/database-stores";
 import {EventEnum} from "@/data/enum/EventEnum";
 import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
+import draggable from "zhyswan-vuedraggable";
 
 
 const taskGroups: Ref<TaskGroupEntity[]> = ref([]);
@@ -71,7 +80,7 @@ const updateTaskGroups = () => {
     tasks: true,
     tags: true
   }}).then((result) => {
-    taskGroups.value = result;
+    taskGroups.value = result.filter(groups => groups.dayTaskDate === null);
   });
 };
 

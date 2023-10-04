@@ -18,6 +18,8 @@ export class TaskGroupEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
+    // TODO: Record the user's ordering of tasks.
+
     @Column('datetime', { nullable: true })
     dayTaskDate: Date | null;
 
