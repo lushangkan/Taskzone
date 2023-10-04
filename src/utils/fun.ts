@@ -1,5 +1,5 @@
 import {isEmojiSupported} from "is-emoji-supported";
-import EmojiCss from '@/assets/styles/fonts/emoji.less'
+import EmojiCss from '@/assets/styles/fonts/emoji.less?inline'
 import Color from "colorjs.io";
 import Emojis from "@/assets/data/emojis.json"
 import OpenColor from "open-color";

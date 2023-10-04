@@ -88,7 +88,7 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import * as fun from "@/utils/fun";
 import {useI18n} from "vue-i18n";
 import iro from '@jaames/iro';
-import {IroColorPicker} from "@jaames/iro/dist/ColorPicker";
+import {IroColorPicker} from "@jaames/iro/dist/ColorPicker.d.ts";
 
 const emit = defineEmits<{
   'selectColor': [colorHex: string]
@@ -213,7 +213,7 @@ function updateTextColor() {
     btns.value.forEach((e) =>{
       const colorText = e!.getElementsByTagName('a')[0];
       const backgroundColor = e!.style.backgroundColor;
-      const textColor = fun.getTextColor(backgroundColor);
+      const textColor = fun.getForegroundColor(backgroundColor);
       const blackWhiteVar = fun.getWhiteBlackCssVar();
       if (textColor === 'black') {
         colorText.style.setProperty('color', `hsl(var(${blackWhiteVar.black}))`);

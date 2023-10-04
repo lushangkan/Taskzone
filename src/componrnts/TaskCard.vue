@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <div v-bind="$attrs" ref="taskCardRef" class="btn-transition leading-none flex-nowrap normal-case	w-full min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
+    <div v-bind="$attrs" ref="taskCardRef" class="relative btn-transition leading-none flex-nowrap normal-case	w-full min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
       <input ref="inputRef" type="checkbox" title="Complete" class="z-10 d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)" @change="onCompleteChange" />
       <div class="h-full w-full flex flex-col justify-around items-center py-[8px]">
         <div class="flex flex-row justify-around items-center w-full gap-[8px]">
@@ -29,6 +29,7 @@
           </div>
         </div>
       </div>
+      <div class="drag-handle absolute right-0 top-0 h-full w-[30%]"/>
     </div>
   </div>
 </template>
@@ -73,6 +74,9 @@ const priorityColor = reactive({
 async function onCompleteChange() {
   if (inputRef.value?.checked) {
     fun.playSound('../assets/sounds/ding.aac');
+
+    taskCardRef.value?.classList.remove('btn-transition');
+
     anime({
       targets: inputRef.value,
       keyframes: [
@@ -89,13 +93,13 @@ async function onCompleteChange() {
         }
       }
     });
-    await anime({
+    anime({
       targets: taskCardRef.value,
       keyframes: [
         {scale: 0.95},
         {scale: 1},
       ],
-      duration: 900,
+      duration: 800,
       easing: 'spring(1, 100, 10, 15)',
       complete: async () => {
         if (taskCardRef.value !== null) {
@@ -106,8 +110,10 @@ async function onCompleteChange() {
           await updateTaskDone();
           emits.call(null, 'on-complete-change', true)
         }
+
+        taskCardRef.value?.classList.add('btn-transition');
       }
-  });
+    });
   } else {
     if (props.taskEntity !== undefined) {
       props.taskEntity!.isDone = !props.taskEntity!.isDone;
