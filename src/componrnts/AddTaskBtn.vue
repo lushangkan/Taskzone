@@ -24,8 +24,9 @@
 
 <script setup lang="ts">
 import {PlusIcon, ListChecksIcon, CheckCircleIcon} from 'lucide-vue-next'
-import {onMounted, reactive, Ref, ref} from "vue";
+import {onMounted, onUnmounted, reactive, Ref, ref} from "vue";
 import {useAppStores} from "@/stores/app-stores";
+import EventType from "@/event/EventType";
 
 const scrollEle = ref<HTMLElement | undefined>();
 
@@ -35,39 +36,45 @@ const addTaskBtnShow = ref(true);
 
 const appStore = useAppStores();
 
-onMounted(() => {
-  // 添加监听器
-  appStore.mainScrollListeners.initialized.push(() => {
-    // 获取滚动元素
-    const scrollContent = document.getElementById('main-scroll-content');
-    if (scrollContent !== null) {
+const onScrollInitialized = () => {
+  // 获取滚动元素
+  const scrollContent = document.getElementById('main-scroll-content');
+  if (scrollContent !== null) {
 
-      const scrollEle = scrollContent.parentElement;
+    const scrollEle = scrollContent.parentElement;
 
-      let lastScrollTop = 0;
+    let lastScrollTop = 0;
 
-      if ("addEventListener" in scrollEle) {
-        scrollEle.addEventListener('scroll', () => {
-          const scrollTop = scrollEle.scrollTop;
-          if (scrollTop > lastScrollTop && scrollTop - lastScrollTop > 20) {
-            addTaskBtnShow.value = false;
-          } else if (scrollTop < lastScrollTop && lastScrollTop - scrollTop > 20) {
-            addTaskBtnShow.value = true;
-          }
-          lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        });
+    if ("addEventListener" in scrollEle) {
+      scrollEle.addEventListener('scroll', () => {
+        const scrollTop = scrollEle.scrollTop;
+        if (scrollTop > lastScrollTop && scrollTop - lastScrollTop > 20) {
+          addTaskBtnShow.value = false;
+        } else if (scrollTop < lastScrollTop && lastScrollTop - scrollTop > 20) {
+          addTaskBtnShow.value = true;
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+      });
 
-        // 监听content Click事件
-        scrollEle.addEventListener('click', () => {
-          optionsBtnShow.value = false;
-        });
-      } else {
-        console.warn('Could not find scroll element');
-      }
+      // 监听content Click事件
+      scrollEle.addEventListener('click', () => {
+        optionsBtnShow.value = false;
+      });
     } else {
       console.warn('Could not find scroll element');
     }
-  })
+  } else {
+    console.warn('Could not find scroll element');
+  }
+};
+
+onMounted(() => {
+  // 添加监听器
+  appStore.eventBus.on(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
+});
+
+onUnmounted(() => {
+  appStore.eventBus.off(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
 });
 
 </script>

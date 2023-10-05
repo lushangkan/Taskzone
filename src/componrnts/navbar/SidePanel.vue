@@ -65,30 +65,31 @@ import TaskGroupCard from "@/componrnts/TaskGroupCard.vue";
 import * as DBUtils from "@/data/database/utils/database-utils";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import {onMounted, Ref, ref} from "vue";
-import {useDatabaseStores} from "@/stores/database-stores";
-import {EventEnum} from "@/data/enum/EventEnum";
 import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
 import draggable from "zhyswan-vuedraggable";
+import {useAppStores} from "@/stores/app-stores";
+import EventType from "@/event/EventType";
 
 
 const taskGroups: Ref<TaskGroupEntity[]> = ref([]);
 const taskGroupRepository = DBUtils.getTaskGroupEntityRepository();
-const dbStore = useDatabaseStores();
 
-const updateTaskGroups = () => {
-  taskGroupRepository?.find({relations: {
-    tasks: true,
-    tags: true
-  }}).then((result) => {
-    taskGroups.value = result.filter(groups => groups.dayTaskDate === null);
-  });
+const appStore = useAppStores();
+
+const updateTaskGroups = async () => {
+  taskGroups.value = (await taskGroupRepository?.find({
+    relations: {
+      tasks: true,
+      tags: true
+    }
+  }))!.filter(groups => groups.dayTaskDate === null);
 };
 
 
 onMounted(() => {
-  updateTaskGroups();
-
-  dbStore.entityListeners.set(EventEnum.ALL, updateTaskGroups);
+  updateTaskGroups().then(() => {
+    appStore.eventBus.on(EventType.DB_ALL, updateTaskGroups);
+  });
 })
 
 </script>

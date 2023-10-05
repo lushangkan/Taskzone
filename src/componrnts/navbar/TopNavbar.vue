@@ -46,6 +46,7 @@ import {useI18n} from "vue-i18n";
 import moment from "moment";
 import {Moment} from "moment";
 import "moment/dist/locale/zh-cn.js";
+import EventType from "@/event/EventType";
 
 const i18n = useI18n();
 
@@ -120,6 +121,16 @@ function onDateChange(date: Moment) {
   }
 }
 
+const onScrollInitialized = () => {
+  const scrollContent = document.getElementById('main-scroll-content');
+  if (scrollContent !== null) {
+    scrollEle.value = scrollContent.parentElement;
+  } else {
+    scrollEle.value = undefined;
+    console.warn('Could not find scroll element');
+  }
+}
+
 onMounted(() => {
   // 获取日任务路由参数的日期
   if (router.currentRoute.value.params.date) {
@@ -144,16 +155,12 @@ onMounted(() => {
   }
 
   // 获取滚动元素
-  appStore.mainScrollListeners.initialized.push(() => {
-    const scrollContent = document.getElementById('main-scroll-content');
-    if (scrollContent !== null) {
-      scrollEle.value = scrollContent.parentElement;
-    } else {
-      scrollEle.value = undefined;
-      console.warn('Could not find scroll element');
-    }
-  })
-})
+  appStore.eventBus.on(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
+});
+
+onUnmounted(() => {
+  appStore.eventBus.off(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
+});
 
 </script>
 

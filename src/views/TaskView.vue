@@ -72,9 +72,10 @@ import TaskCard from "@/componrnts/TaskCard.vue";
 import {onMounted, Ref, ref} from "vue";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {useDatabaseStores} from "@/stores/database-stores";
-import {EventEnum} from "@/data/enum/EventEnum";
 import * as DbUtils from "@/data/database/utils/database-utils";
 import draggable from 'zhyswan-vuedraggable'
+import {Event} from "happy-dom";
+import EventType from "@/event/EventType";
 
 
 const appStore = useAppStores();
@@ -85,37 +86,29 @@ const doneTasks: Ref<TaskEntity[]> = ref([]);
 const isDragging = ref(false);
 
 // 监听数据表变化
-const dbStore = useDatabaseStores();
-
-const updateTasks = (event?: any) => {
-  DbUtils.getTaskEntityRepository()?.find({
+const updateTasks = async () => {
+  const result = (await DbUtils.getTaskEntityRepository()?.find({
     relations: {
       tags: true
     }
-  }).then((result) => {
-    undoneTasks.value = result.filter((task) => !task.isDone);
-    doneTasks.value = result.filter((task) => task.isDone);
-  });
+  }))!;
+
+  undoneTasks.value = result.filter((task) => !task.isDone);
+  doneTasks.value = result.filter((task) => task.isDone);
 }
 
-dbStore.entityListeners.set(EventEnum.ALL, updateTasks);
-
 function scrollInitialized() {
-  for (const listener of appStore.mainScrollListeners.initialized) {
-    listener();
-  }
+  appStore.eventBus.emit(EventType.MAIN_SCROLL_INITIALIZED_EVENT, {});
 }
 
 function onCompletedChange(isDone: boolean) {
   updateTasks();
 }
 
-function onDragEnd(event: any) {
-
-}
-
 onMounted(() => {
-  updateTasks();
+  updateTasks().then(() => {
+    appStore.eventBus.on(EventType.DB_ALL, updateTasks);
+  });
 });
 
 </script>
