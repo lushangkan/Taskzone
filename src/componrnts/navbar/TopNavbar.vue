@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: 去除动画，使得性能差的设备流畅-->
   <sticky-element :scrollElement="scrollEle" stuckClass="navbar-stuck" showClass="navbar-show" transitionClass="navbar-transition" id="sticky-navbar">
     <div id="app-navbar" class="fixed flex flex-col justify-start items-center w-full py-[16px] z-10">
       <ion-header
@@ -110,41 +109,6 @@ watch(menuOpen, (newVal) => {
     menuController.open();
   } else {
     menuController.close();
-  }
-});
-
-// 当Datepicker打开状态改变
-watch(datepickerOpen, (newVal) => {
-  if (newVal) {
-    // 打开
-    anime({
-      targets: '#app-navbar',
-      keyframes: [
-        {
-          translateY: '8%',
-          duration: 280
-        },
-        {
-          translateY: '0',
-          duration: 280
-        }
-      ],
-    });
-  } else {
-    // 关闭
-    anime({
-      targets: '#app-navbar',
-      keyframes: [
-        {
-          translateY: '-10%',
-          duration: 230
-        },
-        {
-          translateY: '0',
-          duration: 200
-        }
-      ]
-    });
   }
 });
 
