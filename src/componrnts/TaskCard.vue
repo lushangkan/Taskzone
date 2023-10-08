@@ -10,10 +10,10 @@
             <span class="text-[21px] text-center">{{ props.taskEntity !== undefined && props.taskEntity.icon !== null? props.taskEntity.icon : '🍪' }}</span>
             <span class="text-[hsl(var(--fg))] text-[18px] font-[500] truncate w-full text-left">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</span>
           </div>
-          <div ref="tagsRef" v-if="props.taskEntity?.tags !== undefined && props.taskEntity?.tags.length !== 0" class="flex flex-row justify-end items-center h-[110%]">
-            <div :class="`flex flex-row justify-start items-center px-[8px] h-full max-w-[80px] gap-[1px] rounded-full`" :style="{ 'background-color': props.taskEntity?.tags[0]?.color === undefined? 'hsl(var(--bg))' : props.taskEntity?.tags[0]?.color }">
-              <span v-if="props.taskEntity?.tags[0]?.icon !== undefined" class="text-[16px]">{{ props.taskEntity?.tags[0]?.icon }}</span>
-              <span class="truncate text-[hsl(var(--fg))] text-[14px] font-light text-clip">{{ props.taskEntity?.tags[0]?.name }}</span>
+          <div ref="tagsRef" v-if="props.taskEntity?.tags !== undefined && props.taskEntity?.tags.length !== 0" class="flex flex-row justify-end items-center h-[120%]">
+            <div :class="`flex flex-row justify-start items-center px-[8px] py-0 h-full max-w-[80px] gap-[1px] rounded-full`" :style="{ 'background-color': props.taskEntity?.tags[0]?.color === undefined? 'hsl(var(--bg))' : props.taskEntity?.tags[0]?.color }">
+              <span v-if="props.taskEntity?.tags[0]?.icon !== undefined" class="text-[16px] leading-normal">{{ props.taskEntity?.tags[0]?.icon }}</span>
+              <span class="truncate text-[hsl(var(--fg))] text-[14px] font-light leading-normal text-clip overflow-visible">{{ props.taskEntity?.tags[0]?.name }}</span>
             </div>
           </div>
         </div>
