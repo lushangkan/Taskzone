@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from '@ionic/vue-router';
 import {RouteRecordRaw} from 'vue-router';
-import DayTaskView from "@/views/TaskView.vue";
+import DayTaskView from "@/views/TasksView.vue";
 import WelcomeView from "@/views/WelcomeView.vue";
 import ColorPickerTest from "@/views/ColorPickerTest.vue";
 
@@ -16,11 +16,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'welcome',
         path: '/welcome',
         component: WelcomeView
-    },
-    {
-        name: 'colorpicker-test',
-        path: '/colorpicker',
-        component: ColorPickerTest
     }
 ]
 

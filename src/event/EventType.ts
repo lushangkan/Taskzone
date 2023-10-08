@@ -1,6 +1,14 @@
 enum EventType {
     MAIN_SCROLL_INITIALIZED_EVENT = 'mainScrollInitialized',
 
+    ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT = 'enabledTaskCardMultiSelectionMode',
+    DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT = 'disabledTaskCardMultiSelectionMode',
+
+    CLICK_DELETE_TASK_BUTTON_EVENT = 'clickDeleteTaskButton',
+    CLICK_EDIT_TASK_BUTTON_EVENT = 'clickEditTaskButton',
+    CLICK_MOVE_TASK_BUTTON_EVENT = 'clickMoveTaskButton',
+    CLICK_COPY_TASK_BUTTON_EVENT = 'clickCopyTaskButton',
+
     DB_ALL = 'dbAll',
     DB_AFTER_LOAD = 'dbAfterLoad',
     DB_AFTER_INSERT = 'dbAfterInsert',

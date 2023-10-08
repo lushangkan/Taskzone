@@ -27,6 +27,22 @@ export function checkIsSupportEmoji(store: any) {
 }
 
 /**
+ * 判断元素是否是指定元素的子元素
+ * @param child 子元素
+ * @param parent 父元素
+ */
+export function isChildOf(child: HTMLElement, parent: HTMLElement) {
+    let parentNode = child.parentNode;
+    while (parentNode !== null) {
+        if (parentNode === parent) {
+            return true;
+        }
+        parentNode = parentNode.parentNode;
+    }
+    return false;
+}
+
+/**
  * 根据背景色获取前景颜色
  * @param backgroundColorText 背景色
  * @return 文本颜色, black或white

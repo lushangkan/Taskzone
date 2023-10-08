@@ -29,7 +29,8 @@
               <template #item="{element}">
                 <div class="list-group-item w-full">
                   <task-card class="h-[62px] w-[95%]"
-                           :task-entity="element" @on-complete-change="onCompletedChange"/>
+                           :task-entity="element" @on-complete-change="onCompletedChange"
+                  />
                 </div>
               </template>
             </draggable>
@@ -69,14 +70,11 @@ import AddTaskBtn from "@/componrnts/AddTaskBtn.vue";
 import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
 import {useAppStores} from "@/stores/app-stores";
 import TaskCard from "@/componrnts/TaskCard.vue";
-import {onMounted, Ref, ref} from "vue";
+import {onMounted, onUnmounted, Ref, ref} from "vue";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
-import {useDatabaseStores} from "@/stores/database-stores";
 import * as DbUtils from "@/data/database/utils/database-utils";
 import draggable from 'zhyswan-vuedraggable'
-import {Event} from "happy-dom";
 import EventType from "@/event/EventType";
-
 
 const appStore = useAppStores();
 
@@ -85,7 +83,11 @@ const doneTasks: Ref<TaskEntity[]> = ref([]);
 
 const isDragging = ref(false);
 
-// 监听数据表变化
+const multiSelectMode = ref(false);
+
+/**
+ * 数据库更新后的回调, 更新任务列表
+ */
 const updateTasks = async () => {
   const result = (await DbUtils.getTaskEntityRepository()?.find({
     relations: {
@@ -97,18 +99,41 @@ const updateTasks = async () => {
   doneTasks.value = result.filter((task) => task.isDone);
 }
 
+
+/**
+ * 虚拟滚动条初始化完成后,触发MAIN_SCROLL_INITIALIZED_EVENT事件，以初始化 stick TopNavbar 和 stick AddTaskBtn
+ */
 function scrollInitialized() {
   appStore.eventBus.emit(EventType.MAIN_SCROLL_INITIALIZED_EVENT, {});
 }
 
+/**
+ * 任务完成状态改变后的回调
+ * @param isDone
+ */
 function onCompletedChange(isDone: boolean) {
+  // 更新任务列表
   updateTasks();
 }
 
 onMounted(() => {
+  // 清空多选任务
+  appStore.selectedTasks = [];
+
+  // 初始化任务列表
   updateTasks().then(() => {
+    // 监听数据库更新事件
     appStore.eventBus.on(EventType.DB_ALL, updateTasks);
   });
+
+  // 监听多选模式
+  appStore.eventBus.on(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = true);
+  appStore.eventBus.on(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = false);
+});
+
+onUnmounted(() => {
+  // 清空多选任务
+  appStore.selectedTasks = [];
 });
 
 </script>

@@ -3,7 +3,6 @@
 </template>
 
 <script setup lang="ts">
-import AutoComplete from "primevue/autocomplete";
 import {ref} from "vue";
 
 defineOptions({
