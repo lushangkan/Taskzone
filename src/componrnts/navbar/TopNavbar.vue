@@ -12,12 +12,12 @@
           </div>
           <div class="d-navbar-start">
             <ion-title class="text-base-100 text-lg font-medium">{{
-                pageName === 'daytask' ? titleDate === 'today' ? i18n.t('page.daytask.today') : titleDate : i18n.t(`page.${pageName}.name`, i18n.t('page.pageNotFound'))
+                pageName === 'tasks' ? titleDate === 'today' ? i18n.t('page.tasks.today') : titleDate : i18n.t(`page.${pageName}.name`, i18n.t('page.pageNotFound'))
               }}
             </ion-title>
           </div>
           <div class="navbar-end">
-            <button v-if="pageName==='daytask'" type="button" title="Open datepicker"
+            <button v-if="pageName==='tasks'" type="button" title="Open datepicker"
                     :class="`d-btn d-btn-ghost ${datepickerOpen?'d-btn-active':''}`"
                     @click="datepickerOpen=!datepickerOpen">
               <calendar-days-icon class="w-[24px] h-[24px]" color="hsl(var(--b1))"/>
@@ -61,7 +61,7 @@
         </div>
       </ion-header>
       <Transition name="datepicker">
-        <navbar-datepicker v-if="datepickerOpen" @on-date-change="onDateChange"/>
+        <navbar-datepicker v-if="datepickerOpen" v-model="date"/>
       </Transition>
     </div>
   </sticky-element>
@@ -92,6 +92,7 @@ const appStore = useAppStores();
 
 const pageName = ref(router.currentRoute.value.name);
 const titleDate = ref('');
+const date = ref<Date>();
 const menuOpen = ref(false);
 const datepickerOpen = ref(false);
 const multiSelectMenuOpen = ref(false);
@@ -111,17 +112,6 @@ watch(menuOpen, (newVal) => {
     menuController.close();
   }
 });
-
-// 当Datepicker值发生变化
-function onDateChange(date: Moment) {
-  if (date.isSame(moment(), 'day')) {
-    titleDate.value = 'today';
-  } else if (!date.isSame(moment(), 'year')) {
-    titleDate.value = date.format('LL');
-  } else {
-    titleDate.value = date.format('MMMDo');
-  }
-}
 
 /**
  * 滚动元素初始化完成事件回调
@@ -163,28 +153,51 @@ const onClickWindowCallback = (event: UIEvent) => {
   }
 };
 
+/**
+ * 更新Navbar的标题日期
+ * @param dateMoment 日期
+ */
+function updateNavbarDate(dateMoment: Moment) {
+  if (dateMoment.isSame(moment(), 'day')) {
+    titleDate.value = 'today';
+  } else if (!dateMoment.isSame(moment(), 'year')) {
+    titleDate.value = dateMoment.format('LL');
+  } else {
+    titleDate.value = dateMoment.format('MMMDo');
+  }
+}
+
 onMounted(() => {
   // 获取日任务路由参数的日期
   if (router.currentRoute.value.params.date) {
     // 存在日期参数
     // 日期格式校验
     const dateStr = router.currentRoute.value.params.date;
-    const date = moment(dateStr, 'YYYY-MM-DD');
-    if (date.isValid()) {
+    const dateMoment = moment(dateStr, 'YYYY-MM-DD');
+    if (dateMoment.isValid()) {
       // 日期有效
-      if (date.isSame(moment(), 'day')) {
-        titleDate.value = 'today';
-      } else if (!date.isSame(moment(), 'year')) {
-        titleDate.value = date.format('LL');
-      } else {
-        titleDate.value = date.format('MMMDo');
-      }
+      updateNavbarDate(dateMoment);
+      date.value = dateMoment.toDate();
     } else {
       titleDate.value = 'today';
+      date.value = moment().toDate();
     }
   } else {
     titleDate.value = 'today';
+    date.value = moment().toDate();
   }
+
+  // 当Datepicker值发生变化
+  watch(date, (value) => {
+    const dateMoment = moment(value);
+    updateNavbarDate(dateMoment);
+    // 导航到指定日期的任务列表
+    if (dateMoment.isSame(moment(), 'day')) {
+      router.replace('/');
+    } else {
+      router.replace('/tasks/day/' + dateMoment.format('YYYY-MM-DD'));
+    }
+  });
 
   // 获取滚动元素
   appStore.eventBus.on(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);

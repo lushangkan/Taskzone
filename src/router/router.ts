@@ -1,16 +1,15 @@
 import {createRouter, createWebHistory} from '@ionic/vue-router';
 import {RouteRecordRaw} from 'vue-router';
-import DayTaskView from "@/views/TasksView.vue";
+import TaskView from "@/views/TasksView.vue";
 import WelcomeView from "@/views/WelcomeView.vue";
-import ColorPickerTest from "@/views/ColorPickerTest.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
-        name: 'daytask',
+        name: 'tasks',
         path: '/',
-        alias: '/daytask/:date',
-        component: DayTaskView,
-        props: (route) => ({date: route.params.date})
+        alias: ['/tasks/day/:date', "/tasks/:taskGroupId"],
+        component: TaskView,
+        props: (route) => ({date: route.params.date, taskGroupId: route.params.taskGroupId})
     },
     {
         name: 'welcome',

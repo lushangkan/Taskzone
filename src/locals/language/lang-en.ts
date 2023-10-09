@@ -6,7 +6,7 @@ export const langEn = {
             name: 'Welcome',
             tipsLine: 'I don\'t think there\'s a task yet <br> Click + to create a new task',
         },
-        daytask: {
+        tasks: {
             today: 'Today',
             titleDate: '{date}'
         },
