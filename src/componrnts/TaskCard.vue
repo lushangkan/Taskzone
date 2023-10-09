@@ -5,7 +5,7 @@
          ref="taskCardRef" class="task-card relative btn-transition leading-none flex-nowrap normal-case	w-full min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
       <input ref="inputRef" type="checkbox" title="Complete" class="d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)" @change="onCompleteChange" />
       <div class="h-full w-full flex flex-col justify-around items-center py-[8px]">
-        <div class="flex flex-row justify-between items-center w-full">
+        <div class="flex flex-row justify-between items-center w-full gap-[5px]">
           <div class="flex flex-row justify-start items-center gap-[4px]">
             <span class="text-[21px] text-center">{{ props.taskEntity !== undefined && props.taskEntity.icon !== null? props.taskEntity.icon : '🍪' }}</span>
             <span class="text-[hsl(var(--fg))] text-[18px] font-[500] truncate w-full text-left">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</span>
@@ -189,20 +189,53 @@ function onHoldCard(event: any) {
   if (!appStore.selectedTasks?.includes(props.taskEntity!)) {
     appStore.selectedTasks?.push(props.taskEntity!);
     appStore.eventBus.emit(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, {});
-    inputRef.value?.click();
+    if (!(event.target as HTMLElement).isEqualNode(inputRef.value!)) inputRef.value?.click();
   }
 }
 
 function onTapCard(event: any) {
-  if (appStore.selectedTasks?.length === 0) return;
+  if (!multiSelectMode.value) return;
 
   if (appStore.selectedTasks?.includes(props.taskEntity!)) {
     appStore.selectedTasks!.splice(appStore.selectedTasks!.indexOf(props.taskEntity!), 1);
+    if (!(event.target as HTMLElement).isEqualNode(inputRef.value!)) inputRef.value?.click();
     return;
   }
 
   appStore.selectedTasks?.push(props.taskEntity!);
+
+  if (!(event.target as HTMLElement).isEqualNode(inputRef.value!)) inputRef.value?.click();
 }
+
+const enableMultiSelectCallback = () => {
+  multiSelectMode.value = true;
+
+  if (inputRef.value?.className === undefined) return;
+
+  // 如果checkbox已选择，则取消选择
+  if (inputRef.value?.checked) inputRef.value?.click();
+
+  // 切换checkbox为多选模式样式
+  if (!inputRef.value?.classList.contains('multiple-selection')) inputRef.value?.classList.add('multiple-selection');
+
+  // 删除卡片点击动画
+  if (taskCardRef.value?.classList.contains('btn-transition')) taskCardRef.value?.classList.remove('btn-transition');
+};
+
+const disableMultiSelectCallback = () => {
+  if (inputRef.value?.className === undefined) return;
+
+  // 如果Task为完成状态，则选择checkbox
+  if ((!inputRef.value?.checked && props.taskEntity?.isDone) || (inputRef.value?.checked && !props.taskEntity?.isDone)) inputRef.value?.click();
+
+  // 切换checkbox为单选模式样式
+  if (inputRef.value?.classList.contains('multiple-selection')) inputRef.value?.classList.remove('multiple-selection');
+
+  // 添加卡片点击动画
+  if (!taskCardRef.value?.classList.contains('btn-transition')) taskCardRef.value?.classList.add('btn-transition');
+
+  multiSelectMode.value = false;
+};
 
 onMounted(() => {
   // 初始化颜色变量
@@ -212,37 +245,10 @@ onMounted(() => {
   inputRef.value!.checked = props.taskEntity?.isDone === true;
 
   // 监听多选模式事件
-  appStore.eventBus.on(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => {
-    multiSelectMode.value = true;
-
-    if (inputRef.value?.className === undefined) return;
-
-    // 如果checkbox已选择，则取消选择
-    if (inputRef.value?.checked) inputRef.value?.click();
-
-    // 切换checkbox为多选模式样式
-    if (!inputRef.value?.classList.contains('multiple-selection')) inputRef.value?.classList.add('multiple-selection');
-
-    // 删除卡片点击动画
-    if (taskCardRef.value?.classList.contains('btn-transition')) taskCardRef.value?.classList.remove('btn-transition');
-
-  });
+  appStore.eventBus.on(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, enableMultiSelectCallback);
 
   // 监听退出多选模式事件
-  appStore.eventBus.on(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => {
-    if (inputRef.value?.className === undefined) return;
-
-    // 如果Task为完成状态，则选择checkbox
-    if ((!inputRef.value?.checked && props.taskEntity?.isDone) || (inputRef.value?.checked && !props.taskEntity?.isDone)) inputRef.value?.click();
-
-    // 切换checkbox为单选模式样式
-    if (inputRef.value?.classList.contains('multiple-selection')) inputRef.value?.classList.remove('multiple-selection');
-
-    // 添加卡片点击动画
-    if (!taskCardRef.value?.classList.contains('btn-transition')) taskCardRef.value?.classList.add('btn-transition');
-
-    multiSelectMode.value = false;
-  })
+  appStore.eventBus.on(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, disableMultiSelectCallback)
 
 })
 

@@ -75,8 +75,10 @@ import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import * as DbUtils from "@/data/database/utils/database-utils";
 import draggable from 'zhyswan-vuedraggable'
 import EventType from "@/event/EventType";
+import {useDatabaseStores} from "@/stores/database-stores";
 
 const appStore = useAppStores();
+const dbStore = useDatabaseStores();
 
 const undoneTasks: Ref<TaskEntity[]> = ref([]);
 const doneTasks: Ref<TaskEntity[]> = ref([]);
@@ -116,6 +118,14 @@ function onCompletedChange(isDone: boolean) {
   updateTasks();
 }
 
+const multiSelectDeleteTasksCallback = async () => {
+  for (const task of appStore.selectedTasks) {
+    await dbStore.entityManager!.remove(Object.assign(new TaskEntity(), task));
+  }
+
+  appStore.eventBus.emit(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, {});
+};
+
 onMounted(() => {
   // 清空多选任务
   appStore.selectedTasks = [];
@@ -129,6 +139,7 @@ onMounted(() => {
   // 监听多选模式
   appStore.eventBus.on(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = true);
   appStore.eventBus.on(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = false);
+  appStore.eventBus.on(EventType.CLICK_DELETE_TASK_BUTTON_EVENT, multiSelectDeleteTasksCallback);
 });
 
 onUnmounted(() => {

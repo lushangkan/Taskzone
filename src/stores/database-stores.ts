@@ -29,8 +29,8 @@ export const useDatabaseStores = defineStore('databaseStore', () => {
         }
     });
 
-    async function updateStatus(Entity?: any) {
-        const status = await checkAppTableStatus(Entity)
+    async function updateStatus(entity?: any) {
+        const status = await checkAppTableStatus(entity)
         if (status !== undefined) {
             Object.assign(tableStatus, Object.fromEntries(Object.entries(status).filter(([, value]) => value !== undefined)));
         }
