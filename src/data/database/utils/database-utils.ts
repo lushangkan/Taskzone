@@ -107,20 +107,6 @@ export async function checkAppTableStatus(Entity?: any) {
 }
 
 /**
- * 保存数据库到IndexedDB(Web平台)
- */
-export async function saveDatabase() {
-    const dbStore = useDatabaseStores();
-    if (dbStore.platform === 'web' && dbStore.sqliteConnection !== undefined) {
-        for (const databaseName of dbStore.databaseNames) {
-            await dbStore.sqliteConnection.saveToStore(databaseName);
-        }
-        return true;
-    }
-    return false;
-}
-
-/**
  * 关闭所有数据库连接
  */
 export function closeDatabase() {

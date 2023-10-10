@@ -8,7 +8,8 @@ export const langZhCn = {
         },
         tasks: {
             today: '今天',
-            titleDate: '{date}'
+            titleDate: '{date}',
+            notFoundTaskGroup: '找不到任务组',
         },
         pageNotFound: '页面不存在',
     },

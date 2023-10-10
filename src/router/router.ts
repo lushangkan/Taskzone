@@ -7,7 +7,7 @@ const routes: Array<RouteRecordRaw> = [
     {
         name: 'tasks',
         path: '/',
-        alias: ['/tasks/day/:date', "/tasks/:taskGroupId"],
+        alias: ["/tasks/:taskGroupId", '/tasks/day/:date'],
         component: TaskView,
         props: (route) => ({date: route.params.date, taskGroupId: route.params.taskGroupId})
     },

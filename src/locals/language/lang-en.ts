@@ -8,7 +8,8 @@ export const langEn = {
         },
         tasks: {
             today: 'Today',
-            titleDate: '{date}'
+            titleDate: '{date}',
+            notFoundTaskGroup: 'Task group not found',
         },
         pageNotFound: 'Page not found',
     },

@@ -13,8 +13,9 @@
       </div>
     </Transition>
     <Transition name="add-task-btn">
+      <!-- TODO: 在taskGroup页面下支持呼吸animation -->
       <button v-show="addTaskBtnShow" type="button" title="add task" @click="optionsBtnShow=!optionsBtnShow"
-              class="addtaskbtn d-btn d-btn-circle border-none w-14 h-14 bg-primary shadow justify-center items-center inline-flex z-30">
+              class="add-task-btn d-btn d-btn-circle border-none w-14 h-14 bg-primary shadow justify-center items-center inline-flex z-30" :style="taskGroupColor !== undefined? `background: ${taskGroupColor}; animation: none;`:''">
         <PlusIcon color="hsl(var(--b1))"
                   class="w-[39px] h-[39px] relative flex-col justify-start items-start flex"></PlusIcon>
       </button>
@@ -27,14 +28,16 @@ import {PlusIcon, ListChecksIcon, CheckCircleIcon} from 'lucide-vue-next'
 import {onMounted, onUnmounted, reactive, Ref, ref} from "vue";
 import {useAppStores} from "@/stores/app-stores";
 import EventType from "@/event/EventType";
-
-const scrollEle = ref<HTMLElement | undefined>();
+import * as dbUtils from "@/data/database/utils/database-utils";
+import {useRouter} from "vue-router";
+import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 
 const optionsBtnShow = ref(false);
-
 const addTaskBtnShow = ref(true);
+const taskGroupColor = ref<string | undefined>();
 
 const appStore = useAppStores();
+const router = useRouter();
 
 const onScrollInitialized = () => {
   // 获取滚动元素
@@ -68,7 +71,20 @@ const onScrollInitialized = () => {
   }
 };
 
+/**
+ * 获取任务组颜色以改变按钮背景颜色
+ */
+async function inTaskGroupPage() {
+  const taskGroupRepository = dbUtils.getTaskGroupEntityRepository();
+  if (typeof router.currentRoute.value.params.taskGroupId !== 'string') return;
+  const taskGroupEntity: TaskGroupEntity | null = await taskGroupRepository?.findOne({ where: { id: router.currentRoute.value.params.taskGroupId }});
+  if (taskGroupEntity === null) return;
+  if (taskGroupEntity.color !== null) taskGroupColor.value = taskGroupEntity.color;
+}
+
 onMounted(() => {
+  if (router.currentRoute.value.name === 'tasks' && router.currentRoute.value.params.taskGroupId) inTaskGroupPage();
+
   // 添加监听器
   appStore.eventBus.on(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
 });
