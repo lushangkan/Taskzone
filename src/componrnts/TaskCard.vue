@@ -2,18 +2,18 @@
   <div class="w-full">
     <div v-bind="$attrs" v-touch:tap="onTapCard"
          v-touch:hold="onHoldCard" v-touch-options="{ touchHoldTolerance: 180 }"
-         ref="taskCardRef" class="task-card relative btn-transition leading-none flex-nowrap normal-case	w-full min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
+         ref="taskCardRef" class="task-card relative btn-transition leading-none flex-nowrap normal-casew-full min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
       <input ref="inputRef" type="checkbox" title="Complete" class="d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)" @change="onCompleteChange" />
-      <div class="h-full w-full flex flex-col justify-around items-center py-[8px]">
+      <div class="h-full w-[231px] flex flex-col justify-around items-center py-[8px]">
         <div class="flex flex-row justify-between items-center w-full gap-[5px]">
-          <div class="flex flex-row justify-start items-center gap-[4px]">
+          <div class="flex flex-row justify-start items-center gap-[4px] w-[146px]">
             <span class="text-[21px] text-center">{{ props.taskEntity !== undefined && props.taskEntity.icon !== null? props.taskEntity.icon : '🍪' }}</span>
             <span class="text-[hsl(var(--fg))] text-[18px] font-[500] truncate w-full text-left">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</span>
           </div>
           <div ref="tagsRef" v-if="props.taskEntity?.tags !== undefined && props.taskEntity?.tags.length !== 0" class="flex flex-row justify-end items-center h-[120%]">
-            <div :class="`flex flex-row justify-start items-center px-[8px] py-0 h-full max-w-[80px] gap-[1px] rounded-full`" :style="{ 'background-color': props.taskEntity?.tags[0]?.color === undefined? 'hsl(var(--bg))' : props.taskEntity?.tags[0]?.color }">
+            <div class="flex flex-row justify-start items-center px-[8px] py-0 h-full max-w-[80px] gap-[1px] rounded-full whitespace-nowrap" :style="{ 'background-color': props.taskEntity?.tags[0]?.color === undefined? 'hsl(var(--bg))' : props.taskEntity?.tags[0]?.color }">
               <span v-if="props.taskEntity?.tags[0]?.icon !== undefined" class="text-[16px] leading-normal">{{ props.taskEntity?.tags[0]?.icon }}</span>
-              <span class="truncate text-[hsl(var(--fg))] text-[14px] font-light leading-normal text-clip overflow-visible">{{ props.taskEntity?.tags[0]?.name }}</span>
+              <span class="text-[hsl(var(--fg))] text-[14px] font-light leading-normal text-clip overflow-hidden">{{ props.taskEntity?.tags[0]?.name }}</span>
             </div>
           </div>
         </div>
