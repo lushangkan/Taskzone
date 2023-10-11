@@ -213,15 +213,7 @@ function updateTextColor() {
     btns.value.forEach((e) =>{
       const colorText = e!.getElementsByTagName('a')[0];
       const backgroundColor = e!.style.backgroundColor;
-      const textColor = fun.getForegroundColor(backgroundColor);
-      const blackWhiteVar = fun.getWhiteBlackCssVar();
-      if (textColor === 'black') {
-        colorText.style.setProperty('color', `hsl(var(${blackWhiteVar.black}))`);
-      } else if (textColor === 'white') {
-        colorText.style.setProperty('color', `hsl(var(${blackWhiteVar.white}))`);
-      } else {
-        colorText.style.setProperty('color', `hsl(var(${blackWhiteVar.black}))`);
-      }
+      colorText.style.setProperty('color', `hsl(var(${fun.getForegroundColor(backgroundColor)}))`);
     });
   }
 

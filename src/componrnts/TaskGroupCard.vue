@@ -23,9 +23,8 @@ const cardRef: Ref<HTMLDivElement | null> = ref(null);
 
 function initColorVar() {
   const foregroundColor = getForegroundColor(window.getComputedStyle(cardRef.value!).backgroundColor);
-  const whiteBlackCss = getWhiteBlackCssVar();
 
-  cardRef.value?.style.setProperty('--fg', `var(${foregroundColor === 'white' ? whiteBlackCss.white : whiteBlackCss.black})`);
+  cardRef.value?.style.setProperty('--fg', `var(${foregroundColor})`);
 }
 
 watch(cardRef, (value) => {

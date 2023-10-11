@@ -152,16 +152,15 @@ async function onCompleteChange() {
  */
 function initColorVar() {
   const foregroundColor = getForegroundColor(window.getComputedStyle(taskCardRef.value!).backgroundColor);
-  const whiteBlackCss = getWhiteBlackCssVar();
 
-  taskCardRef.value?.style.setProperty('--bg', `var(${foregroundColor === 'white' ? whiteBlackCss.black : whiteBlackCss.white})`);
-  taskCardRef.value?.style.setProperty('--fg', `var(${foregroundColor === 'white' ? whiteBlackCss.white : whiteBlackCss.black})`);
+  taskCardRef.value?.style.setProperty('--bg', `var(${foregroundColor === '--b1'? '--n' : '--b1'})`);
+  taskCardRef.value?.style.setProperty('--fg', `var(${foregroundColor === '--b1'? '--b1' : '--n'})`);
 
   if (tagsRef.value !== null) {
     const tagForegroundColor = getForegroundColor(window.getComputedStyle(tagsRef.value!).backgroundColor);
 
-    tagsRef.value?.style.setProperty('--bg', `var(${tagForegroundColor === 'white' ? whiteBlackCss.black : whiteBlackCss.white})`);
-    tagsRef.value?.style.setProperty('--fg', `var(${tagForegroundColor === 'white' ? whiteBlackCss.white : whiteBlackCss.black})`);
+    tagsRef.value?.style.setProperty('--bg', `var(${tagForegroundColor === '--b1'? '--n' : '--b1'})`);
+    tagsRef.value?.style.setProperty('--fg', `var(${tagForegroundColor === '--b1'? '--b1' : '--n'})`);
   }
 }
 

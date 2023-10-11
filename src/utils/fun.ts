@@ -45,14 +45,16 @@ export function isChildOf(child: HTMLElement, parent: HTMLElement) {
 /**
  * 根据背景色获取前景颜色
  * @param backgroundColorText 背景色
- * @return 文本颜色, black或white
+ * @return 文本颜色, css变量名
  */
 export function getForegroundColor(backgroundColorText: string) {
     const backgroundColor = new Color(backgroundColorText);
-    const brightness = ((backgroundColor.srgb[0]*255*299) +
-        (backgroundColor.srgb[1]*255*587) +
-        (backgroundColor.srgb[2]*255*114)) / 1000;
-    return (brightness > 125) ? 'black' : 'white';
+
+    const base100 = new Color(`hsl(${getCssVar('--b1')})`);
+
+    const contrastBase100 = backgroundColor.contrast(base100, "APCA");
+
+    return contrastBase100  < -20? '--b1' : '--n';
 }
 
 /**
