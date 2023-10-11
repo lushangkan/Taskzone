@@ -536,3 +536,24 @@
           0 0 80px -6px rgba(0, 0, 0, 0.07)
   ;
 }
+
+.multi-select-menu-enter-active {
+  animation: multi-select-menu-animation 0.15s ease-out forwards;
+}
+
+.multi-select-menu-leave-active {
+  animation: multi-select-menu-animation 0.15s ease-out forwards;
+  animation-direction: reverse;
+}
+
+@keyframes multi-select-menu-animation {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+

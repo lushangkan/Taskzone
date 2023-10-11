@@ -31,35 +31,37 @@
           <div class="navbar-end relative">
             <button type="button" title="Close multi select mode"
                     class="d-btn d-btn-ghost" @click="onClickCloseBtn">
-              <x class="w-[24px] h-[24px]" color="var(--fg)"/>
+              <x class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
             </button>
             <button type="button" title="Delete task"
                     class="d-btn d-btn-ghost" @click="onClickDeleteBtn">
-              <trash2 class="w-[24px] h-[24px]" color="var(--fg)"/>
+              <trash2 class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
             </button>
             <button ref="multiSelectMenuBtn" type="button" title="More" :class="`d-btn d-btn-ghost ${multiSelectMenuOpen?'d-btn-active':''}`" @click="multiSelectMenuOpen=!multiSelectMenuOpen">
-              <more-horizontal class="w-[24px] h-[24px]" color="var(--fg)"/>
+              <more-horizontal class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
             </button>
-            <ul ref="multiSelectMenu" v-if="multiSelectMenuOpen" class="absolute w-[112px] right-0 mt-[20px] gap-[3px] navbar-multiple-selection-menu d-dropdown-content d-menu bg-base-100 rounded-box">
-              <li v-if="appStore.selectedTasks.length === 1" @click="onClickEditBtn">
-                <div class="flex flex-row justify-around items-center">
-                  <pen-line class="stroke-inherit w-[19px] h-[19px]"/>
-                  <span class="text-inherit text-sm font-medium">编辑</span>
-                </div>
-              </li>
-              <li @click="onClickCopyBtn">
-                <div class="flex flex-row justify-around items-center">
-                  <clipboard-paste class="stroke-inherit w-[19px] h-[19px]"/>
-                  <span class="text-inherit text-sm font-medium">复制</span>
-                </div>
-              </li>
-              <li @click="onClickMoveBtn">
-                <div class="flex flex-row justify-around items-center">
-                  <folder-output class="stroke-inherit w-[19px] h-[19px]"/>
-                  <span class="text-inherit text-sm font-medium">移动</span>
-                </div>
-              </li>
-            </ul>
+            <Transition name="multi-select-menu">
+              <ul ref="multiSelectMenu" v-if="multiSelectMenuOpen" class="absolute w-[112px] right-0 mt-[20px] gap-[3px] navbar-multiple-selection-menu d-dropdown-content d-menu bg-base-100 rounded-box">
+                <li v-if="appStore.selectedTasks.length === 1" @click="onClickEditBtn">
+                  <div class="flex flex-row justify-around items-center">
+                    <pen-line class="stroke-inherit w-[19px] h-[19px]"/>
+                    <span class="text-inherit text-sm font-medium">编辑</span>
+                  </div>
+                </li>
+                <li @click="onClickCopyBtn">
+                  <div class="flex flex-row justify-around items-center">
+                    <clipboard-paste class="stroke-inherit w-[19px] h-[19px]"/>
+                    <span class="text-inherit text-sm font-medium">复制</span>
+                  </div>
+                </li>
+                <li @click="onClickMoveBtn">
+                  <div class="flex flex-row justify-around items-center">
+                    <folder-output class="stroke-inherit w-[19px] h-[19px]"/>
+                    <span class="text-inherit text-sm font-medium">移动</span>
+                  </div>
+                </li>
+              </ul>
+            </Transition>
           </div>
         </div>
       </ion-header>
