@@ -15,9 +15,9 @@
     <Transition name="add-task-btn">
       <!-- TODO: 在taskGroup页面下支持呼吸animation -->
       <button v-show="addTaskBtnShow" type="button" title="add task" @click="optionsBtnShow=!optionsBtnShow"
-              class="add-task-btn d-btn d-btn-circle border-none w-14 h-14 bg-primary shadow justify-center items-center inline-flex z-30" :style="taskGroupColor !== undefined? `background: ${taskGroupColor}; animation: none;`:''">
-        <PlusIcon color="hsl(var(--b1))"
-                  class="w-[39px] h-[39px] relative flex-col justify-start items-start flex"></PlusIcon>
+              class="add-task-btn d-btn d-btn-circle border-none w-14 h-14 bg-primary shadow justify-center items-center inline-flex z-30" :style="`${taskGroupColor !== undefined? `background: ${taskGroupColor}; animation: none;`:''}; --fg: var(${fgColor})`">
+        <PlusIcon color="hsl(var(--fg))"
+                  class="w-[39px] h-[39px] relative flex-col justify-start items-start flex"/>
       </button>
     </Transition>
   </div>
@@ -31,10 +31,12 @@ import EventType from "@/event/EventType";
 import * as dbUtils from "@/data/database/utils/database-utils";
 import {useRouter} from "vue-router";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
+import * as fun from "@/utils/fun";
 
 const optionsBtnShow = ref(false);
 const addTaskBtnShow = ref(true);
 const taskGroupColor = ref<string | undefined>();
+const fgColor = ref('--b1');
 
 const appStore = useAppStores();
 const router = useRouter();
@@ -80,6 +82,16 @@ async function inTaskGroupPage() {
   const taskGroupEntity: TaskGroupEntity | null = await taskGroupRepository?.findOne({ where: { id: router.currentRoute.value.params.taskGroupId }});
   if (taskGroupEntity === null) return;
   if (taskGroupEntity.color !== null) taskGroupColor.value = taskGroupEntity.color;
+
+  initForegroundColor();
+}
+
+/**
+ * 初始化前景色
+ */
+function initForegroundColor() {
+  if (taskGroupColor.value === undefined) return;
+  fgColor.value = fun.getForegroundColor(typeof taskGroupColor.value === "string" ? taskGroupColor.value : '');
 }
 
 onMounted(() => {

@@ -54,7 +54,7 @@ export function getForegroundColor(backgroundColorText: string) {
 
     const contrastBase100 = backgroundColor.contrast(base100, "APCA");
 
-    return contrastBase100  < -20? '--b1' : '--n';
+    return contrastBase100  < -40? '--b1' : '--n';
 }
 
 /**

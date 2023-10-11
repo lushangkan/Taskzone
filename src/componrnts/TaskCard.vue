@@ -2,7 +2,11 @@
   <div class="w-full">
     <div v-bind="$attrs" v-touch:tap="onTapCard"
          v-touch:hold="onHoldCard" v-touch-options="{ touchHoldTolerance: 180 }"
-         ref="taskCardRef" class="task-card relative btn-transition leading-none flex-nowrap normal-casew-full min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{ 'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]) }">
+         ref="taskCardRef" class="task-card relative btn-transition leading-none flex-nowrap normal-case w-full min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{
+           'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]),
+           '--fg': `var(${fgColor})`,
+           '--bg': `var(${bgColor})`,
+         }">
       <input ref="inputRef" type="checkbox" title="Complete" class="d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)" @change="onCompleteChange" />
       <div class="h-full w-[231px] flex flex-col justify-around items-center py-[8px]">
         <div class="flex flex-row justify-between items-center w-full gap-[5px]">
@@ -11,7 +15,11 @@
             <span class="text-[hsl(var(--fg))] text-[18px] font-[500] truncate w-full text-left">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</span>
           </div>
           <div ref="tagsRef" v-if="props.taskEntity?.tags !== undefined && props.taskEntity?.tags.length !== 0" class="flex flex-row justify-end items-center h-[120%]">
-            <div class="flex flex-row justify-start items-center px-[8px] py-0 h-full max-w-[80px] gap-[1px] rounded-full whitespace-nowrap" :style="{ 'background-color': props.taskEntity?.tags[0]?.color === undefined? 'hsl(var(--bg))' : props.taskEntity?.tags[0]?.color }">
+            <div class="flex flex-row justify-start items-center px-[8px] py-0 h-full max-w-[80px] gap-[1px] rounded-full whitespace-nowrap" :style="{
+              '--bg': `var(${tagBgColor})`,
+              '--fg': `var(${tagFgColor})`,
+              'background-color': props.taskEntity?.tags[0]?.color === undefined? 'hsl(var(--bg))' : props.taskEntity?.tags[0]?.color
+            }">
               <span v-if="props.taskEntity?.tags[0]?.icon !== undefined" class="text-[16px] leading-normal">{{ props.taskEntity?.tags[0]?.icon }}</span>
               <span class="text-[hsl(var(--fg))] text-[14px] font-light leading-normal text-clip overflow-hidden">{{ props.taskEntity?.tags[0]?.name }}</span>
             </div>
@@ -27,7 +35,7 @@
           <div v-if="hasPriority()" class="h-[2px] rounded-full aspect-square bg-[hsl(var(--fg))]"/>
           <div v-if="hasPriority()" class="flex flex-row justify-start items-center gap-[0]">
             <badge-alert-icon stroke-width="2px" class="h-[14px] text-[hsl(var(--fg))]"/>
-            <div :class="`flex flex-row justify-center items-center ${props.taskEntity?.priority === Priority.MEDIUM || props.taskEntity?.priority === Priority.HIGH? `aspect-square w-[18px] h-[18px] rounded-full border border-[4px] border-[hsl(var(--bg))]` : ''}`" :style="{ backgroundColor: `var(${priorityColor[props.taskEntity?.priority]})` }"/>
+            <div :class="`flex flex-row justify-center items-center ${props.taskEntity?.priority === Priority.MEDIUM || props.taskEntity?.priority === Priority.HIGH? `aspect-square w-[18px] h-[18px] rounded-full border-[4px] border-[hsl(var(--fg))]` : ''}`" :style="{ backgroundColor: `var(${priorityColor[props.taskEntity?.priority]})` }"/>
           </div>
         </div>
       </div>
@@ -71,6 +79,11 @@ const taskCardRef: Ref<HTMLDivElement | null> = ref(null);
 const tagsRef: Ref<HTMLDivElement | null> = ref(null);
 
 const multiSelectMode = ref(false);
+
+const fgColor = ref('--b1)');
+const bgColor = ref('--n');
+const tagFgColor = ref('--b1');
+const tagBgColor = ref('--n');
 
 const priorityColor = reactive({
   [Priority.LOW]: undefined,
@@ -153,14 +166,14 @@ async function onCompleteChange() {
 function initColorVar() {
   const foregroundColor = getForegroundColor(window.getComputedStyle(taskCardRef.value!).backgroundColor);
 
-  taskCardRef.value?.style.setProperty('--bg', `var(${foregroundColor === '--b1'? '--n' : '--b1'})`);
-  taskCardRef.value?.style.setProperty('--fg', `var(${foregroundColor === '--b1'? '--b1' : '--n'})`);
+  bgColor.value = foregroundColor === '--b1'? '--n' : '--b1';
+  fgColor.value = foregroundColor === '--b1'? '--b1' : '--n';
 
   if (tagsRef.value !== null) {
     const tagForegroundColor = getForegroundColor(window.getComputedStyle(tagsRef.value!).backgroundColor);
 
-    tagsRef.value?.style.setProperty('--bg', `var(${tagForegroundColor === '--b1'? '--n' : '--b1'})`);
-    tagsRef.value?.style.setProperty('--fg', `var(${tagForegroundColor === '--b1'? '--b1' : '--n'})`);
+    tagBgColor.value = tagForegroundColor === '--b1'? '--n' : '--b1';
+    tagFgColor.value = tagForegroundColor === '--b1'? '--b1' : '--n';
   }
 }
 

@@ -1,6 +1,6 @@
 <template>
  <div ref="cardRef" v-if="taskGroupEntity?.dayTaskDate === null"
-      class="btn-transition w-full h-[48px] rounded-[16px] flex justify-start items-center px-[12px] gap-[8px]" :style="{ backgroundColor: taskGroupEntity?.color }">
+      class="btn-transition w-full h-[48px] rounded-[16px] flex justify-start items-center px-[12px] gap-[8px]" :style="{ backgroundColor: taskGroupEntity?.color, '--fg': `var(${fgColor})` }">
    <span v-if="taskGroupEntity?.icon !== null" class="text-[22px]">{{ taskGroupEntity.icon }}</span>
    <span class="truncate text-clip font-medium" style="color: hsl(var(--fg));">{{ taskGroupEntity.name }}</span>
  </div>
@@ -21,10 +21,10 @@ const props = defineProps({
 
 const cardRef: Ref<HTMLDivElement | null> = ref(null);
 
-function initColorVar() {
-  const foregroundColor = getForegroundColor(window.getComputedStyle(cardRef.value!).backgroundColor);
+const fgColor = ref<string>('--b1');
 
-  cardRef.value?.style.setProperty('--fg', `var(${foregroundColor})`);
+function initColorVar() {
+  fgColor.value = getForegroundColor(window.getComputedStyle(cardRef.value!).backgroundColor);
 }
 
 watch(cardRef, (value) => {

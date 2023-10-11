@@ -2,18 +2,18 @@
   <sticky-element :scrollElement="scrollEle" stuckClass="navbar-stuck" showClass="navbar-show" transitionClass="navbar-transition" id="sticky-navbar">
     <div id="app-navbar" class="fixed flex flex-col justify-start items-center w-full py-[16px] z-10">
       <ion-header
-          class="relative border-none w-[348px] h-[63px] px-[13px] rounded-3xl navbar-shadow bg-gradient-to-br from-[hsl(var(--p--100))] to-[hsl(var(--p-300))]" :style="`${taskGroupColor !== undefined? `background: ${taskGroupColor}`:''}`">
+          class="relative border-none w-[348px] h-[63px] px-[13px] rounded-3xl navbar-shadow bg-gradient-to-br from-[hsl(var(--p--100))] to-[hsl(var(--p-300))]" :style="`${taskGroupColor !== undefined? `background: ${taskGroupColor}`:''}; --fg: var(${fgColor}); `">
         <div v-if="!multiSelectMode" class="w-full h-full flex flex-row justify-between items-center px-0">
           <div class="navbar-start w-[56px] h-[48px]">
             <button type="button" title="Open menu" :class="`w-[56px] h-[48px] d-btn d-btn-ghost ${menuOpen?'d-btn-active':''}`"
                     @click="menuOpen=!menuOpen">
-              <menu-icon class="w-[24px] h-[24px]" color="hsl(var(--b1))"/>
+              <menu-icon class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
             </button>
           </div>
           <div class="navbar-center">
             <div class="flex flex-row justify-center items-center gap-[3px]">
               <span v-if="taskGroupIcon !== undefined" class="text-[25px]">{{ taskGroupIcon }}</span>
-              <span class="whitespace-nowrap text-base-100 text-lg font-medium">{{
+              <span class="whitespace-nowrap text-lg font-medium" style="color: hsl(var(--fg))">{{
                   pageName === 'tasks' ? tasksTitle === 'today' ? i18n.t('page.tasks.today') : tasksTitle : i18n.t(`page.${pageName}.name`, i18n.t('page.pageNotFound'))
                 }}
               </span>
@@ -23,7 +23,7 @@
             <button v-show="pageName==='tasks' && date !== undefined" type="button" title="Open datepicker"
                     :class="`w-[56px] h-[48px] d-btn d-btn-ghost ${datepickerOpen?'d-btn-active':''}`"
                     @click="datepickerOpen=!datepickerOpen">
-              <calendar-days-icon class="w-[24px] h-[24px]" color="hsl(var(--b1))"/>
+              <calendar-days-icon class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
             </button>
           </div>
         </div>
@@ -31,14 +31,14 @@
           <div class="navbar-end relative">
             <button type="button" title="Close multi select mode"
                     class="d-btn d-btn-ghost" @click="onClickCloseBtn">
-              <x class="stroke-base-100 w-[24px] h-[24px]"/>
+              <x class="w-[24px] h-[24px]" color="var(--fg)"/>
             </button>
             <button type="button" title="Delete task"
                     class="d-btn d-btn-ghost" @click="onClickDeleteBtn">
-              <trash2 class="stroke-base-100 w-[24px] h-[24px]"/>
+              <trash2 class="w-[24px] h-[24px]" color="var(--fg)"/>
             </button>
             <button ref="multiSelectMenuBtn" type="button" title="More" :class="`d-btn d-btn-ghost ${multiSelectMenuOpen?'d-btn-active':''}`" @click="multiSelectMenuOpen=!multiSelectMenuOpen">
-              <more-horizontal class="stroke-base-100 w-[24px] h-[24px]"/>
+              <more-horizontal class="w-[24px] h-[24px]" color="var(--fg)"/>
             </button>
             <ul ref="multiSelectMenu" v-if="multiSelectMenuOpen" class="absolute w-[112px] right-0 mt-[20px] gap-[3px] navbar-multiple-selection-menu d-dropdown-content d-menu bg-base-100 rounded-box">
               <li v-if="appStore.selectedTasks.length === 1" @click="onClickEditBtn">
@@ -90,6 +90,7 @@ import EventType from "@/event/EventType";
 import * as fun from "@/utils/fun";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import * as dbUtils from "@/data/database/utils/database-utils";
+import {getForegroundColor, getWhiteBlackCssVar} from "@/utils/fun";
 
 const i18n = useI18n();
 const router = useRouter();
@@ -104,10 +105,11 @@ const menuOpen = ref(false);
 const datepickerOpen = ref(false);
 const multiSelectMenuOpen = ref(false);
 const multiSelectMode = ref(false);
+const fgColor = ref('--b1');
 
 const scrollEle = ref<HTMLElement | undefined | null>();
-const multiSelectMenu = ref<HTMLUListElement | null>(null)
-const multiSelectMenuBtn = ref<HTMLButtonElement | null>(null)
+const multiSelectMenu = ref<HTMLUListElement | null>(null);
+const multiSelectMenuBtn = ref<HTMLButtonElement | null>(null);
 
 moment.locale(i18n.locale.value);
 
@@ -221,6 +223,16 @@ async function inTaskGroupPage() {
   typeof taskGroup.name === "string" ? tasksTitle.value = taskGroup.name : undefined;
   typeof taskGroup.icon === "string" ? taskGroupIcon.value = taskGroup.icon : undefined;
   typeof taskGroup.color === "string" ? taskGroupColor.value = taskGroup.color : undefined;
+
+  initForegroundColor();
+}
+
+/**
+ * 获取背景颜色以设置前景颜色
+ */
+function initForegroundColor() {
+  if (taskGroupColor.value === undefined) return;
+  fgColor.value = fun.getForegroundColor(typeof taskGroupColor.value === "string" ? taskGroupColor.value : '');
 }
 
 onMounted(() => {
@@ -248,6 +260,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   appStore.eventBus.off(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
+  appStore.eventBus.off(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = true);
+  appStore.eventBus.off(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = false);
 });
 
 </script>
