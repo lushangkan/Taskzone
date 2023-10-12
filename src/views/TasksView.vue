@@ -23,7 +23,7 @@
                          class: `${undoneTasks.length !== 0? 'pt-[115px]':''} w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`
                        }"
                        animation="200" handle=".drag-handle"
-                       @start="isDragging = true" @end="isDragging = false"
+                       @start="onDragStart" @end="onDragEnd"
                        delay="100"
             >
               <template #item="{element}">
@@ -46,7 +46,7 @@
                          class: `${undoneTasks.length === 0 && doneTasks.length !== 0? 'pt-[115px]':''} w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`
                        }"
                        animation="200" handle=".drag-handle"
-                       @start="isDragging = true" @end="isDragging = false"
+                       @start="onDragStart" @end="onDragEnd"
                        delay="100"
             >
               <template #item="{element}">
@@ -116,6 +116,16 @@ function scrollInitialized() {
 function onCompletedChange(isDone: boolean) {
   // 更新任务列表
   updateTasks();
+}
+
+function onDragStart() {
+  appStore.eventBus.emit(EventType.DRAGGING_TASK_CARD_EVENT, {});
+  isDragging.value = true;
+}
+
+function onDragEnd() {
+  appStore.eventBus.emit(EventType.DRAG_TASK_CARD_END_EVENT, {});
+  isDragging.value = false;
 }
 
 const multiSelectDeleteTasksCallback = async () => {

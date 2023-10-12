@@ -79,6 +79,7 @@ const taskCardRef: Ref<HTMLDivElement | null> = ref(null);
 const tagsRef: Ref<HTMLDivElement | null> = ref(null);
 
 const multiSelectMode = ref(false);
+const draggingCard = ref(false);
 
 const fgColor = ref('--b1)');
 const bgColor = ref('--n');
@@ -198,6 +199,8 @@ async function updateTaskDone() {
 }
 
 function onHoldCard(event: any) {
+  if (draggingCard.value) return;
+  if (multiSelectMode.value) return;
   if (!appStore.selectedTasks?.includes(props.taskEntity!)) {
     appStore.selectedTasks?.push(props.taskEntity!);
     appStore.eventBus.emit(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, {});
@@ -249,6 +252,14 @@ const disableMultiSelectCallback = () => {
   multiSelectMode.value = false;
 };
 
+const draggingCallback = () => {
+  draggingCard.value = true;
+};
+
+const dragEndCallback = () => {
+  draggingCard.value = false;
+};
+
 onMounted(() => {
   // 初始化颜色变量
   initColorVar();
@@ -258,9 +269,11 @@ onMounted(() => {
 
   // 监听多选模式事件
   appStore.eventBus.on(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, enableMultiSelectCallback);
-
-  // 监听退出多选模式事件
   appStore.eventBus.on(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, disableMultiSelectCallback)
+
+  // 监听拖拽事件
+  appStore.eventBus.on(EventType.DRAGGING_TASK_CARD_EVENT, draggingCallback);
+  appStore.eventBus.on(EventType.DRAG_TASK_CARD_END_EVENT, dragEndCallback);
 
 })
 

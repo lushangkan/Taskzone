@@ -43,10 +43,29 @@
           <p class="text-center text-[hsl(var(--n-700))] text-xs font-light">{{ $t('menu.taskList') }}</p>
           <div class="w-[119px] h-[0px] border-t border-[hsl(var(--n-1000)) / 0.9]"/>
         </div>
+        <Transition name="task-group-multi-select-menu">
+          <div v-if="multiSelectMode" class="w-full h-[21px] flex flex-row justify-end items-center gap-[17px]">
+            <button @click="onClickCloseMultiSelectMode" type="button" title="Close multi selection mode" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
+              <x-icon class="w-full h-full" color="hsl(var(--n))"/>
+            </button>
+            <button type="button" title="Delete selected task group" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
+              <trash2-icon class="w-full h-full" color="hsl(var(--n))"/>
+            </button>
+            <button type="button" title="Reset selected task group" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
+              <list-restart-icon class="w-full h-full" color="hsl(var(--n))"/>
+            </button>
+            <Transition name="multi-select-menu-edit-btn">
+              <button v-if="appStore.selectedTaskGroups.length === 1" type="button" title="Edit selected task group" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
+                <pen-line-icon class="w-full h-full" color="hsl(var(--n))"/>
+              </button>
+            </Transition>
+          </div>
+        </Transition>
         <draggable v-model="taskGroups" item-key="id"
                    animation="200" tag="div"
                    :component-data="{ class: 'w-full flex flex-col justify-start items-center gap-[15px]' }"
-                   delay="100"
+                   @start="onDragStart" @end="onDragEnd"
+                   delay="100" :disabled="multiSelectMode"
         >
           <template #item="{element}">
             <div class="list-group-item w-full">
@@ -61,7 +80,7 @@
 
 <script setup lang="ts">
 import {IonMenu} from "@ionic/vue";
-import {CalendarCheckIcon, SettingsIcon, TagsIcon} from 'lucide-vue-next';
+import {CalendarCheckIcon, SettingsIcon, TagsIcon, XIcon, Trash2Icon, ListRestartIcon, PenLineIcon } from 'lucide-vue-next';
 import TaskGroupCard from "@/componrnts/TaskGroupCard.vue";
 import * as DBUtils from "@/data/database/utils/database-utils";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
@@ -71,11 +90,36 @@ import draggable from "zhyswan-vuedraggable";
 import {useAppStores} from "@/stores/app-stores";
 import EventType from "@/event/EventType";
 
-
 const taskGroups: Ref<TaskGroupEntity[]> = ref([]);
 const taskGroupRepository = DBUtils.getTaskGroupEntityRepository();
 
+const multiSelectMode = ref(false);
+
 const appStore = useAppStores();
+
+function onDragStart() {
+  appStore.eventBus.emit(EventType.DRAGGING_TASK_GROUP_CARD_EVENT, {});
+}
+
+function onDragEnd() {
+  appStore.eventBus.emit(EventType.DRAG_TASK_GROUP_CARD_END_EVENT, {});
+}
+
+function onClickCloseMultiSelectMode() {
+  appStore.eventBus.emit(EventType.DISABLED_TASK_GROUP_CARD_MULTI_SELECTION_MODE_EVENT, {});
+}
+
+function onClickDeleteSelectedTaskGroup() {
+
+}
+
+function onClickResetSelectedTaskGroup() {
+
+}
+
+function onClickEditSelectedTaskGroup() {
+
+}
 
 const updateTaskGroups = async () => {
   taskGroups.value = (await taskGroupRepository?.find({
@@ -86,11 +130,22 @@ const updateTaskGroups = async () => {
   }))!.filter(groups => groups.dayTaskDate === null);
 };
 
+const enableMultiSelectModeCallBack = () => {
+  multiSelectMode.value = true;
+};
+
+const disableMultiSelectModeCallBack = () => {
+  multiSelectMode.value = false;
+};
 
 onMounted(() => {
   updateTaskGroups().then(() => {
     appStore.eventBus.on(EventType.DB_ALL, updateTaskGroups);
   });
+
+  // 监听多选事件
+  appStore.eventBus.on(EventType.ENABLED_TASK_GROUP_CARD_MULTI_SELECTION_MODE_EVENT, enableMultiSelectModeCallBack);
+  appStore.eventBus.on(EventType.DISABLED_TASK_GROUP_CARD_MULTI_SELECTION_MODE_EVENT, disableMultiSelectModeCallBack);
 })
 
 </script>
