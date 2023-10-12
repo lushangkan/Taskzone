@@ -1,6 +1,9 @@
 <template>
   <!-- TODO: 缩小内容尺寸，使得在手机看起来没有这么大 -->
-  <ion-menu @ionWillClose="$emit('onmenuclose')" ref="menu" content-id="main-content" class="z-20 menu-panel">
+  <ion-menu @ionWillClose="$emit('onmenuclose')" ref="menu"
+            content-id="main-content" class="z-20 menu-panel"
+            :swipeGesture="!draggingCard"
+  >
     <overlay-scrollbars-component defer element="div" :options="{
           overflow: {
             x: 'hidden',
@@ -13,7 +16,7 @@
           }
         }" class="w-full h-full">
       <div
-          class="w-full overflow-y-auto	top-0 py-[29px] px-[30.5px] bg-base-100 flex-col justify-start items-center gap-[25px] flex">
+          class="w-full overflow-y-auto top-0 py-[29px] px-[30.5px] bg-base-100 flex-col justify-start items-center gap-[25px] flex">
         <div class="w-full flex-col justify-start items-center gap-[12px] inline-flex">
           <div class="box">
             <input type="text" :placeholder="$t('menu.searchPapi')"
@@ -95,14 +98,17 @@ const taskGroups: Ref<TaskGroupEntity[]> = ref([]);
 const taskGroupRepository = DBUtils.getTaskGroupEntityRepository();
 
 const multiSelectMode = ref(false);
+const draggingCard = ref(false);
 
 const appStore = useAppStores();
 
 function onDragStart() {
+  draggingCard.value = true;
   appStore.eventBus.emit(EventType.DRAGGING_TASK_GROUP_CARD_EVENT, {});
 }
 
 function onDragEnd() {
+  draggingCard.value = false;
   appStore.eventBus.emit(EventType.DRAG_TASK_GROUP_CARD_END_EVENT, {});
 }
 
