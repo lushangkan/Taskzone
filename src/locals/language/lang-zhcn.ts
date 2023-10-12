@@ -17,6 +17,7 @@ export const langZhCn = {
         searchPapi: '搜索任务',
         dayTask: '日任务',
         tags: '标签',
+        setting: '设置',
         taskList: '任务列表',
     },
     addTaskBtn: {

@@ -17,6 +17,7 @@ export const langEn = {
         searchPapi: 'Search task',
         dayTask: 'Day task',
         tags: 'Tags',
+        setting: 'Setting',
         taskList: 'Task list',
     },
     addTaskBtn: {

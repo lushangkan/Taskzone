@@ -15,11 +15,6 @@
       <div
           class="w-full overflow-y-auto	top-0 py-[29px] px-[30.5px] bg-base-100 flex-col justify-start items-center gap-[25px] flex">
         <div class="w-full flex-col justify-start items-center gap-[12px] inline-flex">
-          <div class="w-full flex flex-row justify-start items-center px-[2px]">
-            <button type="button" title="Setting" class="d-btn d-btn-circle d-btn-ghost w-[30px] h-[30px] min-h-[30px]">
-              <SettingsIcon class="w-[24px] h-[24px]" color="hsl(var(--n--300))"/>
-            </button>
-          </div>
           <div class="box">
             <input type="text" :placeholder="$t('menu.searchPapi')"
                    class="d-input d-input-bordered border-[#C6C6C6] w-full h-[40px] rounded-[16px] px-[12px] z-[51] text-stone-300 text-[16.5px] font-light">
@@ -29,14 +24,20 @@
           <div
               type="button" :title="$t('menu.dayTask')"
               class="d-btn d-btn-ghost btn-menu-active w-full h-[46px] min-h-[45px] rounded-[16px] flex flex-row justify-start items-center text-[hsl(var(--b1))] text-[18px] font-normal normal-case">
-            <CalendarCheckIcon class="w-[21px] h-[21px]" color="hsl(var(--n-700))"></CalendarCheckIcon>
+            <calendar-check-icon class="w-[21px] h-[21px]" color="hsl(var(--n-700))"/>
             {{ $t('menu.dayTask') }}
           </div>
           <div
               type="button" :title="$t('menu.tags')"
               class="d-btn d-btn-ghost w-full h-[46px] min-h-[45px] rounded-[16px] flex flex-row justify-start items-center text-[hsl(var(--n-700))] text-[18px] font-normal normal-case">
-            <TagsIcon class="w-[21px] h-[21px]" color="hsl(var(--n-700))"></TagsIcon>
+            <tags-icon class="w-[21px] h-[21px]" color="hsl(var(--n-700))"/>
             {{ $t('menu.tags') }}
+          </div>
+          <div
+              type="button" :title="$t('menu.tags')"
+              class="d-btn d-btn-ghost w-full h-[46px] min-h-[45px] rounded-[16px] flex flex-row justify-start items-center text-[hsl(var(--n-700))] text-[18px] font-normal normal-case">
+            <settings-icon class="w-[21px] h-[21px]" color="hsl(var(--n-700))"/>
+            {{ $t('menu.setting') }}
           </div>
         </div>
         <div class="w-full flex flex-row justify-around items-center gap-[8px]">
