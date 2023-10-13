@@ -1,7 +1,7 @@
 <template>
   <ion-app class="select-none">
     <top-navbar>
-      <ion-router-outlet class="z-0" id="main-content"/>
+      <router-view class="z-0" id="main-content"/>
     </top-navbar>
   </ion-app>
 </template>
