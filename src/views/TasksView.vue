@@ -76,21 +76,28 @@ import * as DbUtils from "@/data/database/utils/database-utils";
 import draggable from 'zhyswan-vuedraggable'
 import EventType from "@/event/EventType";
 import {useDatabaseStores} from "@/stores/database-stores";
+import {useRouter} from "vue-router";
+import * as dbUtils from "@/data/database/utils/database-utils";
+import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 
 const appStore = useAppStores();
 const dbStore = useDatabaseStores();
 
+const router = useRouter();
+
 const undoneTasks: Ref<TaskEntity[]> = ref([]);
 const doneTasks: Ref<TaskEntity[]> = ref([]);
+
+const taskGroupEntity: Ref<TaskGroupEntity | undefined> = ref();
 
 const isDragging = ref(false);
 
 const multiSelectMode = ref(false);
-
 /**
  * 数据库更新后的回调, 更新任务列表
  */
 const updateTasks = async () => {
+  // 更新任务
   const result = (await DbUtils.getTaskEntityRepository()?.find({
     relations: {
       tags: true
@@ -99,6 +106,15 @@ const updateTasks = async () => {
 
   undoneTasks.value = result.filter((task) => !task.isDone);
   doneTasks.value = result.filter((task) => task.isDone);
+}
+
+const updateTaskGroup = async () => {
+  // 更新任务组状态
+  if (taskGroupEntity.value !== undefined) {
+    const taskGroupRepository = dbUtils.getTaskGroupEntityRepository();
+    const result: TaskGroupEntity | null = await taskGroupRepository?.findOneById(taskGroupEntity.value!.id);
+    if (result === null) router.push("/");
+  }
 }
 
 
@@ -136,7 +152,16 @@ const multiSelectDeleteTasksCallback = async () => {
   appStore.eventBus.emit(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, {});
 };
 
+async function inTaskGroupPage() {
+  const taskGroupRepository = dbUtils.getTaskGroupEntityRepository();
+  if (typeof router.currentRoute.value.params.taskGroupId !== 'string') return;
+  const result: TaskGroupEntity | null = await taskGroupRepository?.findOne({ where: { id: router.currentRoute.value.params.taskGroupId }});
+  taskGroupEntity.value = result === null ? undefined : result;
+}
+
 onMounted(() => {
+  if (router.currentRoute.value.name === 'tasks' && router.currentRoute.value.params.taskGroupId) inTaskGroupPage();
+
   // 清空多选任务
   appStore.selectedTasks = [];
 
@@ -144,6 +169,8 @@ onMounted(() => {
   updateTasks().then(() => {
     // 监听数据库更新事件
     appStore.eventBus.on(EventType.DB_ALL, updateTasks);
+    appStore.eventBus.on(EventType.DB_AFTER_REMOVE, updateTaskGroup);
+    appStore.eventBus.on(EventType.DB_AFTER_SOFT_REMOVE, updateTaskGroup);
   });
 
   // 监听多选模式

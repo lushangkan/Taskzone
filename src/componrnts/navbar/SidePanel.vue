@@ -1,6 +1,6 @@
 <template>
   <!-- TODO: 缩小内容尺寸，使得在手机看起来没有这么大 -->
-  <ion-menu @ionWillClose="$emit('onmenuclose')" ref="menu"
+  <ion-menu @ionWillClose="$emit('onCloseSidePanel')" ref="menu"
             content-id="main-content" class="z-20 menu-panel"
             :swipeGesture="!draggingCard"
   >
@@ -24,24 +24,27 @@
           </div>
         </div>
         <div class="w-full flex flex-col justify-start items-center gap-[20px]">
-          <div
+          <router-link
               type="button" :title="$t('menu.dayTask')"
-              class="d-btn d-btn-ghost btn-menu-active w-full h-[46px] min-h-[45px] rounded-[16px] flex flex-row justify-start items-center text-[hsl(var(--b1))] text-[18px] font-normal normal-case">
+              to="/"
+              :class="`${dayTaskOpen? 'btn-menu-active':''} d-btn d-btn-ghost w-full h-[46px] min-h-[45px] rounded-[16px] flex flex-row justify-start items-center text-[hsl(var(--n-700))] text-[18px] font-normal normal-case`">
             <calendar-check-icon class="w-[21px] h-[21px]" color="hsl(var(--n-700))"/>
             {{ $t('menu.dayTask') }}
-          </div>
-          <div
+          </router-link>
+          <router-link
               type="button" :title="$t('menu.tags')"
-              class="d-btn d-btn-ghost w-full h-[46px] min-h-[45px] rounded-[16px] flex flex-row justify-start items-center text-[hsl(var(--n-700))] text-[18px] font-normal normal-case">
+              to="/"
+              :class="`${tagsOpen? 'btn-menu-active':''} d-btn d-btn-ghost w-full h-[46px] min-h-[45px] rounded-[16px] flex flex-row justify-start items-center text-[hsl(var(--n-700))] text-[18px] font-normal normal-case`">
             <tags-icon class="w-[21px] h-[21px]" color="hsl(var(--n-700))"/>
             {{ $t('menu.tags') }}
-          </div>
-          <div
+          </router-link>
+          <router-link
               type="button" :title="$t('menu.tags')"
-              class="d-btn d-btn-ghost w-full h-[46px] min-h-[45px] rounded-[16px] flex flex-row justify-start items-center text-[hsl(var(--n-700))] text-[18px] font-normal normal-case">
+              to="/"
+              :class="`${settingOpen? 'btn-menu-active':''} d-btn d-btn-ghost w-full h-[46px] min-h-[45px] rounded-[16px] flex flex-row justify-start items-center text-[hsl(var(--n-700))] text-[18px] font-normal normal-case`">
             <settings-icon class="w-[21px] h-[21px]" color="hsl(var(--n-700))"/>
             {{ $t('menu.setting') }}
-          </div>
+          </router-link>
         </div>
         <div class="w-full flex flex-row justify-around items-center gap-[8px]">
           <p class="text-center text-[hsl(var(--n-700))] text-xs font-light">{{ $t('menu.taskList') }}</p>
@@ -73,7 +76,7 @@
         >
           <template #item="{element}">
             <div class="list-group-item w-full">
-              <task-group-card :task-group-entity="element"/>
+              <task-group-card :task-group-entity="element" @before-jump-to-group="beforeJumpToGroup" :class="element.id !== undefined && element.id === taskGroupOpen? 'task-group-card-active' : ''"/>
             </div>
           </template>
         </draggable>
@@ -93,6 +96,11 @@ import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
 import draggable from "zhyswan-vuedraggable";
 import {useAppStores} from "@/stores/app-stores";
 import EventType from "@/event/EventType";
+import {RouteLocationNormalized, useRouter, RouterLink} from "vue-router";
+
+const emit = defineEmits<{
+  (e: 'onCloseSidePanel') : void
+}>()
 
 const taskGroups: Ref<TaskGroupEntity[]> = ref([]);
 const taskGroupRepository = DBUtils.getTaskGroupEntityRepository();
@@ -100,7 +108,14 @@ const taskGroupRepository = DBUtils.getTaskGroupEntityRepository();
 const multiSelectMode = ref(false);
 const draggingCard = ref(false);
 
+const dayTaskOpen = ref(false);
+const tagsOpen = ref(false);
+const settingOpen = ref(false);
+const taskGroupOpen = ref<string | undefined>();
+
 const appStore = useAppStores();
+
+const router = useRouter();
 
 function onDragStart() {
   draggingCard.value = true;
@@ -128,6 +143,9 @@ function onClickEditSelectedTaskGroup() {
 
 }
 
+function beforeJumpToGroup() {
+}
+
 const updateTaskGroups = async () => {
   taskGroups.value = (await taskGroupRepository?.find({
     relations: {
@@ -145,7 +163,27 @@ const disableMultiSelectModeCallBack = () => {
   multiSelectMode.value = false;
 };
 
+function updateSidePanel(route: RouteLocationNormalized) {
+  dayTaskOpen.value = false;
+  tagsOpen.value = false;
+  settingOpen.value = false;
+  taskGroupOpen.value = undefined;
+
+  // 获取当前页面
+  switch ("name" in route ? route.name : undefined) {
+    case "tasks":
+      // 任务页面
+      if ((route.params.date) || route.path === '' || route.path === '/') {
+        dayTaskOpen.value = true;
+      } else if (route.params.taskGroupId) {
+        taskGroupOpen.value = typeof route.params.taskGroupId === 'string'? route.params.taskGroupId : undefined;
+      }
+  }
+}
+
 onMounted(() => {
+  updateSidePanel(router.currentRoute.value);
+
   updateTaskGroups().then(() => {
     appStore.eventBus.on(EventType.DB_ALL, updateTaskGroups);
   });
@@ -154,6 +192,14 @@ onMounted(() => {
   appStore.eventBus.on(EventType.ENABLED_TASK_GROUP_CARD_MULTI_SELECTION_MODE_EVENT, enableMultiSelectModeCallBack);
   appStore.eventBus.on(EventType.DISABLED_TASK_GROUP_CARD_MULTI_SELECTION_MODE_EVENT, disableMultiSelectModeCallBack);
 })
+
+router.beforeEach(() => {
+  emit('onCloseSidePanel');
+});
+
+router.afterEach((to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+  updateSidePanel(to);
+});
 
 </script>
 

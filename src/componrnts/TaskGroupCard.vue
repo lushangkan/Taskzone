@@ -16,6 +16,7 @@ import {onMounted, type Ref, ref, watch} from "vue";
 import EventType from "@/event/EventType";
 import {useAppStores} from "@/stores/app-stores";
 import {storeToRefs} from "pinia";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   taskGroupEntity: {
@@ -24,7 +25,12 @@ const props = defineProps({
   }
 });
 
+const emit = defineEmits<{
+  (e: 'beforeJumpToGroup'): void
+}>()
+
 const appStore = useAppStores();
+const router = useRouter();
 
 const cardRef: Ref<HTMLDivElement | null> = ref(null);
 
@@ -33,6 +39,7 @@ const multiSelectMode = ref(false);
 const draggingCard = ref<boolean>(false);
 
 const { selectedTaskGroups } = storeToRefs(appStore);
+
 
 watch(selectedTaskGroups, (value) =>{
   if (value.includes(props.taskGroupEntity!) && !cardRef.value?.classList.contains('select-task-group-card')) {
@@ -57,13 +64,21 @@ function onHoldCard() {
 
 function onTapCard() {
   if (draggingCard.value) return;
-  if (!multiSelectMode.value) return;
 
-  if (appStore.selectedTaskGroups.includes(props.taskGroupEntity!)) {
-    appStore.selectedTaskGroups.splice(appStore.selectedTaskGroups.indexOf(props.taskGroupEntity!), 1);
-  } else {
-    appStore.selectedTaskGroups.push(props.taskGroupEntity!);
+  // 处于多选模式
+  if (multiSelectMode.value) {
+    if (appStore.selectedTaskGroups.includes(props.taskGroupEntity!)) {
+      appStore.selectedTaskGroups.splice(appStore.selectedTaskGroups.indexOf(props.taskGroupEntity!), 1);
+    } else {
+      appStore.selectedTaskGroups.push(props.taskGroupEntity!);
+    }
+    return;
   }
+
+  emit('beforeJumpToGroup');
+
+  //导航到任务
+  router.push('/tasks/' + props.taskGroupEntity!.id);
 }
 
 const draggingCallback = () => {

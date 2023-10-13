@@ -2,7 +2,7 @@
   <sticky-element :scrollElement="scrollEle" stuckClass="navbar-stuck" showClass="navbar-show" transitionClass="navbar-transition" id="sticky-navbar">
     <div id="app-navbar" class="fixed flex flex-col justify-start items-center w-full py-[16px] z-10">
       <ion-header
-          class="relative border-none w-[348px] h-[63px] px-[13px] rounded-3xl navbar-shadow bg-gradient-to-br from-[hsl(var(--p--100))] to-[hsl(var(--p-300))]" :style="`${taskGroupColor !== undefined? `background: ${taskGroupColor}`:''}; --fg: var(${fgColor}); `">
+          class="relative border-none w-[348px] h-[63px] px-[13px] rounded-3xl navbar-shadow bg-gradient-to-br from-[hsl(var(--p--100))] to-[hsl(var(--p-300))]" :style="`${taskGroupEntity?.color !== undefined? `background: ${taskGroupEntity?.color}`:''}; --fg: var(${fgColor}); `">
         <div v-if="!multiSelectMode" class="w-full h-full flex flex-row justify-between items-center px-0">
           <div class="navbar-start w-[56px] h-[48px]">
             <button type="button" title="Open menu" :class="`w-[56px] h-[48px] d-btn d-btn-ghost ${menuOpen?'d-btn-active':''}`"
@@ -10,21 +10,29 @@
               <menu-icon class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
             </button>
           </div>
-          <div class="navbar-center">
-            <div class="flex flex-row justify-center items-center gap-[3px]">
-              <span v-if="taskGroupIcon !== undefined" class="text-[25px]">{{ taskGroupIcon }}</span>
-              <span class="whitespace-nowrap text-lg font-medium" style="color: hsl(var(--fg))">{{
-                  pageName === 'tasks' ? tasksTitle === 'today' ? i18n.t('page.tasks.today') : tasksTitle : i18n.t(`page.${pageName}.name`, i18n.t('page.pageNotFound'))
+          <div class="navbar-center w-[210px]">
+            <div class="flex flex-row justify-center items-center gap-[3px] w-full">
+              <span v-if="taskGroupEntity?.icon !== undefined" class="text-[25px]">{{ taskGroupEntity?.icon }}</span>
+              <span class="truncate	whitespace-nowrap text-lg font-medium" style="color: hsl(var(--fg))">{{
+                  pageName === 'tasks' ? tasksTitle === 'today' ? i18n.t('page.tasks.today') : taskGroupEntity !== undefined? taskGroupEntity.name : tasksTitle : i18n.t(`page.${pageName}.name`, i18n.t('page.pageNotFound'))
                 }}
               </span>
             </div>
           </div>
           <div class="navbar-end w-[56px] h-[48px]">
-            <button v-show="pageName==='tasks' && date !== undefined" type="button" title="Open datepicker"
+            <button v-if="pageName==='tasks' && date !== undefined" type="button" title="Open datepicker"
                     :class="`w-[56px] h-[48px] d-btn d-btn-ghost ${datepickerOpen?'d-btn-active':''}`"
                     @click="datepickerOpen=!datepickerOpen">
               <calendar-days-icon class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
             </button>
+            <button v-if="pageName==='tasks' && isTaskGroupPage && taskGroupEntity !== undefined" type="button" title="Open datepicker"
+                    :class="`w-[56px] h-[48px] d-btn d-btn-ghost ${taskGroupMenuOpen?'d-btn-active':''}`"
+                    @click="taskGroupMenuOpen=!taskGroupMenuOpen">
+              <more-horizontal class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
+            </button>
+            <Transition name="navbar-menu">
+              <task-group-menu v-if="taskGroupMenuOpen && taskGroupEntity !== undefined" :task-group-entity="taskGroupEntity"/>
+            </Transition>
           </div>
         </div>
         <div v-if="multiSelectMode" class="w-full h-full flex flex-row justify-end items-center px-0">
@@ -40,27 +48,8 @@
             <button ref="multiSelectMenuBtn" type="button" title="More" :class="`d-btn d-btn-ghost ${multiSelectMenuOpen?'d-btn-active':''}`" @click="multiSelectMenuOpen=!multiSelectMenuOpen">
               <more-horizontal class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
             </button>
-            <Transition name="multi-select-menu">
-              <ul ref="multiSelectMenu" v-if="multiSelectMenuOpen" class="absolute w-[112px] right-0 mt-[20px] gap-[3px] navbar-multiple-selection-menu d-dropdown-content d-menu bg-base-100 rounded-box">
-                <li v-if="appStore.selectedTasks.length === 1" @click="onClickEditBtn">
-                  <div class="flex flex-row justify-around items-center">
-                    <pen-line class="stroke-inherit w-[19px] h-[19px]"/>
-                    <span class="text-inherit text-sm font-medium">编辑</span>
-                  </div>
-                </li>
-                <li @click="onClickCopyBtn">
-                  <div class="flex flex-row justify-around items-center">
-                    <clipboard-paste class="stroke-inherit w-[19px] h-[19px]"/>
-                    <span class="text-inherit text-sm font-medium">复制</span>
-                  </div>
-                </li>
-                <li @click="onClickMoveBtn">
-                  <div class="flex flex-row justify-around items-center">
-                    <folder-output class="stroke-inherit w-[19px] h-[19px]"/>
-                    <span class="text-inherit text-sm font-medium">移动</span>
-                  </div>
-                </li>
-              </ul>
+            <Transition name="navbar-menu">
+              <multi-select-menu v-if="multiSelectMenuOpen"/>
             </Transition>
           </div>
         </div>
@@ -70,7 +59,7 @@
       </Transition>
     </div>
   </sticky-element>
-  <side-panel @onmenuclose="menuOpen=false" class="w-full h-full z-20"/>
+  <side-panel @on-close-side-panel="menuOpen=false" class="w-full h-full z-20"/>
   <slot/>
 </template>
 
@@ -78,7 +67,7 @@
 import {IonHeader, IonTitle, menuController} from "@ionic/vue";
 import {CalendarDaysIcon, MenuIcon, X, PenLine, Trash2, MoreHorizontal, ClipboardPaste, FolderOutput} from 'lucide-vue-next';
 import {onMounted, onUnmounted, type Ref, ref, watch} from "vue";
-import {useRouter} from "vue-router";
+import {RouteLocationNormalized, useRouter} from "vue-router";
 import SidePanel from "@/componrnts/navbar/SidePanel.vue";
 import NavbarDatepicker from "@/componrnts/navbar/NavbarDatepicker.vue";
 import StickyElement from 'vue-sticky-element';
@@ -92,7 +81,9 @@ import EventType from "@/event/EventType";
 import * as fun from "@/utils/fun";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import * as dbUtils from "@/data/database/utils/database-utils";
-import {getForegroundColor, getWhiteBlackCssVar} from "@/utils/fun";
+import MultiSelectMenu from "@/componrnts/navbar/MultiSelectMenu.vue";
+import TaskGroupMenu from "@/componrnts/navbar/TaskGroupMenu.vue";
+import {WatchStopHandle} from "vue";
 
 const i18n = useI18n();
 const router = useRouter();
@@ -100,18 +91,25 @@ const appStore = useAppStores();
 
 const pageName = ref(router.currentRoute.value.name);
 const tasksTitle = ref('');
-const taskGroupIcon = ref<string | undefined>(undefined);
-const taskGroupColor = ref<string | undefined>(undefined);
-const date = ref<Date>();
-const menuOpen = ref(false);
-const datepickerOpen = ref(false);
-const multiSelectMenuOpen = ref(false);
-const multiSelectMode = ref(false);
 const fgColor = ref('--b1');
+const date = ref<Date>();
+
+const taskGroupMenuOpen = ref(false);
+const isTaskGroupPage = ref(false);
+const taskGroupEntity = ref<TaskGroupEntity | undefined>();
+
+const menuOpen = ref(false);
+
+const datepickerOpen = ref(false);
+
+const multiSelectMode = ref(false);
+const multiSelectMenuOpen = ref(false);
 
 const scrollEle = ref<HTMLElement | undefined | null>();
 const multiSelectMenu = ref<HTMLUListElement | null>(null);
 const multiSelectMenuBtn = ref<HTMLButtonElement | null>(null);
+
+let dateWatcher: WatchStopHandle | undefined = undefined;
 
 moment.locale(i18n.locale.value);
 
@@ -145,18 +143,6 @@ function onClickDeleteBtn() {
   appStore.eventBus.emit(EventType.CLICK_DELETE_TASK_BUTTON_EVENT, {});
 }
 
-function onClickEditBtn() {
-  appStore.eventBus.emit(EventType.CLICK_EDIT_TASK_BUTTON_EVENT, {});
-}
-
-function onClickMoveBtn() {
-  appStore.eventBus.emit(EventType.CLICK_MOVE_TASK_BUTTON_EVENT, {});
-}
-
-function onClickCopyBtn() {
-  appStore.eventBus.emit(EventType.CLICK_COPY_TASK_BUTTON_EVENT, {});
-}
-
 const onClickWindowCallback = (event: UIEvent) => {
   if (multiSelectMenuOpen.value && (!(event.target as HTMLElement).isEqualNode(multiSelectMenu.value!) && !fun.isChildOf(event.target as HTMLElement, multiSelectMenu.value!)) && (!(event.target as HTMLElement).isEqualNode(multiSelectMenuBtn.value) && !fun.isChildOf(event.target as HTMLElement, multiSelectMenuBtn.value!))) {
     // 点击在多选菜单之外
@@ -181,12 +167,11 @@ function updateNavbarDate(dateMoment: Moment) {
 /**
  * 进入日任务模式
  */
-function inDayTaskPage() {
-  if (taskGroupIcon.value !== undefined) taskGroupIcon.value = undefined;
-  if (taskGroupColor.value !== undefined) taskGroupColor.value = undefined;
+function inDayTaskPage(route: RouteLocationNormalized) {
+  if (taskGroupEntity.value !== undefined) taskGroupEntity.value = undefined;
 
   // 日期格式校验
-  const dateStr = router.currentRoute.value.params.date;
+  const dateStr = route.params.date;
   const dateMoment = moment(dateStr, 'YYYY-MM-DD');
   if (dateMoment.isValid()) {
     // 日期有效
@@ -198,7 +183,7 @@ function inDayTaskPage() {
   }
 
   // 当Datepicker值发生变化
-  watch(date, (value) => {
+  dateWatcher = watch(date, (value) => {
     const dateMoment = moment(value);
     updateNavbarDate(dateMoment);
     // 导航到指定日期的任务列表
@@ -210,10 +195,10 @@ function inDayTaskPage() {
   });
 }
 
-async function inTaskGroupPage() {
+async function inTaskGroupPage(route: RouteLocationNormalized) {
   if (date.value !== undefined) date.value = undefined;
 
-  const taskGroupId = router.currentRoute.value.params.taskGroupId;
+  const taskGroupId = route.params.taskGroupId;
   if (typeof taskGroupId !== 'string') return;
   const taskGroup: TaskGroupEntity | null = await dbUtils.getTaskGroupEntityRepository()?.findOne({ where: { id: taskGroupId }});
   if (taskGroup === null) {
@@ -222,9 +207,9 @@ async function inTaskGroupPage() {
     return;
   }
 
-  typeof taskGroup.name === "string" ? tasksTitle.value = taskGroup.name : undefined;
-  typeof taskGroup.icon === "string" ? taskGroupIcon.value = taskGroup.icon : undefined;
-  typeof taskGroup.color === "string" ? taskGroupColor.value = taskGroup.color : undefined;
+  isTaskGroupPage.value = true;
+  tasksTitle.value = '';
+  taskGroupEntity.value = taskGroup;
 
   initForegroundColor();
 }
@@ -233,21 +218,27 @@ async function inTaskGroupPage() {
  * 获取背景颜色以设置前景颜色
  */
 function initForegroundColor() {
-  if (taskGroupColor.value === undefined) return;
-  fgColor.value = fun.getForegroundColor(typeof taskGroupColor.value === "string" ? taskGroupColor.value : '');
+  if (taskGroupEntity.value?.color === undefined) return;
+  fgColor.value = fun.getForegroundColor(typeof taskGroupEntity.value!.color === "string" ? taskGroupEntity.value!.color : '');
+}
+
+function updateNavbar(route: RouteLocationNormalized) {
+  fgColor.value = '--b1';
+
+  // 获取日任务路由参数的日期
+  if (route.params.date) {
+    // 存在日期参数
+    inDayTaskPage(route);
+  } else if (route.params.taskGroupId) {
+    // 存在任务组参数
+    inTaskGroupPage(route);
+  } else if (route.name === 'tasks') {
+    inDayTaskPage(route);
+  }
 }
 
 onMounted(() => {
-  // 获取日任务路由参数的日期
-  if (router.currentRoute.value.params.date) {
-    // 存在日期参数
-    inDayTaskPage();
-  } else if (router.currentRoute.value.params.taskGroupId) {
-    // 存在任务组参数
-    inTaskGroupPage();
-  } else if (pageName.value === 'tasks') {
-    inDayTaskPage();
-  }
+  updateNavbar(router.currentRoute.value);
 
   // 获取滚动元素
   appStore.eventBus.on(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
@@ -264,6 +255,14 @@ onUnmounted(() => {
   appStore.eventBus.off(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
   appStore.eventBus.off(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = true);
   appStore.eventBus.off(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = false);
+});
+
+router.afterEach((to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+  // 停止监听日期变化
+  if (dateWatcher !== undefined) dateWatcher();
+
+  pageName.value = to.name;
+  updateNavbar(to);
 });
 
 </script>
