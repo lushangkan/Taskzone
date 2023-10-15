@@ -76,7 +76,7 @@ import * as DbUtils from "@/data/database/utils/database-utils";
 import draggable from 'zhyswan-vuedraggable'
 import EventType from "@/event/EventType";
 import {useDatabaseStores} from "@/stores/database-stores";
-import {useRouter} from "vue-router";
+import {RouteLocationNormalized, useRouter} from "vue-router";
 import * as dbUtils from "@/data/database/utils/database-utils";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 
@@ -152,15 +152,25 @@ const multiSelectDeleteTasksCallback = async () => {
   appStore.eventBus.emit(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, {});
 };
 
-async function inTaskGroupPage() {
+async function inTaskGroupPage(route: RouteLocationNormalized) {
   const taskGroupRepository = dbUtils.getTaskGroupEntityRepository();
-  if (typeof router.currentRoute.value.params.taskGroupId !== 'string') return;
-  const result: TaskGroupEntity | null = await taskGroupRepository?.findOne({ where: { id: router.currentRoute.value.params.taskGroupId }});
+  if (typeof route.params.taskGroupId !== 'string') return;
+  const result: TaskGroupEntity | null = await taskGroupRepository?.findOne({ where: { id: route.params.taskGroupId }});
   taskGroupEntity.value = result === null ? undefined : result;
 }
 
+async function inDayTaskPage(route: RouteLocationNormalized) {
+
+}
+
 onMounted(() => {
-  if (router.currentRoute.value.name === 'tasks' && router.currentRoute.value.params.taskGroupId) inTaskGroupPage();
+  if (router.currentRoute.value.name === 'tasks' && router.currentRoute.value.params.taskGroupId) {
+    inTaskGroupPage(router.currentRoute.value);
+  } else if (router.currentRoute.value.name === 'tasks' && router.currentRoute.value.params.date) {
+    inDayTaskPage(router.currentRoute.value);
+  } else if (router.currentRoute.value.name === 'tasks' && (router.currentRoute.value.path === "/" || router.currentRoute.value.path === "")) {
+    inDayTaskPage(router.currentRoute.value);
+  }
 
   // 清空多选任务
   appStore.selectedTasks = [];
@@ -182,6 +192,16 @@ onMounted(() => {
 onUnmounted(() => {
   // 清空多选任务
   appStore.selectedTasks = [];
+});
+
+router.afterEach((to) =>{
+  if (to.name === 'tasks' && to.params.taskGroupId) {
+    inTaskGroupPage(to);
+  } else if (to.name === 'tasks' && to.params.date) {
+    inDayTaskPage(to);
+  } else if (to.name === 'tasks' && (to.path === "/" || to.path === "")) {
+    inDayTaskPage(to);
+  }
 });
 
 </script>
