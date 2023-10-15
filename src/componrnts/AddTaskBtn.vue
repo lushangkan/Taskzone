@@ -29,7 +29,7 @@ import {onMounted, onUnmounted, reactive, Ref, ref} from "vue";
 import {useAppStores} from "@/stores/app-stores";
 import EventType from "@/event/EventType";
 import * as dbUtils from "@/data/database/utils/database-utils";
-import {useRouter} from "vue-router";
+import {RouteLocationNormalized, useRouter} from "vue-router";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import * as fun from "@/utils/fun";
 
@@ -76,10 +76,10 @@ const onScrollInitialized = () => {
 /**
  * 获取任务组颜色以改变按钮背景颜色
  */
-async function inTaskGroupPage() {
+async function inTaskGroupPage(route: RouteLocationNormalized) {
   const taskGroupRepository = dbUtils.getTaskGroupEntityRepository();
-  if (typeof router.currentRoute.value.params.taskGroupId !== 'string') return;
-  const taskGroupEntity: TaskGroupEntity | null = await taskGroupRepository?.findOne({ where: { id: router.currentRoute.value.params.taskGroupId }});
+  if (typeof route.params.taskGroupId !== 'string') return;
+  const taskGroupEntity: TaskGroupEntity | null = await taskGroupRepository?.findOne({ where: { id: route.params.taskGroupId }});
   if (taskGroupEntity === null) return;
   if (taskGroupEntity.color !== null) taskGroupColor.value = taskGroupEntity.color;
 
@@ -95,7 +95,7 @@ function initForegroundColor() {
 }
 
 onMounted(() => {
-  if (router.currentRoute.value.name === 'tasks' && router.currentRoute.value.params.taskGroupId) inTaskGroupPage();
+  if (router.currentRoute.value.name === 'tasks' && router.currentRoute.value.params.taskGroupId) inTaskGroupPage(router.currentRoute.value);
 
   // 添加监听器
   appStore.eventBus.on(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
@@ -103,6 +103,13 @@ onMounted(() => {
 
 onUnmounted(() => {
   appStore.eventBus.off(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
+});
+
+// 监听路由变化
+router.afterEach((to) => {
+  fgColor.value = '--b1';
+  taskGroupColor.value = undefined;
+  if (to.name === 'tasks' && to.params.taskGroupId) inTaskGroupPage(to);
 });
 
 </script>
