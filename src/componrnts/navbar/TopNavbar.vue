@@ -31,7 +31,7 @@
               <more-horizontal class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
             </button>
             <Transition name="navbar-menu">
-              <task-group-menu v-if="taskGroupMenuOpen && taskGroupEntity !== undefined" :task-group-entity="taskGroupEntity"/>
+              <task-group-menu v-if="taskGroupMenuOpen && taskGroupEntity !== undefined" :task-group-entity="taskGroupEntity" @click-del-btn="taskGroupMenuOpen=fa"/>
             </Transition>
           </div>
         </div>
