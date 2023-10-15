@@ -55,14 +55,14 @@
             <button @click="onClickCloseMultiSelectMode" type="button" title="Close multi selection mode" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
               <x-icon class="w-full h-full" color="hsl(var(--n))"/>
             </button>
-            <button type="button" title="Delete selected task group" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
+            <button @click="onClickDeleteSelectedTaskGroup" type="button" title="Delete selected task group" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
               <trash2-icon class="w-full h-full" color="hsl(var(--n))"/>
             </button>
-            <button type="button" title="Reset selected task group" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
+            <button @click="onClickResetSelectedTaskGroup" type="button" title="Reset selected task group" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
               <list-restart-icon class="w-full h-full" color="hsl(var(--n))"/>
             </button>
             <Transition name="multi-select-menu-edit-btn">
-              <button v-if="appStore.selectedTaskGroups.length === 1" type="button" title="Edit selected task group" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
+              <button @click="onClickEditSelectedTaskGroup" v-if="appStore.selectedTaskGroups.length === 1" type="button" title="Edit selected task group" class="d-btn d-btn-circle d-btn-ghost w-[21px] h-[21px] min-h-[21px]">
                 <pen-line-icon class="w-full h-full" color="hsl(var(--n))"/>
               </button>
             </Transition>
@@ -76,13 +76,16 @@
         >
           <template #item="{element}">
             <div class="list-group-item w-full">
-              <task-group-card :task-group-entity="element" @before-jump-to-group="beforeJumpToGroup" :class="element.id !== undefined && element.id === taskGroupOpen? 'task-group-card-active' : ''"/>
+              <task-group-card :task-group-entity="element" :class="element.id !== undefined && element.id === taskGroupOpen? 'task-group-card-active' : ''"/>
             </div>
           </template>
         </draggable>
       </div>
     </overlay-scrollbars-component>
   </ion-menu>
+  <Transition appear name="popup">
+    <confirm-deletion-popup ref="popup" v-if="popupOpen" prompt="确定要删除此任务组吗" @click-cancel-btn="popupOpen = false" @click-delete-btn="onClickPopupDelete"/>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -97,6 +100,8 @@ import draggable from "zhyswan-vuedraggable";
 import {useAppStores} from "@/stores/app-stores";
 import EventType from "@/event/EventType";
 import {RouteLocationNormalized, useRouter, RouterLink} from "vue-router";
+import {useDatabaseStores} from "@/stores/database-stores";
+import ConfirmDeletionPopup from "@/componrnts/popup/ConfirmDeletionPopup.vue";
 
 const emit = defineEmits<{
   (e: 'onCloseSidePanel') : void
@@ -111,9 +116,11 @@ const draggingCard = ref(false);
 const dayTaskOpen = ref(false);
 const tagsOpen = ref(false);
 const settingOpen = ref(false);
+const popupOpen = ref(false);
 const taskGroupOpen = ref<string | undefined>();
 
 const appStore = useAppStores();
+const dbStore = useDatabaseStores();
 
 const router = useRouter();
 
@@ -132,18 +139,25 @@ function onClickCloseMultiSelectMode() {
 }
 
 function onClickDeleteSelectedTaskGroup() {
-
+  popupOpen.value = true;
 }
 
 function onClickResetSelectedTaskGroup() {
-
+  appStore.eventBus.emit(EventType.DISABLED_TASK_GROUP_CARD_MULTI_SELECTION_MODE_EVENT, {});
 }
 
 function onClickEditSelectedTaskGroup() {
-
+  appStore.eventBus.emit(EventType.DISABLED_TASK_GROUP_CARD_MULTI_SELECTION_MODE_EVENT, {});
 }
 
-function beforeJumpToGroup() {
+function onClickPopupDelete() {
+  for (const group of appStore.selectedTaskGroups) {
+    dbStore.entityManager?.remove(group);
+  }
+
+  popupOpen.value = false;
+
+  appStore.eventBus.emit(EventType.DISABLED_TASK_GROUP_CARD_MULTI_SELECTION_MODE_EVENT, {});
 }
 
 const updateTaskGroups = async () => {

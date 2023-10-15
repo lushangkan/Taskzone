@@ -610,3 +610,21 @@
 .task-group-card-active {
   box-shadow: 0 0 9px 3px hsl(var(--p)/0.25);
 }
+
+.popup-enter-active {
+  animation: popup-animation 0.15s ease-in-out forwards;
+}
+
+.popup-leave-active {
+  animation: popup-animation 0.15s ease-in-out forwards;
+  animation-direction: reverse;
+}
+
+@keyframes popup-animation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
