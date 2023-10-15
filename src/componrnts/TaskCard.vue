@@ -7,7 +7,7 @@
            '--fg': `var(${fgColor})`,
            '--bg': `var(${bgColor})`,
          }">
-      <input ref="inputRef" type="checkbox" title="Complete" class="d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkbg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)" @change="onCompleteChange" />
+      <input ref="inputRef" type="checkbox" title="Complete" class="d-checkbox h-[24px] min-w-[0] w-[24px] aspect-square border-[3px] border-[hsl(var(--chkfg))] rounded-full outline outline-0 outline-base-100" style="--chkfg: var(--fg); --chkbg: var(--bg)" @change="onCompleteChange" />
       <div class="h-full w-[231px] flex flex-col justify-around items-center py-[8px]">
         <div class="flex flex-row justify-between items-center w-full gap-[5px]">
           <div class="flex flex-row justify-start items-center gap-[4px] w-[146px]">
