@@ -407,7 +407,7 @@
 
 .d-checkbox:checked {
   position: relative;
-  background-color: hsl(var(--chkbg) / var(--tw-bg-opacity));
+  background-color: hsl(var(--chkfg) / var(--tw-bg-opacity));
   background-image: none;
   overflow: hidden;
   @apply flex items-center justify-center;
@@ -424,7 +424,7 @@
   mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Y29sb3IiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGVjayI+PHBvbHlsaW5lIHBvaW50cz0iMjAgNiA5IDE3IDQgMTIiLz48L3N2Zz4=") no-repeat 50% 50%;
   -webkit-mask-size: 85%;
   mask-size: 85%;
-  background-color: hsl(var(--fg));
+  background-color: hsl(var(--bg));
   animation: slideInUp 0.2s ease-out forwards;
 }
 
@@ -538,24 +538,14 @@
 }
 
 .navbar-menu-enter-active {
-  animation: navbar-menu-animation 0.15s ease-out forwards;
+  animation: fadeIn 0.2s ease-out;
 }
 
 .navbar-menu-leave-active {
-  animation: navbar-menu-animation 0.15s ease-out forwards;
-  animation-direction: reverse;
+  animation: fadeOut 0.2s ease-out;
 }
 
-@keyframes navbar-menu-animation {
-  0% {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+
 
 .select-task-group-card {
   filter: brightness(65%);
