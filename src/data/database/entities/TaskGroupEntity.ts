@@ -1,6 +1,6 @@
 import {
     Column,
-    CreateDateColumn,
+    CreateDateColumn, DeleteDateColumn,
     Entity,
     JoinTable,
     ManyToMany,
@@ -11,6 +11,7 @@ import {RepeatMode} from "@/data/enum/RepeatMode";
 import {RepeatCustom} from "@/data/models/RepeatCustom";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {TagEntity} from "@/data/database/entities/TagEntity";
+import {OnDeleteType} from "typeorm/metadata/types/OnDeleteType";
 
 @Entity()
 export class TaskGroupEntity {
@@ -29,7 +30,7 @@ export class TaskGroupEntity {
     @Column('text', { nullable: true })
     description: string | null;
 
-    @OneToMany(() => TaskEntity, task => task.taskGroup, { nullable: true, cascade: true })
+    @OneToMany(() => TaskEntity, task => task.taskGroup, { nullable: true, cascade: true, onDelete: "CASCADE" })
     tasks: (TaskEntity | null)[];
 
     @Column('text', { nullable: true })
@@ -38,7 +39,7 @@ export class TaskGroupEntity {
     @Column('text', { nullable: true })
     icon: string | null;
 
-    @ManyToMany(() => TagEntity, tag => tag.taskGroups, { nullable: true })
+    @ManyToMany(() => TagEntity, tag => tag.taskGroups, { nullable: true, onDelete: "SET NULL" })
     @JoinTable()
     tags: (TagEntity | null)[];
 

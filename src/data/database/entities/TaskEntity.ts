@@ -33,7 +33,7 @@ export class TaskEntity {
     @Column('text')
     icon: string;
 
-    @ManyToMany(() => TagEntity, tag => tag.tasks, { nullable: true })
+    @ManyToMany(() => TagEntity, tag => tag.tasks, { nullable: true, onDelete: "SET NULL" })
     @JoinTable()
     tags: (TagEntity | null)[];
 
@@ -58,13 +58,13 @@ export class TaskEntity {
     @Column('text')
     reminders: ReminderMode;
 
-    @ManyToOne(() => TaskGroupEntity, taskGroup => taskGroup.tasks, { nullable: true })
+    @ManyToOne(() => TaskGroupEntity, taskGroup => taskGroup.tasks, { nullable: true,  onDelete: "CASCADE" })
     taskGroup: TaskGroupEntity | null;
 
-    @ManyToOne(() => TaskEntity, task => task.childTasks, { nullable: true })
+    @ManyToOne(() => TaskEntity, task => task.childTasks, { nullable: true, onDelete: "SET NULL" })
     parentTask: TaskEntity | null;
 
-    @OneToMany(() => TaskEntity, task => task.parentTask, { nullable: true })
+    @OneToMany(() => TaskEntity, task => task.parentTask, { nullable: true, onDelete: "CASCADE" })
     childTasks: TaskEntity[] | null[];
 
 }
