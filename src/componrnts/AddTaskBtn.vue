@@ -13,9 +13,8 @@
       </div>
     </Transition>
     <Transition name="add-task-btn">
-      <!-- TODO: 在taskGroup页面下支持呼吸animation -->
       <button v-show="addTaskBtnShow" type="button" title="add task" @click="optionsBtnShow=!optionsBtnShow"
-              class="add-task-btn d-btn d-btn-circle border-none w-14 h-14 bg-primary shadow justify-center items-center inline-flex z-30" :style="`${taskGroupColor !== undefined? `background: ${taskGroupColor}; animation: none;`:''}; --fg: var(${fgColor})`">
+              class="add-task-btn d-btn d-btn-circle border-none w-14 h-14 bg-[hsl(var(--bg))] shadow justify-center items-center inline-flex z-30" :style="`--fg: var(${fgColor}); --bg: ${taskGroupColor === undefined? 'var(--p)':taskGroupColor}`">
         <PlusIcon color="hsl(var(--fg))"
                   class="w-[39px] h-[39px] relative flex-col justify-start items-start flex"/>
       </button>
@@ -32,6 +31,7 @@ import * as dbUtils from "@/data/database/utils/database-utils";
 import {RouteLocationNormalized, useRouter} from "vue-router";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import * as fun from "@/utils/fun";
+import Color from "colorjs.io";
 
 const optionsBtnShow = ref(false);
 const addTaskBtnShow = ref(true);
@@ -80,8 +80,10 @@ async function inTaskGroupPage(route: RouteLocationNormalized) {
   const taskGroupRepository = dbUtils.getTaskGroupEntityRepository();
   if (typeof route.params.taskGroupId !== 'string') return;
   const taskGroupEntity: TaskGroupEntity | null = await taskGroupRepository?.findOne({ where: { id: route.params.taskGroupId }});
-  if (taskGroupEntity === null) return;
-  if (taskGroupEntity.color !== null) taskGroupColor.value = taskGroupEntity.color;
+  if (taskGroupEntity === null || taskGroupEntity.color === null) return;
+
+  const color = new Color(taskGroupEntity.color);
+  taskGroupColor.value = color.to('hsl', {}).toString().replace('hsl(', '').replace(')', '');
 
   initForegroundColor();
 }

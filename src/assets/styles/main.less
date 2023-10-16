@@ -178,24 +178,34 @@
 }
 
 .add-task-btn {
-  animation: add-task-btn-animation 0.2s ease-in-out forwards alternate infinite;
+  animation: add-task-btn-animation 2s ease-in-out forwards alternate infinite;
 }
 
 @keyframes add-task-btn-animation {
   0% {
-    box-shadow: 0 0 5px 5px rgba(114,232,196,0.15);
+    box-shadow: 0 0 5px 5px hsla(var(--bg) / 0.15);
   }
   100% {
-    box-shadow: 0 0 8px 5px rgba(114,232,196,0.3);
+    box-shadow: 0 0 8px 5px hsla(var(--bg) / 0.3);
   }
 }
 
 .add-task-btn-enter-active {
-  animation: backInUp 0.4s ease-out forwards;
+  animation: add-task-btn-sticky-animation 0.2s ease-out;
+  animation-direction: reverse;
 }
 
 .add-task-btn-leave-active {
-  animation: backOutDown 0.4s ease-out forwards;
+  animation: add-task-btn-sticky-animation 0.2s ease-out;
+}
+
+@keyframes add-task-btn-sticky-animation {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(15vh);
+  }
 }
 
 .options-btn-enter-active {
@@ -429,7 +439,7 @@
 }
 
 .task-card-shadow {
-  box-shadow: 0px 8px 10px -3px hsl(var(--n)/0.1);
+  box-shadow: 0 8px 10px -3px hsl(var(--n)/0.1);
 }
 
 .text-stroke-neutral {
