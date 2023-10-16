@@ -1,11 +1,11 @@
 <template>
- <div ref="cardRef" v-if="taskGroupEntity?.dayTaskDate === null"
-      v-touch:tap="onTapCard"
-      v-touch:hold="onHoldCard" v-touch-options="{ touchHoldTolerance: 300 }"
-      class="btn-transition w-full h-[48px] rounded-[16px] flex justify-start items-center px-[12px] gap-[8px]" :style="{ backgroundColor: taskGroupEntity?.color, '--fg': `var(${fgColor})` }">
+ <button type="button" :title="props.taskGroupEntity?.name" ref="cardRef" v-if="taskGroupEntity?.dayTaskDate === null"
+         v-touch:tap="onTapCard"
+         v-touch:hold="onHoldCard" v-touch-options="{ touchHoldTolerance: 300 }"
+         :class="`btn-transition w-full h-[48px] rounded-[16px] flex justify-start items-center px-[12px] gap-[8px] bg-[hsl(var(--bg))] ${selected? 'select-task-group-card':''}`" :style="{ '--bg': bgColor, '--fg': `var(${fgColor})` }">
    <span v-if="taskGroupEntity?.icon !== null" class="text-[22px]">{{ taskGroupEntity.icon }}</span>
    <span class="truncate text-clip font-medium" style="color: hsl(var(--fg));">{{ taskGroupEntity.name }}</span>
- </div>
+ </button>
 </template>
 
 <script setup lang="ts">
@@ -17,6 +17,7 @@ import EventType from "@/event/EventType";
 import {useAppStores} from "@/stores/app-stores";
 import {storeToRefs} from "pinia";
 import {useRouter} from "vue-router";
+import Color from "colorjs.io";
 
 const props = defineProps({
   taskGroupEntity: {
@@ -35,22 +36,28 @@ const router = useRouter();
 const cardRef: Ref<HTMLDivElement | null> = ref(null);
 
 const fgColor = ref<string>('--b1');
+const bgColor = ref<string>('--p');
 const multiSelectMode = ref(false);
 const draggingCard = ref<boolean>(false);
+const selected = ref(false);
 
 const { selectedTaskGroups } = storeToRefs(appStore);
 
 
 watch(selectedTaskGroups, (value) =>{
-  if (value.includes(props.taskGroupEntity!) && !cardRef.value?.classList.contains('select-task-group-card')) {
-    cardRef.value?.classList.add('select-task-group-card');
-  } else if (!value.includes(props.taskGroupEntity!) && cardRef.value?.classList.contains('select-task-group-card')) {
-    cardRef.value?.classList.remove('select-task-group-card');
+  if (value.includes(props.taskGroupEntity!)) {
+    selected.value = true;
+  } else if (!value.includes(props.taskGroupEntity!)) {
+    selected.value = false;
   }
-}, { deep: true });
+}, { deep: true, immediate: true });
 
 function initColorVar() {
   fgColor.value = getForegroundColor(window.getComputedStyle(cardRef.value!).backgroundColor);
+  if (typeof props.taskGroupEntity?.color === 'string') {
+    const color = new Color(props.taskGroupEntity.color);
+    bgColor.value = color.to('hsl', {}).toString().replace('hsl(', '').replace(')', '');
+  }
 }
 
 function onHoldCard() {
