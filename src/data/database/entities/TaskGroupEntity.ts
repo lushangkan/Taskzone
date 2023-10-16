@@ -21,7 +21,7 @@ export class TaskGroupEntity {
 
     // TODO: Record the user's ordering of tasks.
 
-    @Column('datetime', { nullable: true })
+    @Column('datetime', { nullable: true, unique: true })
     dayTaskDate: Date | null;
 
     @Column('text', { nullable: true })
