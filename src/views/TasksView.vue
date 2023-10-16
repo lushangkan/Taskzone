@@ -18,7 +18,7 @@
             <draggable v-model="undoneTasks" item-key="id"
                        tag="transition-group" :component-data="
                        {
-                         name: !isDragging ? 'task-card' : null,
+                         name: !isDragging && !updatingTask ? 'task-card' : null,
                          tag: 'div',
                          class: `w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`
                        }"
@@ -34,14 +34,14 @@
                 </div>
               </template>
             </draggable>
-            <div v-if="undoneTasks.length !== 0" class="w-[90%] flex flex-row justify-around items-center gap-[10px] my-[25px]">
+            <div v-if="undoneTasks.length !== 0 && doneTasks.length !== 0" class="w-[90%] flex flex-row justify-around items-center gap-[10px] my-[25px]">
               <span class="text-neutral font-light text-[13px] whitespace-nowrap">{{ $t('taskView.completed') }}</span>
               <div class="w-full border-t border-base-300/80"/>
             </div>
             <draggable v-model="doneTasks" item-key="id"
                        tag="transition-group" :component-data="
                        {
-                         name: !isDragging ? 'task-card' : null,
+                         name: !isDragging && !updatingTask ? 'task-card' : null,
                          tag: 'div',
                          class: `w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`
                        }"
@@ -70,7 +70,7 @@ import AddTaskBtn from "@/componrnts/AddTaskBtn.vue";
 import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
 import {useAppStores} from "@/stores/app-stores";
 import TaskCard from "@/componrnts/TaskCard.vue";
-import {onMounted, onUnmounted, Ref, ref} from "vue";
+import {onMounted, onUnmounted, Ref, ref, watch} from "vue";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import * as DbUtils from "@/data/database/utils/database-utils";
 import draggable from 'zhyswan-vuedraggable'
@@ -79,6 +79,7 @@ import {useDatabaseStores} from "@/stores/database-stores";
 import {RouteLocationNormalized, useRouter} from "vue-router";
 import * as dbUtils from "@/data/database/utils/database-utils";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
+import moment from "moment";
 
 const appStore = useAppStores();
 const dbStore = useDatabaseStores();
@@ -93,19 +94,38 @@ const taskGroupEntity: Ref<TaskGroupEntity | undefined> = ref();
 const isDragging = ref(false);
 
 const multiSelectMode = ref(false);
+
+const updatingTask = ref(false);
+
+let taskGroupId: string | undefined = undefined;
+
 /**
  * 数据库更新后的回调, 更新任务列表
  */
 const updateTasks = async () => {
+  if (taskGroupId === undefined) return;
+
   // 更新任务
-  const result = (await DbUtils.getTaskEntityRepository()?.find({
+  const taskGroupEntity = (await DbUtils.getTaskGroupEntityRepository()?.findOne({
+    where: {
+      id: taskGroupId
+    },
     relations: {
-      tags: true
+      tasks: true
     }
   }))!;
 
-  undoneTasks.value = result.filter((task) => !task.isDone);
-  doneTasks.value = result.filter((task) => task.isDone);
+  const tasks: (TaskEntity | null)[] = taskGroupEntity.tasks;
+
+  undoneTasks.value = tasks.filter((task) => {
+    if (task === null) return false;
+    return !task.isDone;
+  }) as TaskEntity[];
+
+  doneTasks.value = tasks.filter((task) => {
+    if (task === null) return false;
+    return task.isDone;
+  }) as TaskEntity[];
 }
 
 const updateTaskGroup = async () => {
@@ -153,40 +173,81 @@ const multiSelectDeleteTasksCallback = async () => {
 };
 
 async function inTaskGroupPage(route: RouteLocationNormalized) {
+  taskGroupId = undefined;
+
+  // 获取TaskGroupId
   const taskGroupRepository = dbUtils.getTaskGroupEntityRepository();
+
   if (typeof route.params.taskGroupId !== 'string') return;
+
   const result: TaskGroupEntity | null = await taskGroupRepository?.findOne({ where: { id: route.params.taskGroupId }});
-  taskGroupEntity.value = result === null ? undefined : result;
+  if (result === null) return;
+
+  taskGroupId = result?.id;
+
+  // 初始化任务列表
+  await updateTasks()
 }
 
 async function inDayTaskPage(route: RouteLocationNormalized) {
+  taskGroupId = undefined;
 
+  // 获取日期
+  let date: Date | undefined = undefined;
+
+  if (route.params.date) {
+    const momDate = moment(route.params.date, 'YYYY-MM-DD', true);
+    if (momDate.isValid()) {
+      date = momDate.startOf('day').toDate();
+    }
+  } else {
+    date = moment().startOf('day').toDate();
+  }
+
+  if (date === undefined) return;
+
+  // 获取Id
+  const result: TaskGroupEntity | null = (await dbUtils.getTaskGroupEntityRepository()?.findOne({
+    where: {
+      dayTaskDate: date
+    },
+    relations: {
+      tasks: true,
+      tags: true
+    }
+  }));
+
+  if (result === null) return;
+
+  taskGroupId = result.id;
+
+  // 初始化任务列表
+  await updateTasks()
 }
 
 onMounted(() => {
+  updatingTask.value = true;
+
   if (router.currentRoute.value.name === 'tasks' && router.currentRoute.value.params.taskGroupId) {
-    inTaskGroupPage(router.currentRoute.value);
+    inTaskGroupPage(router.currentRoute.value).then(() => updatingTask.value = false);
   } else if (router.currentRoute.value.name === 'tasks' && router.currentRoute.value.params.date) {
-    inDayTaskPage(router.currentRoute.value);
+    inDayTaskPage(router.currentRoute.value).then(() => updatingTask.value = false);
   } else if (router.currentRoute.value.name === 'tasks' && (router.currentRoute.value.path === "/" || router.currentRoute.value.path === "")) {
-    inDayTaskPage(router.currentRoute.value);
+    inDayTaskPage(router.currentRoute.value).then(() => updatingTask.value = false);
   }
 
   // 清空多选任务
   appStore.selectedTasks = [];
 
-  // 初始化任务列表
-  updateTasks().then(() => {
-    // 监听数据库更新事件
-    appStore.eventBus.on(EventType.DB_ALL, updateTasks);
-    appStore.eventBus.on(EventType.DB_AFTER_REMOVE, updateTaskGroup);
-    appStore.eventBus.on(EventType.DB_AFTER_SOFT_REMOVE, updateTaskGroup);
-  });
-
   // 监听多选模式
   appStore.eventBus.on(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = true);
   appStore.eventBus.on(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = false);
   appStore.eventBus.on(EventType.CLICK_DELETE_TASK_BUTTON_EVENT, multiSelectDeleteTasksCallback);
+
+  // 监听数据库更新事件
+  appStore.eventBus.on(EventType.DB_ALL, updateTasks);
+  appStore.eventBus.on(EventType.DB_AFTER_REMOVE, updateTaskGroup);
+  appStore.eventBus.on(EventType.DB_AFTER_SOFT_REMOVE, updateTaskGroup);
 });
 
 onUnmounted(() => {
@@ -195,12 +256,14 @@ onUnmounted(() => {
 });
 
 router.afterEach((to) =>{
+  updatingTask.value = true;
+
   if (to.name === 'tasks' && to.params.taskGroupId) {
-    inTaskGroupPage(to);
+    inTaskGroupPage(to).then(() => updatingTask.value = false);
   } else if (to.name === 'tasks' && to.params.date) {
-    inDayTaskPage(to);
+    inDayTaskPage(to).then(() => updatingTask.value = false);
   } else if (to.name === 'tasks' && (to.path === "/" || to.path === "")) {
-    inDayTaskPage(to);
+    inDayTaskPage(to).then(() => updatingTask.value = false);
   }
 });
 
