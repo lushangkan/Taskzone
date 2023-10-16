@@ -93,7 +93,7 @@ async function inTaskGroupPage(route: RouteLocationNormalized) {
  */
 function initForegroundColor() {
   if (taskGroupColor.value === undefined) return;
-  fgColor.value = fun.getForegroundColor(typeof taskGroupColor.value === "string" ? taskGroupColor.value : '');
+  fgColor.value = fun.getForegroundColor(typeof taskGroupColor.value === "string" ? `hsl(${taskGroupColor.value})` : '');
 }
 
 onMounted(() => {
