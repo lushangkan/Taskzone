@@ -177,7 +177,7 @@ export function checkTodayTaskGroup() {
 /**
  * 生成指定日期的任务组
  */
-export function checkDayTaskGroup(date: Date) {
+export async function checkDayTaskGroup(date: Date) {
     // 获取日期
     const dateMom = moment(date);
 
@@ -186,13 +186,13 @@ export function checkDayTaskGroup(date: Date) {
     date = dateMom.startOf('day').toDate();
 
     // 检测是否已经生成
-    repository?.findOne({where: {dayTaskDate: date}}).then((group) => {
-        if (group !== null) return;
-        //生成新TaskGroup
-        const newGroup = new TaskGroupEntity();
-        newGroup.dayTaskDate = date;
-        newGroup.repeatMode = RepeatMode.ONLY_ONE;
+    const group = await repository?.findOne({where: {dayTaskDate: date}});
 
-        repository?.save(newGroup);
-    });
+    if (group !== null && group !== undefined) return;
+    //生成新TaskGroup
+    const newGroup = new TaskGroupEntity();
+    newGroup.dayTaskDate = date;
+    newGroup.repeatMode = RepeatMode.ONLY_ONE;
+
+    return await repository?.save(newGroup);
 }

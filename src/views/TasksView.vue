@@ -181,7 +181,14 @@ async function inTaskGroupPage(route: RouteLocationNormalized) {
   if (typeof route.params.taskGroupId !== 'string') return;
 
   const result: TaskGroupEntity | null = await taskGroupRepository?.findOne({ where: { id: route.params.taskGroupId }});
+  // TODO: 跳转到404页
   if (result === null) return;
+
+  // 判断是否为日任务，如果是则跳转到日任务页面
+  if (result.dayTaskDate !== null) {
+    router.push('/tasks/day/' + moment(result.dayTaskDate).format('YYYY-MM-DD'));
+    return;
+  }
 
   taskGroupId = result?.id;
 
@@ -204,10 +211,11 @@ async function inDayTaskPage(route: RouteLocationNormalized) {
     date = moment().startOf('day').toDate();
   }
 
+  // TODO: 跳转到404页
   if (date === undefined) return;
 
   // 获取Id
-  const result: TaskGroupEntity | null = (await dbUtils.getTaskGroupEntityRepository()?.findOne({
+  let result: TaskGroupEntity | null | undefined = (await dbUtils.getTaskGroupEntityRepository()?.findOne({
     where: {
       dayTaskDate: date
     },
@@ -217,7 +225,13 @@ async function inDayTaskPage(route: RouteLocationNormalized) {
     }
   }));
 
-  if (result === null) return;
+  if (result === null) {
+    // 找不到则新建
+    result = await dbUtils.checkDayTaskGroup(date);
+
+    // TODO: 跳转到404页
+    if (result === null || result === undefined) return;
+  }
 
   taskGroupId = result.id;
 
