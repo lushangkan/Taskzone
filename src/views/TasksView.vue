@@ -14,13 +14,13 @@
         }" class="w-full h-full" @os-initialized="scrollInitialized"
       >
         <div id="main-scroll-content" class="w-full flex flex-col justify-center items-center">
-          <div class="w-[82%] pb-[50px] flex flex-col justify-start items-center">
+          <div class="w-[82%] pb-[50px] pt-[115px] flex flex-col justify-start items-center">
             <draggable v-model="undoneTasks" item-key="id"
                        tag="transition-group" :component-data="
                        {
                          name: !isDragging ? 'task-card' : null,
                          tag: 'div',
-                         class: `${undoneTasks.length !== 0? 'pt-[115px]':''} w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`
+                         class: `w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`
                        }"
                        animation="200" handle=".drag-handle"
                        @start="onDragStart" @end="onDragEnd"
@@ -43,7 +43,7 @@
                        {
                          name: !isDragging ? 'task-card' : null,
                          tag: 'div',
-                         class: `${undoneTasks.length === 0 && doneTasks.length !== 0? 'pt-[115px]':''} w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`
+                         class: `w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`
                        }"
                        animation="200" handle=".drag-handle"
                        @start="onDragStart" @end="onDragEnd"
