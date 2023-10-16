@@ -9,7 +9,7 @@ import {ReminderMode} from "@/data/enum/ReminderMode";
 import {TagEntity} from "@/data/database/entities/TagEntity";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 
-export async function genFakeTask(count: number) {
+export async function genFakeTask(count: number, groupId?: string) {
     const dbStore = useDatabaseStores();
     const entityManager = dbStore.entityManager;
 
@@ -36,7 +36,11 @@ export async function genFakeTask(count: number) {
             }
 
             task.reminders = randomEnum(ReminderMode);
-            task.taskGroup = fun.randomBoolean() ? await getRandomTaskGroup() : null;
+            if (groupId !== undefined) {
+                task.taskGroup = await entityManager.findOne(TaskGroupEntity, { where: { id: groupId } });
+            } else {
+                task.taskGroup = fun.randomBoolean() ? await getRandomTaskGroup() : null;
+            }
             // task.parentTask = fun.randomBoolean() ? await getRandomTask() : null;
             // task.childTasks = fun.randomBoolean() ? convertToArray(await genFakeTask(fun.randomInt(0, 3))) : [];
 
