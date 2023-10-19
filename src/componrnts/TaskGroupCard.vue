@@ -53,10 +53,10 @@ watch(selectedTaskGroups, (value) =>{
 }, { deep: true, immediate: true });
 
 function initColorVar() {
-  fgColor.value = getForegroundColor(window.getComputedStyle(cardRef.value!).backgroundColor);
   if (typeof props.taskGroupEntity?.color === 'string') {
     const color = new Color(props.taskGroupEntity.color);
     bgColor.value = color.to('hsl', {}).toString().replace('hsl(', '').replace(')', '');
+    fgColor.value = getForegroundColor(color.to('srgb', {}).toString());
   }
 }
 
