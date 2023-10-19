@@ -12,6 +12,8 @@ import {RepeatCustom} from "@/data/models/RepeatCustom";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {TagEntity} from "@/data/database/entities/TagEntity";
 import {OnDeleteType} from "typeorm/metadata/types/OnDeleteType";
+import {ReminderMode} from "@/data/enum/ReminderMode";
+import {Priority} from "@/data/enum/Priority";
 
 @Entity()
 export class TaskGroupEntity {
@@ -49,10 +51,16 @@ export class TaskGroupEntity {
     @Column('datetime', { nullable: true })
     deadLineDate: Date | null;
 
-    @Column('text')
+    @Column('text', { default: RepeatMode.ONLY_ONCE })
     repeatMode: RepeatMode;
 
     @Column('simple-json', { nullable: true })
     repeatCustom: RepeatCustom | null;
+
+    @Column('text', { default: ReminderMode.NONE } )
+    reminders: ReminderMode;
+
+    @Column('text', { default: Priority.LOW })
+    priority: Priority;
 
 }

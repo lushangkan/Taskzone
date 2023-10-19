@@ -43,13 +43,6 @@ onMounted(() => {
   console.log(FakeData);
 
   console.log(DbUtil);
-
-  console.log(SettingEntity);
-  console.log(TagEntity);
-  console.log(TaskEntity);
-  console.log(TaskGroupEntity);
-
-  console.log(moment)
 });
 
 onUnmounted(() => {

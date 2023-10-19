@@ -37,8 +37,8 @@ export class TaskEntity {
     @JoinTable()
     tags: (TagEntity | null)[];
 
-    @Column('text', { nullable: true })
-    priority: Priority | null;
+    @Column('text', { default: Priority.LOW })
+    priority: Priority;
 
     @CreateDateColumn()
     createDate: Date;
@@ -49,13 +49,13 @@ export class TaskEntity {
     @Column('boolean')
     isDone: boolean;
 
-    @Column('text')
+    @Column('text', { default: RepeatMode.ONLY_ONCE })
     repeatMode: RepeatMode;
 
     @Column('simple-json', { nullable: true })
     repeatCustom: RepeatCustom | null;
 
-    @Column('text')
+    @Column('text', { default: ReminderMode.NONE })
     reminders: ReminderMode;
 
     @ManyToOne(() => TaskGroupEntity, taskGroup => taskGroup.tasks, { nullable: true,  onDelete: "CASCADE" })

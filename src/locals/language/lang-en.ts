@@ -1,4 +1,6 @@
 import {Priority} from "@/data/enum/Priority";
+import {RepeatMode} from "@/data/enum/RepeatMode";
+import {ReminderMode} from "@/data/enum/ReminderMode";
 
 export const langEn = {
     page: {
@@ -72,9 +74,9 @@ export const langEn = {
         defDeadLine: 'No deadline',
         priority: {
             [Priority.LOW]: 'Low',
+            [Priority.NORMAL]: 'Normal',
             [Priority.MEDIUM]: 'Medium',
             [Priority.HIGH]: 'High',
-            def: 'No priority'
         }
     },
     taskView: {
@@ -84,6 +86,20 @@ export const langEn = {
         today: 'Today',
         yesterday: 'Yesterday',
         tomorrow: 'Tomorrow',
+    },
+    repeatMode: {
+        [RepeatMode.ONLY_ONCE]: 'Only once',
+        [RepeatMode.ALWAYS]: 'Every day',
+        [RepeatMode.WORKDAY]: 'Workday',
+        [RepeatMode.HOLIDAYS_AND_WEEKEND]: 'Weekend and holidays',
+        [RepeatMode.CUSTOM]: 'Custom',
+    },
+    reminderMode: {
+        [ReminderMode.NONE]: 'None',
+        [ReminderMode.NOTIFICATION_ONLY]: 'Notification',
+        [ReminderMode.VIBRATION_NOTIFICATION]: 'Vibration',
+        [ReminderMode.VIBRATION_RINGTONE_NOTIFICATION]: 'Vibration & ringtone',
+        [ReminderMode.ALARM]: 'Alarm',
     }
 
 }

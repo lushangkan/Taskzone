@@ -22,7 +22,7 @@ export function getTestTask() {
     task.createDate = faker.date.past();
     task.deadLineDate = faker.date.future();
     task.isDone = false;
-    task.repeatMode = RepeatMode.ONLY_ONE;
+    task.repeatMode = RepeatMode.ONLY_ONCE;
     task.repeatCustom = null;
     task.reminders = ReminderMode.VIBRATION_RINGTONE_NOTIFICATION;
     task.taskGroup = null;

@@ -14,28 +14,20 @@
             <span class="text-[21px] text-center">{{ props.taskEntity !== undefined && props.taskEntity.icon !== null? props.taskEntity.icon : '🍪' }}</span>
             <span class="text-[hsl(var(--fg))] text-[18px] font-[500] truncate w-full text-left">{{ props.taskEntity !== undefined && props.taskEntity.name !== null ? props.taskEntity.name : $t('taskCard.defTaskName') }}</span>
           </div>
-          <div ref="tagsRef" v-if="props.taskEntity?.tags !== undefined && props.taskEntity?.tags.length !== 0" class="flex flex-row justify-end items-center h-[120%]">
-            <div class="flex flex-row justify-start items-center px-[8px] py-0 h-full max-w-[80px] gap-[1px] rounded-full whitespace-nowrap" :style="{
-              '--bg': `var(${tagBgColor})`,
-              '--fg': `var(${tagFgColor})`,
-              'background-color': props.taskEntity?.tags[0]?.color === undefined? 'hsl(var(--bg))' : props.taskEntity?.tags[0]?.color
-            }">
-              <span v-if="props.taskEntity?.tags[0]?.icon !== undefined" class="text-[16px] leading-normal">{{ props.taskEntity?.tags[0]?.icon }}</span>
-              <span class="text-[hsl(var(--fg))] text-[14px] font-light leading-normal text-clip overflow-hidden">{{ props.taskEntity?.tags[0]?.name }}</span>
-            </div>
-          </div>
+          <tag-card class="h-[120%]"
+              v-if="props.taskEntity?.tags !== undefined && props.taskEntity?.tags[0] !== undefined && props.taskEntity?.tags[0] !== null && props.taskEntity?.tags.length !== 0" :tag-entity="props.taskEntity?.tags[0]!"/>
         </div>
-        <div class="flex flex-row justify-start items-center gap-[3px] w-full">
-          <bell-icon v-if="hasReminder()" stroke-width="3px" class="h-[14px] text-[hsl(var(--fg))]"/>
-          <div v-if="hasReminder()" class="h-[2px] rounded-full aspect-square bg-[hsl(var(--fg))]"/>
-          <div v-if="hasDDL()" class="flex flex-row justify-start items-center gap-[0]">
-            <calendar-check-icon stroke-width="2px" class="h-[14px] text-[hsl(var(--fg))]"/>
-            <span class="text-[hsl(var(--fg))] text-[8px] truncate">{{fun.getShortDate(props.taskEntity.deadLineDate)}}</span>
+        <div class="flex flex-row justify-start items-center gap-[6px] w-full">
+          <bell-icon v-if="hasReminder()" stroke-width="2.5px" class="h-[15px] w-[15px] text-[hsl(var(--fg))]"/>
+          <div v-if="hasReminder()" class="h-[3px] rounded-full aspect-square bg-[hsl(var(--fg))]"/>
+          <div v-if="hasDDL()" class="flex flex-row justify-start items-center gap-[4px]">
+            <calendar-check-icon stroke-width="2.5px" class="h-[15px] w-[15px] text-[hsl(var(--fg))]"/>
+            <span class="text-[hsl(var(--fg))] text-[12px] truncate">{{fun.getShortDate(props.taskEntity.deadLineDate)}}</span>
           </div>
-          <div v-if="hasPriority()" class="h-[2px] rounded-full aspect-square bg-[hsl(var(--fg))]"/>
-          <div v-if="hasPriority()" class="flex flex-row justify-start items-center gap-[0]">
-            <badge-alert-icon stroke-width="2px" class="h-[14px] text-[hsl(var(--fg))]"/>
-            <div :class="`flex flex-row justify-center items-center ${props.taskEntity?.priority === Priority.MEDIUM || props.taskEntity?.priority === Priority.HIGH? `aspect-square w-[18px] h-[18px] rounded-full border-[4px] border-[hsl(var(--fg))]` : ''}`" :style="{ backgroundColor: `var(${priorityColor[props.taskEntity?.priority]})` }"/>
+          <div v-if="hasPriority()" class="h-[3px] rounded-full aspect-square bg-[hsl(var(--fg))]"/>
+          <div v-if="hasPriority()" class="flex flex-row justify-start items-center gap-[4px]">
+            <badge-alert-icon stroke-width="2.5px" class="h-[15px] w-[15px] text-[hsl(var(--fg))]"/>
+            <div :class="`flex flex-row justify-center items-center ${props.taskEntity?.priority === Priority.LOW || props.taskEntity?.priority === Priority.MEDIUM || props.taskEntity?.priority === Priority.HIGH? `aspect-square w-[18px] h-[18px] rounded-full border-[4px] border-[hsl(var(--fg))]` : ''}`" :style="{ backgroundColor: `var(${priorityColor[props.taskEntity?.priority]})` }"/>
           </div>
         </div>
       </div>
@@ -58,6 +50,7 @@ import {ReminderMode} from "@/data/enum/ReminderMode";
 import {useAppStores} from "@/stores/app-stores";
 import {storeToRefs} from "pinia";
 import EventType from "@/event/EventType";
+import TagCard from "@/componrnts/TagCard.vue";
 
 defineOptions({
   inheritAttrs: false
@@ -76,18 +69,16 @@ const emits = defineEmits<{
 
 const inputRef: Ref<HTMLInputElement | null> = ref(null);
 const taskCardRef: Ref<HTMLDivElement | null> = ref(null);
-const tagsRef: Ref<HTMLDivElement | null> = ref(null);
 
 const multiSelectMode = ref(false);
 const draggingCard = ref(false);
 
 const fgColor = ref('--b1)');
 const bgColor = ref('--n');
-const tagFgColor = ref('--b1');
-const tagBgColor = ref('--n');
 
 const priorityColor = reactive({
-  [Priority.LOW]: undefined,
+  [Priority.LOW]: '--oc-gray-4',
+  [Priority.NORMAL]: undefined,
   [Priority.MEDIUM]: '--oc-yellow-6',
   [Priority.HIGH]: '--oc-red-6',
 });
@@ -169,13 +160,6 @@ function initColorVar() {
 
   bgColor.value = foregroundColor === '--b1'? '--n' : '--b1';
   fgColor.value = foregroundColor === '--b1'? '--b1' : '--n';
-
-  if (tagsRef.value !== null) {
-    const tagForegroundColor = getForegroundColor(window.getComputedStyle(tagsRef.value!).backgroundColor);
-
-    tagBgColor.value = tagForegroundColor === '--b1'? '--n' : '--b1';
-    tagFgColor.value = tagForegroundColor === '--b1'? '--b1' : '--n';
-  }
 }
 
 function hasReminder() {
@@ -187,7 +171,7 @@ function hasDDL() {
 }
 
 function hasPriority() {
-  return props.taskEntity?.priority !== null && props.taskEntity?.priority !== Priority.LOW
+  return props.taskEntity?.priority !== null && props.taskEntity?.priority !== Priority.NORMAL
 }
 
 async function updateTaskDone() {

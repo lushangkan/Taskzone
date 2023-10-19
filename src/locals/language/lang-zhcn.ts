@@ -1,4 +1,6 @@
 import {Priority} from "@/data/enum/Priority";
+import {RepeatMode} from "@/data/enum/RepeatMode";
+import {ReminderMode} from "@/data/enum/ReminderMode";
 
 export const langZhCn = {
     page: {
@@ -69,13 +71,7 @@ export const langZhCn = {
     },
     taskCard: {
         defTaskName: '任务',
-        defDeadLine: '无截止时间',
-        priority: {
-            [Priority.LOW]: '低',
-            [Priority.MEDIUM]: '中',
-            [Priority.HIGH]: '高',
-            def: '无优先级'
-        }
+        defDeadLine: '无截止时间'
     },
     taskView: {
         completed: '已完成'
@@ -84,5 +80,25 @@ export const langZhCn = {
         today: '今天',
         yesterday: '昨天',
         tomorrow: '明天',
+    },
+    repeatMode: {
+        [RepeatMode.ONLY_ONCE]: '仅一次',
+        [RepeatMode.ALWAYS]: '每天',
+        [RepeatMode.WORKDAY]: '工作日',
+        [RepeatMode.HOLIDAYS_AND_WEEKEND]: '周末和节假日',
+        [RepeatMode.CUSTOM]: '自定义',
+    },
+    priority: {
+        [Priority.LOW]: '低',
+        [Priority.NORMAL]: '普通',
+        [Priority.MEDIUM]: '中',
+        [Priority.HIGH]: '高',
+    },
+    reminderMode: {
+        [ReminderMode.NONE]: '无',
+        [ReminderMode.NOTIFICATION_ONLY]: '通知',
+        [ReminderMode.VIBRATION_NOTIFICATION]: '震动',
+        [ReminderMode.VIBRATION_RINGTONE_NOTIFICATION]: '震动并响铃',
+        [ReminderMode.ALARM]: '闹铃提醒',
     }
 }

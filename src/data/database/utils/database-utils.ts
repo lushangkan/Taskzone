@@ -192,7 +192,7 @@ export async function checkDayTaskGroup(date: Date) {
     //生成新TaskGroup
     const newGroup = new TaskGroupEntity();
     newGroup.dayTaskDate = date;
-    newGroup.repeatMode = RepeatMode.ONLY_ONE;
+    newGroup.repeatMode = RepeatMode.ONLY_ONCE;
 
     return await repository?.save(newGroup);
 }

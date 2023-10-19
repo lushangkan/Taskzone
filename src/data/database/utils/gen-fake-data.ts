@@ -57,7 +57,7 @@ export async function genFakeTask(count: number, groupId?: string) {
     return false;
 }
 
-export async function genFakeTag(count: number) {
+export async function genFakeTag(count: number, taskId?: string, taskGroupId?: string) {
     const dbStore = useDatabaseStores();
     const entityManager = dbStore.entityManager;
     const map: Map<TagEntity, any> = new Map();
@@ -70,8 +70,18 @@ export async function genFakeTag(count: number) {
             tag.description = faker.lorem.lines(1);
             tag.color = fun.randomColor();
             tag.icon = fun.randomEmoji();
-            tag.tasks = fun.randomBoolean() ? await getRandomTasks(fun.randomInt(0, 3)) : [];
-            tag.taskGroups = fun.randomBoolean() ? await getRandomTaskGroups(fun.randomInt(0, 3)) : [];
+
+            if (taskId !== undefined){
+                tag.tasks = [await entityManager.findOne(TaskEntity, { where: { id: taskId } })];
+            } else {
+                tag.tasks = fun.randomBoolean() ? await getRandomTasks(fun.randomInt(0, 3)) : [];
+            }
+
+            if (taskGroupId !== undefined){
+                tag.taskGroups = [await entityManager.findOne(TaskGroupEntity, { where: { id: taskGroupId } })];
+            } else {
+                tag.taskGroups = fun.randomBoolean() ? await getRandomTaskGroups(fun.randomInt(0, 3)) : [];
+            }
 
             try {
                 map.set(await entityManager.save(tag), true);

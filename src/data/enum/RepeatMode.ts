@@ -1,5 +1,5 @@
 export enum RepeatMode {
-    ONLY_ONE = 'only_one',
+    ONLY_ONCE = 'only_once',
     ALWAYS = 'always',
     WORKDAY = 'workday',
     HOLIDAYS_AND_WEEKEND = 'holidays_and_weekend',

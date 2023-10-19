@@ -1,6 +1,6 @@
 <template>
   <ion-page class="bg-base-300">
-    <ion-content :fullscreen="true" :scroll-events=true class="custom-scroll-bar">
+    <ion-content :fullscreen="true" :scroll-events=true >
       <overlay-scrollbars-component id="main-scroll" defer element="div" :options="{
           overflow: {
             x: 'hidden',
@@ -13,8 +13,9 @@
           }
         }" class="w-full h-full" @os-initialized="scrollInitialized"
       >
-        <div id="main-scroll-content" class="w-full flex flex-col justify-center items-center">
-          <div class="w-[82%] pb-[50px] pt-[115px] flex flex-col justify-start items-center">
+        <div id="main-scroll-content" class="w-full flex flex-col justify-center items-center bg-base-100">
+          <div class="w-[82%] pb-[50px] pt-[115px] flex flex-col justify-start items-center gap-[30px]">
+            <task-group-info v-if="taskGroupEntity !== undefined && taskGroupEntity !== null && taskGroupEntity.dayTaskDate === null" :task-group-entity="taskGroupEntity"/>
             <draggable v-model="undoneTasks" item-key="id"
                        tag="transition-group" :component-data="
                        {
@@ -34,7 +35,7 @@
                 </div>
               </template>
             </draggable>
-            <div v-if="undoneTasks.length !== 0 && doneTasks.length !== 0" class="w-[90%] flex flex-row justify-around items-center gap-[10px] my-[25px]">
+            <div v-if="undoneTasks.length !== 0 && doneTasks.length !== 0" class="w-[90%] flex flex-row justify-around items-center gap-[10px]">
               <span class="text-neutral font-light text-[13px] whitespace-nowrap">{{ $t('taskView.completed') }}</span>
               <div class="w-full border-t border-base-300/80"/>
             </div>
@@ -80,6 +81,7 @@ import {RouteLocationNormalized, useRouter} from "vue-router";
 import * as dbUtils from "@/data/database/utils/database-utils";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import moment from "moment";
+import TaskGroupInfo from "@/componrnts/TaskGroupInfo.vue";
 
 const appStore = useAppStores();
 const dbStore = useDatabaseStores();
@@ -89,7 +91,7 @@ const router = useRouter();
 const undoneTasks: Ref<TaskEntity[]> = ref([]);
 const doneTasks: Ref<TaskEntity[]> = ref([]);
 
-const taskGroupEntity: Ref<TaskGroupEntity | undefined> = ref();
+const taskGroupEntity: Ref<TaskGroupEntity | null> = ref(null);
 
 const isDragging = ref(false);
 
@@ -106,16 +108,23 @@ const updateTasks = async () => {
   if (taskGroupId === undefined) return;
 
   // 更新任务
-  const taskGroupEntity = (await DbUtils.getTaskGroupEntityRepository()?.findOne({
+  // 未知类型错误，必须使用@ts-ignore，使用后运行正常，请勿移除
+  // @ts-ignore
+  taskGroupEntity.value = (await DbUtils.getTaskGroupEntityRepository()?.findOne({
     where: {
       id: taskGroupId
     },
     relations: {
-      tasks: true
+      tasks: {
+        tags: true
+      },
+      tags: true,
     }
   }))!;
 
-  const tasks: (TaskEntity | null)[] = taskGroupEntity.tasks;
+  const tasks: (TaskEntity | null)[] | undefined  = taskGroupEntity.value?.tasks;
+
+  if (tasks === undefined) return;
 
   undoneTasks.value = tasks.filter((task) => {
     if (task === null) return false;
@@ -174,6 +183,7 @@ const multiSelectDeleteTasksCallback = async () => {
 
 async function inTaskGroupPage(route: RouteLocationNormalized) {
   taskGroupId = undefined;
+  taskGroupEntity.value = null;
 
   // 获取TaskGroupId
   const taskGroupRepository = dbUtils.getTaskGroupEntityRepository();
@@ -215,7 +225,7 @@ async function inDayTaskPage(route: RouteLocationNormalized) {
   if (date === undefined) return;
 
   // 获取Id
-  let result: TaskGroupEntity | null | undefined = (await dbUtils.getTaskGroupEntityRepository()?.findOne({
+  let result: TaskGroupEntity | null = (await dbUtils.getTaskGroupEntityRepository()?.findOne({
     where: {
       dayTaskDate: date
     },
