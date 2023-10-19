@@ -11,13 +11,15 @@
             </button>
           </div>
           <div class="navbar-center w-[210px]">
-            <div class="flex flex-row justify-center items-center gap-[3px] w-full">
-              <span v-if="taskGroupEntity?.icon !== undefined" class="text-[25px]">{{ taskGroupEntity?.icon }}</span>
-              <span class="truncate	whitespace-nowrap text-lg font-medium" style="color: hsl(var(--fg))">{{
-                  pageName === 'tasks' ? tasksTitle === 'today' ? i18n.t('page.tasks.today') : taskGroupEntity !== undefined? taskGroupEntity.name : tasksTitle : i18n.t(`page.${pageName}.name`, i18n.t('page.pageNotFound'))
-                }}
-              </span>
-            </div>
+            <Transition name="navbar-title">
+              <div v-show="showTitle" class="flex flex-row justify-center items-center gap-[3px] w-full">
+                <span v-if="taskGroupEntity?.icon !== undefined" class="text-[25px]">{{ taskGroupEntity?.icon }}</span>
+                <span class="truncate	whitespace-nowrap text-lg font-medium" style="color: hsl(var(--fg))">{{
+                    pageName === 'tasks' ? tasksTitle === 'today' ? i18n.t('page.tasks.today') : taskGroupEntity !== undefined? taskGroupEntity.name : tasksTitle : i18n.t(`page.${pageName}.name`, i18n.t('page.pageNotFound'))
+                  }}
+                </span>
+              </div>
+            </Transition>
           </div>
           <div class="navbar-end w-[56px] h-[48px]">
             <button v-if="pageName==='tasks' && date !== undefined" type="button" title="Open datepicker"
@@ -105,6 +107,8 @@ const datepickerOpen = ref(false);
 const multiSelectMode = ref(false);
 const multiSelectMenuOpen = ref(false);
 
+const showTitle = ref(true);
+
 const scrollEle = ref<HTMLElement | undefined | null>();
 const multiSelectMenu = ref<HTMLUListElement | null>(null);
 const multiSelectMenuBtn = ref<HTMLButtonElement | null>(null);
@@ -121,19 +125,6 @@ watch(menuOpen, (newVal) => {
     menuController.close();
   }
 });
-
-/**
- * 滚动元素初始化完成事件回调
- */
-const onScrollInitialized = () => {
-  const scrollContent = document.getElementById('main-scroll-content');
-  if (scrollContent !== null) {
-    scrollEle.value = scrollContent.parentElement;
-  } else {
-    scrollEle.value = undefined;
-    console.warn('Could not find scroll element');
-  }
-}
 
 function onClickCloseBtn() {
   appStore.eventBus.emit(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, {});
@@ -224,6 +215,9 @@ function initForegroundColor() {
 
 function updateNavbar(route: RouteLocationNormalized) {
   fgColor.value = '--b1';
+  menuOpen.value = false;
+  datepickerOpen.value = false;
+  showTitle.value = true;
 
   // 获取日任务路由参数的日期
   if (route.params.date) {
@@ -237,6 +231,35 @@ function updateNavbar(route: RouteLocationNormalized) {
   }
 }
 
+/**
+ * 滚动元素初始化完成事件回调
+ */
+const onScrollInitialized = () => {
+  const scrollContent = document.getElementById('main-scroll-content');
+  if (scrollContent !== null) {
+    scrollEle.value = scrollContent.parentElement;
+  } else {
+    scrollEle.value = undefined;
+    console.warn('Could not find scroll element');
+  }
+}
+
+const onEnableMultiSelectMode = () => {
+  multiSelectMode.value = true;
+}
+
+const onDisableMultiSelectMode = () => {
+  multiSelectMode.value = false;
+}
+
+const onTaskGroupInfoVisible = () => {
+  showTitle.value = false;
+}
+
+const onTaskGroupInfoHidden = () => {
+  showTitle.value = true;
+}
+
 onMounted(() => {
   updateNavbar(router.currentRoute.value);
 
@@ -244,8 +267,12 @@ onMounted(() => {
   appStore.eventBus.on(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
 
   // 监听多选模式
-  appStore.eventBus.on(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = true);
-  appStore.eventBus.on(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = false);
+  appStore.eventBus.on(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, onEnableMultiSelectMode);
+  appStore.eventBus.on(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, onDisableMultiSelectMode);
+
+  // 监听TaskGroupInfo是否可视
+  appStore.eventBus.on(EventType.TASK_GROUP_INFO_VISIBLE_EVENT, onTaskGroupInfoVisible);
+  appStore.eventBus.on(EventType.TASK_GROUP_INFO_HIDDEN_EVENT, onTaskGroupInfoHidden);
 
   // 监听窗口点击事件
   window.addEventListener('click', onClickWindowCallback);
@@ -253,8 +280,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   appStore.eventBus.off(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
-  appStore.eventBus.off(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = true);
-  appStore.eventBus.off(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, () => multiSelectMode.value = false);
+  appStore.eventBus.off(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, onEnableMultiSelectMode);
+  appStore.eventBus.off(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, onDisableMultiSelectMode);
+  appStore.eventBus.off(EventType.TASK_GROUP_INFO_VISIBLE_EVENT, onTaskGroupInfoVisible);
+  appStore.eventBus.off(EventType.TASK_GROUP_INFO_HIDDEN_EVENT, onTaskGroupInfoHidden);
 });
 
 router.afterEach((to: RouteLocationNormalized, from: RouteLocationNormalized) => {

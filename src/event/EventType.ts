@@ -12,6 +12,10 @@ enum EventType {
     ENABLED_TASK_GROUP_CARD_MULTI_SELECTION_MODE_EVENT = 'enabledTaskGroupCardMultiSelectionMode',
     DISABLED_TASK_GROUP_CARD_MULTI_SELECTION_MODE_EVENT = 'disabledTaskGroupCardMultiSelectionMode',
 
+    // Task group info
+    TASK_GROUP_INFO_VISIBLE_EVENT = 'taskGroupInfoVisible',
+    TASK_GROUP_INFO_HIDDEN_EVENT = 'taskGroupInfoHidden',
+
     DRAGGING_TASK_GROUP_CARD_EVENT = 'draggingTaskGroupCard',
     DRAG_TASK_GROUP_CARD_END_EVENT = 'draggingTaskGroupCardEnd',
 

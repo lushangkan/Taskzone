@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full min-h-[180px] rounded-[22px] flex flex-col justify-start items-center px-[26px] py-[16px] gap-[18px]" :style="{ '--group-color': groupColor === undefined? 'var(--p)' : groupColor, backgroundColor: 'hsla(var(--group-color) / 0.15)' }">
+  <div ref="infoCardRef" class="w-full min-h-[180px] rounded-[22px] flex flex-col justify-start items-center px-[26px] py-[16px] gap-[18px]" :style="{ '--group-color': groupColor === undefined? 'var(--p)' : groupColor, backgroundColor: 'hsla(var(--group-color) / 0.15)' }">
     <div class="w-full flex flex-col justify-start items-center gap-[7px]">
       <div class="w-full flex flex-row justify-between items-center">
         <span class="text-neutral text-[17px] font-medium">{{ props.taskGroupEntity.name }}</span>
@@ -63,12 +63,14 @@
 import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import {AlarmCheckIcon, RepeatIcon, AlertCircleIcon, BellIcon } from "lucide-vue-next";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, onUnmounted, reactive, Ref, ref} from "vue";
 import Color from "colorjs.io";
 import * as fun from "@/utils/fun";
 import {RepeatMode} from "@/data/enum/RepeatMode";
 import {Priority} from "@/data/enum/Priority";
 import TagCard from "@/componrnts/TagCard.vue";
+import EventType from "@/event/EventType";
+import {useAppStores} from "@/stores/app-stores";
 
 const props = defineProps({
   taskGroupEntity: {
@@ -77,7 +79,11 @@ const props = defineProps({
   }
 });
 
-const groupColor = ref<string | undefined>(undefined);
+const groupColor: Ref<string | undefined> = ref(undefined);
+const infoCardRef: Ref<HTMLDivElement | null> = ref(null);
+let scrollEle: HTMLElement | null | undefined = null;
+
+const appStore = useAppStores();
 
 const priorityColor = reactive({
   [Priority.LOW]: undefined,
@@ -86,18 +92,45 @@ const priorityColor = reactive({
   [Priority.HIGH]: '--oc-red-6',
 });
 
+const onScrollInitialized = () => {
+  scrollEle = document.getElementById('main-scroll-content')?.parentElement;
+
+  if (scrollEle !== null && scrollEle !== undefined) {
+    scrollEle.addEventListener('scroll', onScroll);
+    onScroll();
+  }
+}
+
+const onScroll = () => {
+  requestAnimationFrame(() => {
+    const cardBottom = infoCardRef.value?.getBoundingClientRect().bottom;
+    const scrollTop = scrollEle?.scrollTop;
+
+    if (cardBottom < scrollTop!) {
+      appStore.eventBus.emit(EventType.TASK_GROUP_INFO_HIDDEN_EVENT, {});
+    } else {
+      appStore.eventBus.emit(EventType.TASK_GROUP_INFO_VISIBLE_EVENT, {});
+    }
+  });
+}
 
 onMounted(() => {
   if (typeof props.taskGroupEntity?.color === 'string') {
     const color = new Color(props.taskGroupEntity.color);
     groupColor.value = color.to('hsl', {}).toString().replace('hsl(', '').replace(')', '');
   }
+
+  // 获取滚动元素
+  appStore.eventBus.on(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
 });
 
+onUnmounted(() => {
+  appStore.eventBus.off(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
 
-
-
-
+  if (scrollEle !== null && scrollEle !== undefined) {
+    scrollEle.removeEventListener('scroll', onScroll);
+  }
+});
 
 </script>
 <style scoped lang="less">
