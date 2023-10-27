@@ -419,7 +419,7 @@
 
 .d-checkbox:checked {
   position: relative;
-  background-color: hsl(var(--chkfg) / var(--tw-bg-opacity));
+  background-color: hsl(var(--chkfg));
   background-image: none;
   overflow: hidden;
   @apply flex items-center justify-center;
@@ -519,7 +519,7 @@
   background-image: none;
 
   border-radius: 100vw;
-  background-color: hsl(var(--chkbg));
+  background-color: hsl(var(--chkfg));
 }
 
 .multiple-selection:checked::after {
@@ -528,10 +528,10 @@
   height: 100%;
   width: 100%;
 
-  background-color: hsl(var(--chkbg));
+  background-color: hsl(var(--chkfg));
 
   box-sizing: border-box;
-  border: 6px solid hsl(var(--p));
+  border: 6.5px solid hsl(var(--p));
   border-radius: 100vw;
 
   -webkit-mask: none;
@@ -556,8 +556,6 @@
 .navbar-menu-leave-active {
   animation: fadeOut 0.2s ease-out;
 }
-
-
 
 .select-task-group-card {
   filter: brightness(65%);
