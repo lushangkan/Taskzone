@@ -41,7 +41,7 @@ export class TaskGroupEntity {
     @Column('text', { nullable: true })
     icon: string | null;
 
-    @ManyToMany(() => TagEntity, tag => tag.taskGroups, { nullable: true, onDelete: "SET NULL" })
+    @ManyToMany(() => TagEntity, tag => tag.taskGroups, { nullable: true })
     @JoinTable()
     tags: (TagEntity | null)[];
 

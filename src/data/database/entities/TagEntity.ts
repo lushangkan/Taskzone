@@ -20,10 +20,10 @@ export class TagEntity {
     @Column('text')
     description: string;
 
-    @ManyToMany(() => TaskEntity, task => task.tags, { nullable: true, cascade: true, onDelete: "SET NULL" })
+    @ManyToMany(() => TaskEntity, task => task.tags, { nullable: true, cascade: true })
     tasks: (TaskEntity | null)[];
 
-    @ManyToMany(() => TaskGroupEntity, taskGroup => taskGroup.tags, { nullable: true, cascade: true, onDelete: "SET NULL" })
+    @ManyToMany(() => TaskGroupEntity, taskGroup => taskGroup.tags, { nullable: true, cascade: true })
     taskGroups: (TaskGroupEntity | null)[];
 
 }

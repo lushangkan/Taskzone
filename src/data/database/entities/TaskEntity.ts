@@ -33,7 +33,7 @@ export class TaskEntity {
     @Column('text')
     icon: string;
 
-    @ManyToMany(() => TagEntity, tag => tag.tasks, { nullable: true, onDelete: "SET NULL" })
+    @ManyToMany(() => TagEntity, tag => tag.tasks, { nullable: true })
     @JoinTable()
     tags: (TagEntity | null)[];
 
@@ -61,7 +61,7 @@ export class TaskEntity {
     @ManyToOne(() => TaskGroupEntity, taskGroup => taskGroup.tasks, { nullable: true,  onDelete: "CASCADE" })
     taskGroup: TaskGroupEntity | null;
 
-    @ManyToOne(() => TaskEntity, task => task.childTasks, { nullable: true, onDelete: "SET NULL" })
+    @ManyToOne(() => TaskEntity, task => task.childTasks, { nullable: true })
     parentTask: TaskEntity | null;
 
     @OneToMany(() => TaskEntity, task => task.parentTask, { nullable: true, onDelete: "CASCADE" })
