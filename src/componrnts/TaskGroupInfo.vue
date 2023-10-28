@@ -24,7 +24,7 @@
           }
         }" class="w-full"
     >
-      <div :class="`w-full ${props.taskGroupEntity?.tags.length === 0 ? 'h-0 gap-y-0' : props.taskGroupEntity?.tags.length === 1? 'h-[30px] gap-y-[4px]' : 'h-[70px] gap-y-[4px]'} flex flex-col flex-wrap justify-start items-start gap-x-[8px]`">
+      <div :class="`${props.taskGroupEntity?.tags.length === 0 ? 'h-0 gap-y-0' : props.taskGroupEntity?.tags.length === 1? 'h-[30px] gap-y-[4px]' : 'h-[70px] gap-y-[4px]'} inline-flex flex-col flex-wrap justify-start items-start gap-x-[8px]`">
         <tag-card v-for="tag in props.taskGroupEntity?.tags" :key="tag?.id" :tag-entity="tag!"
                   class="!h-[30px] !py-[2px] !w-[100px]"
         />
@@ -60,8 +60,8 @@
 </template>
 <script setup lang="ts">
 
-import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
-import {AlarmCheckIcon, RepeatIcon, AlertCircleIcon, BellIcon } from "lucide-vue-next";
+import {OverlayScrollbarsComponent} from "overlayscrollbars-vue";
+import {AlarmCheckIcon, AlertCircleIcon, BellIcon, RepeatIcon} from "lucide-vue-next";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import {onMounted, onUnmounted, reactive, Ref, ref} from "vue";
 import Color from "colorjs.io";
