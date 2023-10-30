@@ -30,7 +30,7 @@
         />
       </div>
     </overlay-scrollbars-component>
-    <div class="w-full flex flex-row justify-between items-end">
+    <div class="w-full flex flex-row justify-between items-end pb-[5.3px]">
       <div class="h-[55px] w-full pb-[3px] flex flex-col flex-wrap justify-between items-start gap-y-[8px] gap-x-[13px] overflow-hidden">
         <div v-if="props.taskGroupEntity !== undefined && props.taskGroupEntity.deadLineDate !== null"
              class="max-w-[100px] flex flex-row justify-start items-center gap-[12px] overflow-hidden">
@@ -71,6 +71,7 @@ import {Priority} from "@/data/enum/Priority";
 import TagCard from "@/componrnts/TagCard.vue";
 import EventType from "@/event/EventType";
 import {useAppStores} from "@/stores/app-stores";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   taskGroupEntity: {
@@ -85,6 +86,8 @@ let scrollEle: HTMLElement | null | undefined = null;
 
 const appStore = useAppStores();
 
+const router = useRouter();
+
 const priorityColor = reactive({
   [Priority.LOW]: undefined,
   [Priority.NORMAL]: undefined,
@@ -92,26 +95,26 @@ const priorityColor = reactive({
   [Priority.HIGH]: '--oc-red-6',
 });
 
-const onScrollInitialized = () => {
+const initScroll = () => {
   scrollEle = document.getElementById('main-scroll-content')?.parentElement;
 
   if (scrollEle !== null && scrollEle !== undefined) {
     scrollEle.addEventListener('scroll', onScroll);
     onScroll();
+  } if (scrollEle === null || scrollEle === undefined) {
+    appStore.eventBus.on(EventType.MAIN_SCROLL_INITIALIZED_EVENT, initScroll);
   }
 }
 
 const onScroll = () => {
-  requestAnimationFrame(() => {
-    const cardBottom = infoCardRef.value?.getBoundingClientRect().bottom;
-    const scrollTop = scrollEle?.scrollTop;
+  const cardBottom = infoCardRef.value?.getBoundingClientRect().bottom;
+  const scrollTop = scrollEle?.scrollTop;
 
-    if (cardBottom < scrollTop!) {
-      appStore.eventBus.emit(EventType.TASK_GROUP_INFO_HIDDEN_EVENT, {});
-    } else {
-      appStore.eventBus.emit(EventType.TASK_GROUP_INFO_VISIBLE_EVENT, {});
-    }
-  });
+  if (cardBottom < scrollTop!) {
+    appStore.eventBus.emit(EventType.TASK_GROUP_INFO_HIDDEN_EVENT, {});
+  } else {
+    appStore.eventBus.emit(EventType.TASK_GROUP_INFO_VISIBLE_EVENT, {});
+  }
 }
 
 onMounted(() => {
@@ -121,11 +124,11 @@ onMounted(() => {
   }
 
   // 获取滚动元素
-  appStore.eventBus.on(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
+  initScroll();
 });
 
 onUnmounted(() => {
-  appStore.eventBus.off(EventType.MAIN_SCROLL_INITIALIZED_EVENT, onScrollInitialized);
+  appStore.eventBus.off(EventType.MAIN_SCROLL_INITIALIZED_EVENT, initScroll);
 
   if (scrollEle !== null && scrollEle !== undefined) {
     scrollEle.removeEventListener('scroll', onScroll);

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="parentRef">
     <ul class="absolute w-[112px] right-0 mt-[20px] gap-[3px] navbar-multiple-selection-menu d-dropdown-content d-menu bg-base-100 rounded-box">
       <li @click="onClickEditBtn">
         <div class="flex flex-row justify-around items-center">
@@ -27,17 +27,17 @@
 </template>
 
 <script setup lang="ts">
-import {PenLine, Trash2Icon, ListRestartIcon} from "lucide-vue-next";
-import * as dbUtils from "@/data/database/utils/database-utils";
+import {ListRestartIcon, PenLine, Trash2Icon} from "lucide-vue-next";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import {useDatabaseStores} from "@/stores/database-stores";
 import ConfirmDeletionPopup from "@/componrnts/popup/ConfirmDeletionPopup.vue";
-import {onMounted, onUnmounted, ref, watch} from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
 
 const emit = defineEmits<{
   (e: 'clickEditBtn'): void
   (e: 'clickDelBtn'): void
   (e: 'clickResetBtn'): void
+  (e: 'clickOutSide'): void
 }>();
 
 const props = defineProps({
@@ -50,6 +50,8 @@ const props = defineProps({
 const dbStore = useDatabaseStores();
 
 const popupOpen = ref(false);
+
+const parentRef = ref<HTMLDivElement | null>(null);
 
 function onClickEditBtn() {
   emit("clickEditBtn");
@@ -72,6 +74,24 @@ function onClickPopupDelete() {
 
   emit("clickDelBtn");
 }
+
+const onClickWindow = (event: UIEvent) => {
+  if (parentRef.value === null) return;
+
+  const button = parentRef.value?.parentElement!.getElementsByTagName('button')[0];
+
+  if (event.target instanceof Node && !parentRef.value?.contains(event.target) && !event.target.isEqualNode(parentRef.value) && !event.target.isEqualNode(button) && !button.contains(event.target)) {
+    emit('clickOutSide');
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('click', onClickWindow);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('click', onClickWindow);
+});
 
 </script>
 

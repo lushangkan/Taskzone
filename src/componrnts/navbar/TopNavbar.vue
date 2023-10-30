@@ -27,14 +27,16 @@
                     @click="datepickerOpen=!datepickerOpen">
               <calendar-days-icon class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
             </button>
-            <button v-if="pageName==='tasks' && isTaskGroupPage && taskGroupEntity !== undefined" type="button" title="Open datepicker"
-                    :class="`w-[56px] h-[48px] d-btn d-btn-ghost ${taskGroupMenuOpen?'d-btn-active':''}`"
-                    @click="taskGroupMenuOpen=!taskGroupMenuOpen">
-              <more-horizontal class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
-            </button>
-            <Transition name="navbar-menu">
-              <task-group-menu v-if="taskGroupMenuOpen && taskGroupEntity !== undefined" :task-group-entity="taskGroupEntity" @click-del-btn="taskGroupMenuOpen=false"/>
-            </Transition>
+            <div>
+              <button v-if="pageName==='tasks' && isTaskGroupPage && taskGroupEntity !== undefined" type="button" title="Open datepicker"
+                      :class="`w-[56px] h-[48px] d-btn d-btn-ghost ${taskGroupMenuOpen?'d-btn-active':''}`"
+                      @click="taskGroupMenuOpen=!taskGroupMenuOpen">
+                <more-horizontal class="w-[24px] h-[24px]" color="hsl(var(--fg))"/>
+              </button>
+              <Transition name="navbar-menu">
+                <task-group-menu v-if="taskGroupMenuOpen && taskGroupEntity !== undefined" :task-group-entity="taskGroupEntity" @click-del-btn="taskGroupMenuOpen=false" @click-out-side="taskGroupMenuOpen=false"/>
+              </Transition>
+            </div>
           </div>
         </div>
         <div v-if="multiSelectMode" class="w-full h-full flex flex-row justify-end items-center px-0">
@@ -66,18 +68,16 @@
 </template>
 
 <script setup lang="ts">
-import {IonHeader, IonTitle, menuController} from "@ionic/vue";
-import {CalendarDaysIcon, MenuIcon, X, PenLine, Trash2, MoreHorizontal, ClipboardPaste, FolderOutput} from 'lucide-vue-next';
-import {onMounted, onUnmounted, type Ref, ref, watch} from "vue";
+import {IonHeader, menuController} from "@ionic/vue";
+import {CalendarDaysIcon, MenuIcon, MoreHorizontal, Trash2, X} from 'lucide-vue-next';
+import {onMounted, onUnmounted, ref, watch, WatchStopHandle} from "vue";
 import {RouteLocationNormalized, useRouter} from "vue-router";
 import SidePanel from "@/componrnts/navbar/SidePanel.vue";
 import NavbarDatepicker from "@/componrnts/navbar/NavbarDatepicker.vue";
 import StickyElement from 'vue-sticky-element';
 import {useAppStores} from "@/stores/app-stores";
-import anime from 'animejs/lib/anime.es.js';
 import {useI18n} from "vue-i18n";
-import moment from "moment";
-import {Moment} from "moment";
+import moment, {Moment} from "moment";
 import "moment/dist/locale/zh-cn.js";
 import EventType from "@/event/EventType";
 import * as fun from "@/utils/fun";
@@ -85,7 +85,6 @@ import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import * as dbUtils from "@/data/database/utils/database-utils";
 import MultiSelectMenu from "@/componrnts/navbar/MultiSelectMenu.vue";
 import TaskGroupMenu from "@/componrnts/navbar/TaskGroupMenu.vue";
-import {WatchStopHandle} from "vue";
 
 const i18n = useI18n();
 const router = useRouter();
