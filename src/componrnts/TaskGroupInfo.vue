@@ -1,5 +1,5 @@
 <template>
-  <div ref="infoCardRef" class="w-full min-h-[180px] rounded-[22px] flex flex-col justify-start items-center px-[26px] py-[16px] gap-[18px]" :style="
+  <div ref="infoCardRef" class="task-group-info-shadow w-full min-h-[180px] rounded-[22px] flex flex-col justify-start items-center px-[26px] py-[16px] gap-[18px]" :style="
   {
     '--group-color': groupColor === undefined? 'var(--p)' : groupColor,
     backgroundColor: 'hsla(var(--group-color) / 0.15)',
