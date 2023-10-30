@@ -109,7 +109,6 @@ const multiSelectMenuOpen = ref(false);
 const showTitle = ref(true);
 
 const scrollEle = ref<HTMLElement | undefined | null>();
-const multiSelectMenu = ref<HTMLUListElement | null>(null);
 const multiSelectMenuBtn = ref<HTMLButtonElement | null>(null);
 
 let dateWatcher: WatchStopHandle | undefined = undefined;
@@ -132,13 +131,6 @@ function onClickCloseBtn() {
 function onClickDeleteBtn() {
   appStore.eventBus.emit(EventType.CLICK_DELETE_TASK_BUTTON_EVENT, {});
 }
-
-const onClickWindowCallback = (event: UIEvent) => {
-  if (multiSelectMenuOpen.value && (!(event.target as HTMLElement).isEqualNode(multiSelectMenu.value!) && !fun.isChildOf(event.target as HTMLElement, multiSelectMenu.value!)) && (!(event.target as HTMLElement).isEqualNode(multiSelectMenuBtn.value) && !fun.isChildOf(event.target as HTMLElement, multiSelectMenuBtn.value!))) {
-    // 点击在多选菜单之外
-    multiSelectMenuOpen.value = false;
-  }
-};
 
 /**
  * 更新Navbar的标题日期
@@ -273,8 +265,6 @@ onMounted(() => {
   appStore.eventBus.on(EventType.TASK_GROUP_INFO_VISIBLE_EVENT, onTaskGroupInfoVisible);
   appStore.eventBus.on(EventType.TASK_GROUP_INFO_HIDDEN_EVENT, onTaskGroupInfoHidden);
 
-  // 监听窗口点击事件
-  window.addEventListener('click', onClickWindowCallback);
 });
 
 onUnmounted(() => {
