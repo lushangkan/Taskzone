@@ -50,13 +50,11 @@
         <div v-if="props.taskGroupEntity !== undefined && props.taskGroupEntity.priority !== Priority.NORMAL"
              class="h-[21px] flex flex-row justify-start items-center gap-[12px] overflow-visible">
           <alert-circle-icon class="h-[19px] w-[19px] stroke-[hsl(var(--fg))]/70 stroke-[2px]"/>
-          <!-- TODO:根据背景颜色和文字颜色判断是否要添加背景 -->
           <span :class="`${priorityColors[props.taskGroupEntity.priority] === undefined? 'font-light':'font-bold'} ${priorityBgColor !== undefined? 'rounded-full border-[5px]':''} text-[13.5px] text-center text-clip overflow-hidden whitespace-nowrap text-[hsl(var(--fg))]`" :style="{ color: `var(${priorityColors[props.taskGroupEntity.priority]})`, borderColor: `hsl(var(${priorityBgColor}))`, backgroundColor: `hsl(var(${priorityBgColor}))` }">{{ $t(`priority.${props.taskGroupEntity.priority}`) }}</span>
         </div>
         <div v-if="props.taskGroupEntity !== undefined && props.taskGroupEntity.repeatMode !== RepeatMode.ONLY_ONCE"
              class="h-[21px] flex flex-row justify-start items-center gap-[12px] overflow-hidden">
           <bell-icon class="h-[19px] w-[19px] stroke-[hsl(var(--fg))]/70 stroke-[2px]"/>
-          <!-- TODO:根据背景颜色和文字颜色判断是否要添加背景 -->
           <span class="text-[hsl(var(--fg))] font-light text-[13.5px] whitespace-nowrap">{{ $t(`reminderMode.${props.taskGroupEntity.reminders}`) }}</span>
         </div>
       </div>

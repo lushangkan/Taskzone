@@ -1,17 +1,8 @@
-import {
-    Column,
-    CreateDateColumn, DeleteDateColumn,
-    Entity,
-    JoinTable,
-    ManyToMany,
-    OneToMany,
-    PrimaryGeneratedColumn
-} from "typeorm";
+import {Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {RepeatMode} from "@/data/enum/RepeatMode";
 import {RepeatCustom} from "@/data/models/RepeatCustom";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {TagEntity} from "@/data/database/entities/TagEntity";
-import {OnDeleteType} from "typeorm/metadata/types/OnDeleteType";
 import {ReminderMode} from "@/data/enum/ReminderMode";
 import {Priority} from "@/data/enum/Priority";
 
@@ -21,7 +12,8 @@ export class TaskGroupEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    // TODO: Record the user's ordering of tasks.
+    @Column("simple-json", { nullable: true })
+    order: { done: string[], undone: string[] } | null;
 
     @Column('datetime', { nullable: true, unique: true })
     dayTaskDate: Date | null;
