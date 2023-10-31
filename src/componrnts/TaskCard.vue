@@ -37,10 +37,10 @@
 </template>
 <script setup lang="ts">
 
-import {defineProps, onMounted, reactive, ref, Ref, watch} from "vue";
+import {defineProps, onMounted, reactive, ref, Ref} from "vue";
 import * as fun from "@/utils/fun";
+import {getForegroundColor} from "@/utils/fun";
 import * as DBUtils from "@/data/database/utils/database-utils";
-import {getForegroundColor, getWhiteBlackCssVar} from "@/utils/fun";
 import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import anime from "animejs/lib/anime.es.js";
 import {BadgeAlertIcon, BellIcon, CalendarCheckIcon} from "lucide-vue-next";
@@ -48,7 +48,6 @@ import "moment/dist/locale/zh-cn.js";
 import {Priority} from "@/data/enum/Priority";
 import {ReminderMode} from "@/data/enum/ReminderMode";
 import {useAppStores} from "@/stores/app-stores";
-import {storeToRefs} from "pinia";
 import EventType from "@/event/EventType";
 import TagCard from "@/componrnts/TagCard.vue";
 
@@ -60,6 +59,10 @@ const props = defineProps({
   taskEntity: {
     type: TaskEntity,
     default: undefined,
+  },
+  isDraggingCard: {
+    type: Boolean,
+    default: false,
   }
 });
 
@@ -71,7 +74,6 @@ const inputRef: Ref<HTMLInputElement | null> = ref(null);
 const taskCardRef: Ref<HTMLDivElement | null> = ref(null);
 
 const multiSelectMode = ref(false);
-const draggingCard = ref(false);
 
 const fgColor = ref('--b1)');
 const bgColor = ref('--n');
@@ -183,7 +185,7 @@ async function updateTaskDone() {
 }
 
 function onHoldCard(event: any) {
-  if (draggingCard.value) return;
+  if (props.isDraggingCard) return;
   if (multiSelectMode.value) return;
   if (!appStore.selectedTasks?.includes(props.taskEntity!)) {
     appStore.selectedTasks?.push(props.taskEntity!);
@@ -236,14 +238,6 @@ const disableMultiSelectCallback = () => {
   multiSelectMode.value = false;
 };
 
-const draggingCallback = () => {
-  draggingCard.value = true;
-};
-
-const dragEndCallback = () => {
-  draggingCard.value = false;
-};
-
 onMounted(() => {
   // 初始化颜色变量
   initColorVar();
@@ -254,10 +248,6 @@ onMounted(() => {
   // 监听多选模式事件
   appStore.eventBus.on(EventType.ENABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, enableMultiSelectCallback);
   appStore.eventBus.on(EventType.DISABLED_TASK_CARD_MULTI_SELECTION_MODE_EVENT, disableMultiSelectCallback)
-
-  // 监听拖拽事件
-  appStore.eventBus.on(EventType.DRAGGING_TASK_CARD_EVENT, draggingCallback);
-  appStore.eventBus.on(EventType.DRAG_TASK_CARD_END_EVENT, dragEndCallback);
 
 })
 

@@ -25,11 +25,11 @@
                        }"
                        animation="200" handle=".drag-handle"
                        @start="onDragStart" @end="onDragEnd(ListType.UNDONE)"
-                       delay="100"
+                       delay="100" :disabled="multiSelectMode"
             >
               <template #item="{element}">
                 <div class="list-group-item w-full">
-                  <task-card class="h-[62px] w-[95%]"
+                  <task-card class="h-[62px] w-[95%]" :is-dragging-card="isDragging"
                            :task-entity="element" @on-complete-change="onCompletedChange"
                   />
                 </div>
@@ -48,11 +48,11 @@
                        }"
                        animation="200" handle=".drag-handle"
                        @start="onDragStart" @end="onDragEnd(ListType.DONE)"
-                       delay="100"
+                       delay="100" :disabled="multiSelectMode"
             >
               <template #item="{element}">
                 <div class="list-group-item w-full">
-                  <task-card class="h-[62px] w-[95%] greyscale-90"
+                  <task-card class="h-[62px] w-[95%] greyscale-90" :is-dragging-card="isDragging"
                              :task-entity="element" @on-complete-change="onCompletedChange"/>
                 </div>
               </template>
@@ -105,7 +105,6 @@ enum ListType {
   DONE = 'done',
   UNDONE = 'undone'
 }
-
 /**
  * 数据库更新后的回调, 更新任务列表
  */
@@ -258,6 +257,8 @@ function onDragStart(listType: ListType) {
 }
 
 function onDragEnd(listType: ListType) {
+  isDragging.value = false;
+
   // 排序结束，保存到数据库
   let updateOrder = false;
 
@@ -285,7 +286,6 @@ function onDragEnd(listType: ListType) {
   }
 
   appStore.eventBus.emit(EventType.DRAG_TASK_CARD_END_EVENT, {});
-  isDragging.value = false;
 }
 
 const multiSelectDeleteTasksCallback = async () => {
