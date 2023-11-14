@@ -9,7 +9,7 @@ export class SettingEntity {
     @Column('text', {unique: true}) // 唯一列
     key: string;
 
-    @Column('simple-json')
+    @Column('text')
     value: NonNullable<unknown>;
 
 }

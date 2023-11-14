@@ -1,6 +1,6 @@
-import {Setting} from "@/data/interface/Setting";
+import {Settings} from "@/data/interface/Settings";
 
-export class DefSetting implements Setting{
-    resetTime: Date = new Date('2021-01-01T00:00:00.000Z');
+export class DefSetting implements Settings{
+    resetTime: Date = new Date('00:00:00');
     theme = 'default';
 }

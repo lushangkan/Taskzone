@@ -78,7 +78,8 @@ export async function checkAppTableStatus(Entity?: any) {
         taskEntity: undefined,
         tagEntity: undefined,
         taskGroupEntity: undefined,
-        settingEntity: undefined
+        settingEntity: undefined,
+        appPropEntity: undefined
     }
 
     for (const entity of Entity !== undefined? [Entity] : [TagEntity, TaskEntity, TaskGroupEntity, SettingEntity]) {
@@ -184,6 +185,17 @@ export async function checkDayTaskGroup(date: Date) {
     const repository = getTaskGroupEntityRepository();
 
     date = dateMom.startOf('day').toDate();
+
+    // // 获取重置时间
+    // const resetTimeEntity = await getSettingEntityRepository()?.findOne({ where: { key: 'resetTime' } });
+    // if (resetTimeEntity !== undefined && resetTimeEntity !== null) {
+    //     const resetMom = moment(resetTimeEntity.value, "HH:mm:ss");
+    //     if (dateMom.isBefore(resetMom)) {
+    //         date = dateMom.subtract(1, 'day').toDate();
+    //     // } else {
+    //     //     date = dateMom.
+    //     // }
+    // }
 
     // 检测是否已经生成
     const group = await repository?.findOne({where: {dayTaskDate: date}});

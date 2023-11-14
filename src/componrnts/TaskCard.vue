@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <div v-bind="$attrs" v-touch:tap="onTapCard"
-         v-touch:hold="onHoldCard" v-touch-options="{ touchHoldTolerance: 180 }"
+         v-touch:hold="onHoldCard" v-touch-options="{ touchHoldTolerance: 900 }"
          ref="taskCardRef" class="task-card relative btn-transition leading-none flex-nowrap normal-case w-full min-h-[70px] rounded-[22px] task-card-shadow flex flex-row justify-around items-center px-[6%] gap-[10px] overflow-hidden" :style="{
            'background-color': props.taskEntity !== undefined && props.taskEntity.color !== null? props.taskEntity?.color : fun.randomColorFromOpenColor([4,5,6]),
            '--fg': `var(${fgColor})`,

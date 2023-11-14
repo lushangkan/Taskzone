@@ -20,7 +20,7 @@
                        tag="transition-group" :component-data="
                        {
                          name: !isDragging && !updatingTask ? 'task-card' : null,
-                         tag: 'div',
+                         tag: 'ul',
                          class: `w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`
                        }"
                        animation="200" handle=".drag-handle"
@@ -28,11 +28,11 @@
                        delay="100" :disabled="multiSelectMode"
             >
               <template #item="{element}">
-                <div class="list-group-item w-full">
+                <li class="list-group-item w-full">
                   <task-card class="h-[62px] w-[95%]" :is-dragging-card="isDragging"
                            :task-entity="element" @on-complete-change="onCompletedChange"
                   />
-                </div>
+                </li>
               </template>
             </draggable>
             <div v-if="undoneTasks.length !== 0 && doneTasks.length !== 0" class="w-[90%] flex flex-row justify-around items-center gap-[10px]">
@@ -43,7 +43,7 @@
                        tag="transition-group" :component-data="
                        {
                          name: !isDragging && !updatingTask ? 'task-card' : null,
-                         tag: 'div',
+                         tag: 'ul',
                          class: `w-full flex flex-col justify-start items-center bg-base-100 gap-[15px]`
                        }"
                        animation="200" handle=".drag-handle"
@@ -51,10 +51,10 @@
                        delay="100" :disabled="multiSelectMode"
             >
               <template #item="{element}">
-                <div class="list-group-item w-full">
+                <li class="list-group-item w-full">
                   <task-card class="h-[62px] w-[95%] greyscale-90" :is-dragging-card="isDragging"
                              :task-entity="element" @on-complete-change="onCompletedChange"/>
-                </div>
+                </li>
               </template>
             </draggable>
           </div>
@@ -82,6 +82,7 @@ import {RouteLocationNormalized, useRouter} from "vue-router";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import moment from "moment";
 import TaskGroupInfo from "@/componrnts/TaskGroupInfo.vue";
+import {InsertEvent, RecoverEvent, RemoveEvent, SoftRemoveEvent, UpdateEvent} from "typeorm";
 
 const appStore = useAppStores();
 const dbStore = useDatabaseStores();
@@ -94,9 +95,7 @@ const doneTasks: Ref<TaskEntity[]> = ref([]);
 const taskGroupEntity: Ref<TaskGroupEntity | null> = ref(null);
 
 const isDragging = ref(false);
-
 const multiSelectMode = ref(false);
-
 const updatingTask = ref(false);
 
 let taskGroupId: string | undefined = undefined;
@@ -105,11 +104,15 @@ enum ListType {
   DONE = 'done',
   UNDONE = 'undone'
 }
+
 /**
  * 数据库更新后的回调, 更新任务列表
  */
-const updateTasks = async () => {
+const updateTasks = async (event: InsertEvent<any> | RemoveEvent<any> | SoftRemoveEvent<any> | RecoverEvent<any> | UpdateEvent<any> | null | undefined) => {
   if (taskGroupId === undefined) return;
+
+  // 判断是否为更新order，如果是则返回，避免重复计算带来的bug和性能消耗
+  if (event !== null && event !== undefined && event.entity !== null && event.entity !== undefined && "order" in event) return;
 
   // 更新任务
   // 未知类型错误，必须使用@ts-ignore，使用后运行正常，请勿移除
@@ -130,12 +133,12 @@ const updateTasks = async () => {
 
   if (tasks === undefined) return;
 
-  undoneTasks.value = tasks.filter((task) => {
+  const unsortedUndoneTask = tasks.filter((task) => {
     if (task === null) return false;
     return !task.isDone;
   }) as TaskEntity[];
 
-  doneTasks.value = tasks.filter((task) => {
+  const unsortedDoneTask = tasks.filter((task) => {
     if (task === null) return false;
     return task.isDone;
   }) as TaskEntity[];
@@ -153,22 +156,22 @@ const updateTasks = async () => {
     updateOrder = true;
   }
 
-  if (taskGroupEntity.value?.order?.done === undefined || (taskGroupEntity.value?.order.done.length === 0 && doneTasks.value.length !== 0)) {
+  if (taskGroupEntity.value?.order?.done === undefined || (taskGroupEntity.value?.order.done.length === 0 && unsortedDoneTask.length !== 0)) {
     // order.done未空，而doneTasks不为空，说明是第一次加载，生成order.done
-    taskGroupEntity.value!.order!.done = doneTasks.value.map((task) => task.id);
+    taskGroupEntity.value!.order!.done = unsortedDoneTask.map((task) => task.id);
     updateOrder = true;
   }
 
-  if (taskGroupEntity.value?.order?.undone === undefined || (taskGroupEntity.value?.order.undone.length === 0 && undoneTasks.value.length !== 0)) {
+  if (taskGroupEntity.value?.order?.undone === undefined || (taskGroupEntity.value?.order.undone.length === 0 && unsortedUndoneTask.length !== 0)) {
     // order.undone未空，而undoneTasks不为空，说明是第一次加载，生成order.undone
-    taskGroupEntity.value!.order!.undone = undoneTasks.value.map((task) => task.id);
+    taskGroupEntity.value!.order!.undone = unsortedUndoneTask.map((task) => task.id);
     updateOrder = true;
   }
 
-  if (taskGroupEntity.value?.order?.done.length < doneTasks.value.length) {
+  if (taskGroupEntity.value?.order?.done.length < unsortedDoneTask.length) {
     // order.done长度小于doneTasks长度，说明有新的任务添加，更新order.done
     // 寻找新增的任务
-    const newTasks = doneTasks.value.filter((task) => {
+    const newTasks = unsortedDoneTask.filter((task) => {
       return !taskGroupEntity.value!.order!.done.includes(task.id);
     });
     // 添加到尾部
@@ -176,10 +179,10 @@ const updateTasks = async () => {
     updateOrder = true;
   }
 
-  if (taskGroupEntity.value?.order?.undone.length < undoneTasks.value.length) {
+  if (taskGroupEntity.value?.order?.undone.length < unsortedUndoneTask.length) {
     // order.undone长度小于undoneTasks长度，说明有新的任务添加，更新order.undone
     // 寻找新增的任务
-    const newTasks = undoneTasks.value.filter((task) => {
+    const newTasks = unsortedUndoneTask.filter((task) => {
       return !taskGroupEntity.value!.order!.undone.includes(task.id);
     });
     // 添加到尾部
@@ -188,41 +191,52 @@ const updateTasks = async () => {
   }
 
   // 将order.done的顺序应用到doneTasks
-  const newDoneTasks: TaskEntity[] = [];
-  for (const taskId of taskGroupEntity.value!.order!.done) {
-    const task: TaskEntity | undefined = doneTasks.value.find((task) => task.id === taskId);
+  const orderedDoneTasks: TaskEntity[] = [];
+
+  for (let i = 0; i < taskGroupEntity.value!.order!.done.length; i++) {
+    const taskId = taskGroupEntity.value!.order!.done[i];
+    const task: TaskEntity | undefined = unsortedDoneTask.find((task) => task.id === taskId);
     if (task === undefined) {
       // 没有找到对应的任务，说明该任务已被删除，从order.done中移除
       taskGroupEntity.value!.order!.done.splice(taskGroupEntity.value!.order!.done.indexOf(taskId), 1);
+      i--;
       updateOrder = true;
       continue;
     }
-    newDoneTasks.push(task);
+    orderedDoneTasks.push(task);
   }
 
   // 将order.undone的顺序应用到undoneTasks
-  const newUndoneTasks: TaskEntity[] = [];
-  for (const taskId of taskGroupEntity.value!.order!.undone) {
-    const task: TaskEntity | undefined = undoneTasks.value.find((task) => task.id === taskId);
+  const orderedUndoneTasks: TaskEntity[] = [];
+
+  for (let i = 0; i < taskGroupEntity.value!.order!.undone.length; i++) {
+    const taskId = taskGroupEntity.value!.order!.undone[i];
+    const task: TaskEntity | undefined = unsortedUndoneTask.find((task) => task.id === taskId);
     if (task === undefined) {
       // 没有找到对应的任务，说明该任务已被删除，从order.undone中移除
       taskGroupEntity.value!.order!.undone.splice(taskGroupEntity.value!.order!.undone.indexOf(taskId), 1);
+      i--;
       updateOrder = true;
       continue;
     }
-    newUndoneTasks.push(task);
+    orderedUndoneTasks.push(task);
   }
 
+  updatingTask.value = true;
+
   // 应用到变量
-  undoneTasks.value = newUndoneTasks;
-  doneTasks.value = newDoneTasks;
+  undoneTasks.value = orderedUndoneTasks;
+  doneTasks.value = orderedDoneTasks;
+
+  updatingTask.value = false;
 
   if (updateOrder) {
     // 更新数据库
-    await dbUtils.getTaskGroupEntityRepository()?.update(taskGroupEntity.value!.id, {
+    dbUtils.getTaskGroupEntityRepository()?.update(taskGroupEntity.value!.id, {
       order: taskGroupEntity.value!.order
     });
   }
+
 }
 
 const updateTaskGroup = async () => {
@@ -248,7 +262,7 @@ function scrollInitialized() {
  */
 function onCompletedChange(isDone: boolean) {
   // 更新任务列表
-  updateTasks();
+  // updateTasks(undefined);
 }
 
 function onDragStart(listType: ListType) {
@@ -318,7 +332,7 @@ async function inTaskGroupPage(route: RouteLocationNormalized) {
   taskGroupId = result?.id;
 
   // 初始化任务列表
-  await updateTasks()
+  await updateTasks(undefined)
 }
 
 async function inDayTaskPage(route: RouteLocationNormalized) {
@@ -361,7 +375,7 @@ async function inDayTaskPage(route: RouteLocationNormalized) {
   taskGroupId = result.id;
 
   // 初始化任务列表
-  await updateTasks()
+  await updateTasks(undefined)
 }
 
 onMounted(() => {

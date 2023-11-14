@@ -70,6 +70,7 @@ export function initDb(dbStores: ReturnType<typeof useDatabaseStores>) {
 
             } catch (err) {
                 reject(new Error(`Error: ${err}`));
+                // TODO: 遇到错误时，调用原生库提示用户数据库错误，并打开log位置
             }
         });
     });

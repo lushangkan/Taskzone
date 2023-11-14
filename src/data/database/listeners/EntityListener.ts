@@ -1,9 +1,12 @@
 import {
     EntitySubscriberInterface,
     EventSubscriber,
-    InsertEvent, LoadEvent, RecoverEvent,
+    InsertEvent,
+    LoadEvent,
+    RecoverEvent,
     RemoveEvent,
-    SoftRemoveEvent, UpdateEvent
+    SoftRemoveEvent,
+    UpdateEvent
 } from "typeorm";
 import {Promise} from "cypress/types/cy-bluebird";
 import {useDatabaseStores} from "@/stores/database-stores";
@@ -14,6 +17,7 @@ import {TaskEntity} from "@/data/database/entities/TaskEntity";
 import {SettingEntity} from "@/data/database/entities/SettingEntity";
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
 import {getEntityType} from "@/data/database/entity-type";
+import {AppPropEntity} from "@/data/database/entities/AppPropEntity";
 
 @EventSubscriber()
 export class EntityListener implements EntitySubscriberInterface {
@@ -38,7 +42,7 @@ export class EntityListener implements EntitySubscriberInterface {
             this.dbStore.updateStatus(event.entity.constructor);
         } else if (event.entityId !== null || event.entityId) {
             Object.entries(event.entityId).forEach(([repositoryIdName, id]) => {
-                const entity: typeof TagEntity | typeof TaskEntity | typeof SettingEntity | typeof TaskGroupEntity = getEntityType(repositoryIdName.replaceAll('Id', ''));
+                const entity: typeof TagEntity | typeof TaskEntity | typeof SettingEntity | typeof TaskGroupEntity | typeof AppPropEntity = getEntityType(repositoryIdName.replaceAll('Id', ''));
                 this.dbStore.updateStatus(entity);
             })
         }
@@ -52,7 +56,7 @@ export class EntityListener implements EntitySubscriberInterface {
             this.dbStore.updateStatus(event.entity.constructor);
         } else if (event.entityId !== null || event.entityId) {
             Object.entries(event.entityId).forEach(([repositoryIdName, id]) => {
-                const entity: typeof TagEntity | typeof TaskEntity | typeof SettingEntity | typeof TaskGroupEntity = getEntityType(repositoryIdName.replaceAll('Id', ''));
+                const entity: typeof TagEntity | typeof TaskEntity | typeof SettingEntity | typeof TaskGroupEntity | typeof AppPropEntity = getEntityType(repositoryIdName.replaceAll('Id', ''));
                 this.dbStore.updateStatus(entity);
             })
         }
@@ -66,7 +70,7 @@ export class EntityListener implements EntitySubscriberInterface {
             this.dbStore.updateStatus(event.entity.constructor);
         } else if (event.entityId !== null || event.entityId) {
             Object.entries(event.entityId).forEach(([repositoryIdName, id]) => {
-                const entity: typeof TagEntity | typeof TaskEntity | typeof SettingEntity | typeof TaskGroupEntity = getEntityType(repositoryIdName.replaceAll('Id', ''));
+                const entity: typeof TagEntity | typeof TaskEntity | typeof SettingEntity | typeof TaskGroupEntity | typeof AppPropEntity = getEntityType(repositoryIdName.replaceAll('Id', ''));
                 this.dbStore.updateStatus(entity);
             })
         }

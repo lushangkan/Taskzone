@@ -1,7 +1,7 @@
 <template>
  <button type="button" :title="props.taskGroupEntity?.name" ref="cardRef" v-if="taskGroupEntity?.dayTaskDate === null"
          v-touch:tap="onTapCard"
-         v-touch:hold="onHoldCard" v-touch-options="{ touchHoldTolerance: 300 }"
+         v-touch:hold="onHoldCard" v-touch-options="{ touchHoldTolerance: 900 }"
          :class="`btn-transition w-full h-[48px] rounded-[16px] flex justify-start items-center px-[12px] gap-[8px] bg-[hsl(var(--bg))] ${selected? 'select-task-group-card':''}`" :style="{ '--bg': bgColor, '--fg': `var(${fgColor})` }">
    <span v-if="taskGroupEntity?.icon !== null" class="text-[22px]">{{ taskGroupEntity.icon }}</span>
    <span class="truncate text-clip font-medium" style="color: hsl(var(--fg));">{{ taskGroupEntity.name }}</span>
@@ -11,8 +11,8 @@
 <script setup lang="ts">
 
 import {TaskGroupEntity} from "@/data/database/entities/TaskGroupEntity";
-import {getForegroundColor, getWhiteBlackCssVar} from "@/utils/fun";
-import {onMounted, type Ref, ref, watch} from "vue";
+import {getForegroundColor} from "@/utils/fun";
+import {type Ref, ref, watch} from "vue";
 import EventType from "@/event/EventType";
 import {useAppStores} from "@/stores/app-stores";
 import {storeToRefs} from "pinia";

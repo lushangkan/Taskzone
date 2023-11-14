@@ -464,16 +464,34 @@
 
 .gen-diff-width-text-stroke(10);
 
+@keyframes task-card-in {
+  0% {
+    transform: translateX(100%) scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes task-card-out {
+  0% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%) scale(0.9);
+    opacity: 0;
+  }
+}
+
 .task-card-enter-active {
-  animation: slideInRight 0.3s ease-out forwards;
+  animation: task-card-in 0.28s ease-out forwards;
 }
 
 .task-card-leave-active {
-  animation: slideOutRight 0.3s ease-out forwards;
-}
-
-.task-card-move {
-  transition: all 0.3s ease-out;
+  animation: task-card-out 0.28s ease-out forwards;
 }
 
 .greyscale-90 {
